@@ -7,19 +7,20 @@ public class TestClass {
     ListGraph listGraphClass = new ListGraph();
 
     public static void main(String[] args) {
-        Edge edgeClass = new Edge();
+        //Edge edgeClass = new Edge();
+        //System.out.println(edgeClass.getName());
         TestClass testClass = new TestClass();
-        System.out.println(edgeClass.getName());
+
 
         testClass.loadData();
         testClass.removeData();
         testClass.printSet();
+
     }
 
     private void loadData() {
         listGraphClass.add(NODEONE);
         listGraphClass.add(NODETWO);
-
     }
 
     private void removeData() {
@@ -29,5 +30,8 @@ public class TestClass {
 
     private void printSet() {
         System.out.println(listGraphClass.nodeList);
+        System.out.println(listGraphClass.getNodes());
     }
+
+
 }

@@ -1,7 +1,15 @@
-public class Edge {
-    private int weight;
-    private String destination;
+public class Edge<N> {
+
+    // weight - int?
     private String name;
+    private int weight;
+    private N destination;
+
+    public Edge(String name, int weight, N destination)  {
+        this.name = name;
+        this.weight = weight;
+        this.destination = destination;
+    }
 
     public int getWeight() {
         return weight;
@@ -11,7 +19,7 @@ public class Edge {
         this.weight = weight;
     }
 
-    public String getDestination() {
+    public N getDestination() {
         return destination;
     }
 
