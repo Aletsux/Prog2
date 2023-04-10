@@ -1,3 +1,4 @@
+// Edge<N> - Generic type Edge
 public class Edge<N> {
 
     // weight - int?
