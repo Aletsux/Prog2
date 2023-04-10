@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class TestClass {
     private static final String NODEONE = "New York";
     private static final String NODETWO = "Stockholm";
@@ -29,7 +27,7 @@ public class TestClass {
     }
 
     private void printSet() {
-        System.out.println(listGraphClass.nodeList);
+        System.out.println(listGraphClass.existingNodes);
         System.out.println(listGraphClass.getNodes());
     }
 
