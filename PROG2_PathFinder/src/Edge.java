@@ -24,6 +24,10 @@ public class Edge<N> {
         return destination;
     }
 
+    public void setDestination() {
+        this.destination = destination;
+    }
+
     public String getName() {
         return name;
     }
