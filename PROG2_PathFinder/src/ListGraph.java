@@ -110,6 +110,10 @@ public class ListGraph<N> {
         return existingNodes.stream().count();
     }
 
+    public Set<Edge<N>> getEdges(N key) {
+        return adjacentNodes.get(key);
+    }
+
 
     public String toString() {
         return adjacentNodes.toString();
