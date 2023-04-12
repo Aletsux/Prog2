@@ -38,7 +38,7 @@ public class ListGraph<N> {
     // 'bindName' - from user input?
     public void connect(N currentNode, N newNode, String bindName, int weight) {
         try {
-
+            //Throw exceptions
             //checks whether selected nodes exist
             if(!existingNodes.contains(currentNode) || !existingNodes.contains(newNode)) {
                 throw new NoSuchElementException("Node doesn't exist");
@@ -52,11 +52,14 @@ public class ListGraph<N> {
                 throw new IllegalStateException("A conenction already exists");
             }
 
+            //Add nodes if they don't already exist
             add(currentNode);
             add(newNode);
 
+            //Reference the Set<Edge> for the currentNode in the adjacentNodes map
             Set<Edge<N>> edges = adjacentNodes.get(currentNode);
 
+            //create a new edge from currentNode to newNode
             Edge<N> currentToNew = new Edge<>(bindName, weight, newNode);
             if(edges != null) {
                 edges.add(currentToNew);
@@ -67,7 +70,10 @@ public class ListGraph<N> {
                 adjacentNodes.put(currentNode, edges);
             }
 
+            //Reference the Set<Edge> for the newNode in the adjacentNodes map
             edges = adjacentNodes.get(newNode);
+
+            //Same as above, create edge for newNode to currentNode
             Edge<N> newToCurrent = new Edge<>(bindName, weight, currentNode);
             if(edges != null) {
                 edges.add(newToCurrent);
@@ -83,8 +89,9 @@ public class ListGraph<N> {
                 edges = new HashSet<>();
                 adjacentNodes.put(currentNode, edges);
             }
-
         }
+
+        //Catch exceptions
         catch (NoSuchElementException e) {
             System.err.println("Error: " + e.getMessage());
         }
@@ -105,7 +112,7 @@ public class ListGraph<N> {
 
 
     public String toString() {
-        return existingNodes.toString();
+        return adjacentNodes.toString();
     }
 
 }
