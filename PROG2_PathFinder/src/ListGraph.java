@@ -9,7 +9,7 @@ ToDo:
  */
 
 public class ListGraph<N> {
-    LinkedList<N> existingNodes = new LinkedList<>();
+    //LinkedList<N> existingNodes = new LinkedList<>();
 
     //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
@@ -22,28 +22,26 @@ public class ListGraph<N> {
         adjacentNodes.putIfAbsent(node, new HashSet<Edge<N>>());
     }
 
-    //ToDo: Need to remove edges
-    public void remove(N node) throws NoSuchElementException {
-        try {
-            if(!adjacentNodes.containsKey(node)) {
-                throw new NoSuchElementException("Not an existing node!");
-            }
-            adjacentNodes.remove(node);
-        } catch (NoSuchElementException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-    }
-
     // Multiple exceptions need to be thrown
     // 'bindName' - from user input?
     public void connect(N currentNode, N newNode, String bindName, int weight) {
 
         try {
-            System.out.println("Entered connect method");
+            //Throw exceptions
+            //checks whether selected nodes exist
+            if(!adjacentNodes.containsKey(currentNode) || !adjacentNodes.containsKey(newNode)) {
+                throw new NoSuchElementException("Node doesn't exist");
+            }
 
-            //Add nodes if they don't already exist
-            add(currentNode);
-            add(newNode);
+            if(weight < 0) {
+                throw new IllegalArgumentException("Invalid value");
+            }
+
+            if(adjacentNodes.get(currentNode) == null ) {
+                throw new IllegalStateException("A connection already exists");
+            }
+
+            System.out.println("Entered connect method");
 
             //Reference the Set<Edge> for the currentNode in the adjacentNodes map
             Set<Edge<N>> edges = adjacentNodes.get(currentNode);
@@ -81,21 +79,7 @@ public class ListGraph<N> {
                 adjacentNodes.put(currentNode, edges);
             }
 
-            //Throw exceptions
-            //checks whether selected nodes exist
-            if(!existingNodes.contains(currentNode) || !existingNodes.contains(newNode)) {
-                throw new NoSuchElementException("Node doesn't exist");
-            }
-
-            if(weight < 0) {
-                throw new IllegalArgumentException("Invalid value");
-            }
-
-            if(adjacentNodes.containsKey(currentNode)) {
-                throw new IllegalStateException("A connection already exists");
-            }
         }
-
 
         //Catch exceptions
         catch (NoSuchElementException e) {
@@ -111,9 +95,37 @@ public class ListGraph<N> {
         }
     }
 
+    //ToDo: Need to remove edges
+    public void remove(N nodeToRemove) throws NoSuchElementException {
+        try {
+            System.out.println("Entered remove method!");
+            if(!adjacentNodes.containsKey(nodeToRemove)) {
+                throw new NoSuchElementException("Not an existing node!");
+            }
+
+            //save all connections to nodeToRemove
+            Set<Edge<N>> connections = adjacentNodes.get(nodeToRemove);
+
+            //iterate over connections, remove edges from other nodes
+            for (Edge<N> edge : connections) {
+                if (edge.getDestination() != nodeToRemove) {
+                    Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
+                    adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
+                }
+            }
+            //removes the node and all edges from the node
+            adjacentNodes.remove(nodeToRemove);
+
+            System.out.println("All connections should be removed!");
+
+        } catch (NoSuchElementException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+
     // returns amount of 'nodes'
-    public double getNodes() {
-        return existingNodes.stream().count();
+    public Set<N> getNodes() {
+        return adjacentNodes.keySet();
     }
 
     public Set<Edge<N>> getEdges(N key) {
