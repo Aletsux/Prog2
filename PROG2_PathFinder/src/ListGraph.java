@@ -37,20 +37,9 @@ public class ListGraph<N> {
     // Multiple exceptions need to be thrown
     // 'bindName' - from user input?
     public void connect(N currentNode, N newNode, String bindName, int weight) {
+
         try {
-            //Throw exceptions
-            //checks whether selected nodes exist
-            if(!existingNodes.contains(currentNode) || !existingNodes.contains(newNode)) {
-                throw new NoSuchElementException("Node doesn't exist");
-            }
-
-            if(weight < 0) {
-                throw new IllegalArgumentException("Invalid value");
-            }
-
-            if(adjacentNodes.containsKey(currentNode)) {
-                throw new IllegalStateException("A conenction already exists");
-            }
+            System.out.println("Entered connect method");
 
             //Add nodes if they don't already exist
             add(currentNode);
@@ -60,7 +49,9 @@ public class ListGraph<N> {
             Set<Edge<N>> edges = adjacentNodes.get(currentNode);
 
             //create a new edge from currentNode to newNode
-            Edge<N> currentToNew = new Edge<>(bindName, weight, newNode);
+            Edge<N> currentToNew = new Edge<N>(bindName, weight, newNode);
+
+            //more optimal version: adjacentNodes.computeIfAbsent(currentNode, k -> new HashSet<Edge<N>>()).add(currentToNew);
             if(edges != null) {
                 edges.add(currentToNew);
                 adjacentNodes.put(currentNode, edges);
@@ -89,7 +80,22 @@ public class ListGraph<N> {
                 edges = new HashSet<>();
                 adjacentNodes.put(currentNode, edges);
             }
+
+            //Throw exceptions
+            //checks whether selected nodes exist
+            if(!existingNodes.contains(currentNode) || !existingNodes.contains(newNode)) {
+                throw new NoSuchElementException("Node doesn't exist");
+            }
+
+            if(weight < 0) {
+                throw new IllegalArgumentException("Invalid value");
+            }
+
+            if(adjacentNodes.containsKey(currentNode)) {
+                throw new IllegalStateException("A connection already exists");
+            }
         }
+
 
         //Catch exceptions
         catch (NoSuchElementException e) {
