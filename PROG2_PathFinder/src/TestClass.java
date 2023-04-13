@@ -8,27 +8,20 @@ public class TestClass {
     ListGraph listGraphClass = new ListGraph();
 
     public static void main(String[] args) {
-        //Edge edgeClass = new Edge();
-        //System.out.println(edgeClass.getName());
         TestClass testClass = new TestClass();
+        testClass.loadData();
 
         testClass.testConnectMethod();
-
+        testClass.removeData();
+        testClass.printSet();
     }
 
     //Test functionality of connect method
 
     public void testConnectMethod() {
-        loadData();
-        listGraphClass.connect(NODEONE, NODETHREE, "aConnection?", 300);
 
-        Set<Edge> edges = listGraphClass.getEdges(NODEONE);
-
-        for(Edge edge : edges) {
-            System.out.println("Edge: " + edge.toString());
-        }
-
-        System.out.println(listGraphClass.toString());
+        listGraphClass.connect(NODEONE, NODETHREE, "aConnection", 300);
+        listGraphClass.connect(NODETWO, NODETHREE, "bConnection", 500);
     }
 
     private void loadData() {
@@ -38,13 +31,13 @@ public class TestClass {
     }
 
     private void removeData() {
-        //listGraphClass.remove(NODEONE);
+        listGraphClass.remove(NODEONE);
 
     }
 
     private void printSet() {
-        System.out.println(listGraphClass.existingNodes);
-        System.out.println(listGraphClass.getNodes());
+        //System.out.println(listGraphClass.existingNodes);
+        System.out.println(listGraphClass.toString());
     }
 
 
