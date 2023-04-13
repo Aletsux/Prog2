@@ -22,9 +22,12 @@ public class TestClass {
         loadData();
         listGraphClass.connect(NODEONE, NODETHREE, "aConnection?", 300);
 
-        //edges is null...
-        Set<Edge> edges = listGraphClass.getEdges("Edge: " + NODEONE);
-        //System.out.println(edges.toString());
+        Set<Edge> edges = listGraphClass.getEdges(NODEONE);
+
+        for(Edge edge : edges) {
+            System.out.println("Edge: " + edge.toString());
+        }
+
         System.out.println(listGraphClass.toString());
     }
 
