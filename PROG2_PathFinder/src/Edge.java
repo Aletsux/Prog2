@@ -32,5 +32,8 @@ public class Edge<N> {
         return name;
     }
 
-
+    @Override
+    public String toString() {
+        return this.name + " " + getWeight() + " " + getDestination();
+    }
 }
