@@ -137,4 +137,13 @@ public class ListGraph<N> {
         return adjacentNodes.toString();
     }
 
+    private Edge getEdgeBetween (N currentNode, N newNode) {
+        for (Edge edge : adjacentNodes.get(newNode)){
+            if (edge.getDestination().equals(currentNode)){
+                return edge;
+            }
+        }
+        return null;
+    }
+
 }
