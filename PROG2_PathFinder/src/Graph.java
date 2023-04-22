@@ -1,10 +1,26 @@
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
-// Temporary version from chatGPT
-public interface Graph<N> {
-    void addNode(N node);
-    void addEdge(N node1, N node2);
-    List<N> getNeighbors(N node);
-    List<N> getNodes();
+public interface Graph<T> {
+
+    void add(T node);
+    
+    void connect(T node1, T node2, String name, int weight);
+    
+    void setConnectionWeight(T node1, T node2, int weight);
+    
+    Set<T> getNodes();
+    
+    Collection<Edge<T>> getEdgesFrom(T node);
+    
+    Edge<T> getEdgeBetween(T node1, T node2);
+    
+    void disconnect(T node1, T node2);
+    
+    void remove(T node);
+    
+    boolean pathExists(T from, T to);
+    
+    List<Edge<T>> getPath(T from, T to);
 }
-

@@ -8,14 +8,14 @@ Graph - Interface we need to create?
 ToDo:
  */
 
-public class ListGraph<N> {
+public class ListGraph<N> implements Graph<N> {
     //LinkedList<N> existingNodes = new LinkedList<>();
 
     //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
 
     public void add(N node) {
-        if(adjacentNodes.containsKey(node)) {
+        if (adjacentNodes.containsKey(node)) {
             System.err.println("Error: Node already exists!");
         }
         //existingNodes.add(node);
@@ -29,15 +29,15 @@ public class ListGraph<N> {
         try {
             //Throw exceptions
             //checks whether selected nodes exist
-            if(!adjacentNodes.containsKey(currentNode) || !adjacentNodes.containsKey(newNode)) {
+            if (!adjacentNodes.containsKey(currentNode) || !adjacentNodes.containsKey(newNode)) {
                 throw new NoSuchElementException("Node doesn't exist");
             }
 
-            if(weight < 0) {
+            if (weight < 0) {
                 throw new IllegalArgumentException("Invalid value");
             }
 
-            if(adjacentNodes.get(currentNode) == null ) {
+            if (adjacentNodes.get(currentNode) == null) {
                 throw new IllegalStateException("A connection already exists");
             }
 
@@ -50,7 +50,7 @@ public class ListGraph<N> {
             Edge<N> currentToNew = new Edge<N>(bindName, weight, newNode);
 
             //more optimal version: adjacentNodes.computeIfAbsent(currentNode, k -> new HashSet<Edge<N>>()).add(currentToNew);
-            if(edges != null) {
+            if (edges != null) {
                 edges.add(currentToNew);
                 adjacentNodes.put(currentNode, edges);
             } else {
@@ -64,7 +64,7 @@ public class ListGraph<N> {
 
             //Same as above, create edge for newNode to currentNode
             Edge<N> newToCurrent = new Edge<>(bindName, weight, currentNode);
-            if(edges != null) {
+            if (edges != null) {
                 edges.add(newToCurrent);
                 adjacentNodes.put(newNode, edges);
             } else {
@@ -74,7 +74,7 @@ public class ListGraph<N> {
             }
 
             //If list is empty create new list of Edges
-            if(edges == null) {
+            if (edges == null) {
                 edges = new HashSet<>();
                 adjacentNodes.put(currentNode, edges);
             }
@@ -84,13 +84,9 @@ public class ListGraph<N> {
         //Catch exceptions
         catch (NoSuchElementException e) {
             System.err.println("Error: " + e.getMessage());
-        }
-
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             System.err.println("Error: " + e.getMessage());
-        }
-
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
@@ -99,7 +95,7 @@ public class ListGraph<N> {
     public void remove(N nodeToRemove) throws NoSuchElementException {
         try {
             System.out.println("Entered remove method!");
-            if(!adjacentNodes.containsKey(nodeToRemove)) {
+            if (!adjacentNodes.containsKey(nodeToRemove)) {
                 throw new NoSuchElementException("Not an existing node!");
             }
 
@@ -137,13 +133,35 @@ public class ListGraph<N> {
         return adjacentNodes.toString();
     }
 
-    private Edge getEdgeBetween (N currentNode, N newNode) {
-        for (Edge edge : adjacentNodes.get(newNode)){
-            if (edge.getDestination().equals(currentNode)){
-                return edge;
-            }
-        }
+    @Override
+    public void setConnectionWeight(N node1, N node2, int weight) {
+
+    }
+
+    @Override
+    public Collection<Edge<N>> getEdgesFrom(N node) {
         return null;
     }
+
+    @Override
+    public Edge<N> getEdgeBetween(N node1, N node2) {
+        return null;
+    }
+
+    @Override
+    public void disconnect(N node1, N node2) {
+
+    }
+
+    @Override
+    public boolean pathExists(N from, N to) {
+        return false;
+    }
+
+    @Override
+    public List<Edge<N>> getPath(N from, N to) {
+        return null;
+    }
+
 
 }
