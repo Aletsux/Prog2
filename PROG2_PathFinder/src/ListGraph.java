@@ -38,7 +38,7 @@ public class ListGraph<N> implements Graph<N> {
                 throw new IllegalArgumentException("Invalid value");
             }
 
-            if (adjacentNodes.get(currentNode) == null) {
+            if (adjacentNodes.get(currentNode) != null) {
                 throw new IllegalStateException("A connection already exists");
             }
 
@@ -79,7 +79,6 @@ public class ListGraph<N> implements Graph<N> {
                 edges = new HashSet<>();
                 adjacentNodes.put(currentNode, edges);
             }
-
         }
 
         //Catch exceptions
@@ -164,20 +163,48 @@ public class ListGraph<N> implements Graph<N> {
 
 
     @Override
-    public void disconnect(N node1, N node2) throws NoSuchElementException {
+    public void disconnect(N node1, N node2) {
+        Edge edgeToRemove = getEdgeBetween(node1, node2);
         try {
-            if (getEdgeBetween(node1, node2) == null) {
-                throw new NoSuchElementException("No connection between the nodes exists");
+            if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
+                throw new NoSuchElementException("Nodes not registered in the system");
             }
+            if (edgeToRemove == null) {
+                throw new IllegalStateException("No connection between the nodes exists");
+            } else {
+                //iterate over connectionsFrom, remove edges from other nodes
+                Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeToRemove.getDestination());
+                for (Edge<N> edge : connectionsFrom) {
+                    if (edge.getDestination() != node1) {
+                        Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
+                        adjacentEdges.removeIf(e -> e.getDestination() == node1);
+                    }
+                }
+
+                //Iterate over connectionsTo, remove edges to other nodes
+                Set<Edge<N>> connectionsTo = adjacentNodes.get(node2);
+                for (Edge<N> edge : connectionsTo) {
+                    if (edge.getDestination() != node2) {
+                        Set<Edge<N>> adjacentEdges = adjacentNodes.get(node1);
+                        adjacentEdges.removeIf(e -> e.getDestination() == node2);
+                    }
+                }
+            }
+
+        } catch (IllegalStateException e) {
+            System.err.println("Error: " + e.getMessage());
         } catch (NoSuchElementException e) {
             System.err.println("Error: " + e.getMessage());
         }
 
+<<<<<<< Updated upstream
         Set<Edge<N>> connections = adjacentNodes.get(node1);
 
 
 
 
+=======
+>>>>>>> Stashed changes
     }
 
     @Override
