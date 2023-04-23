@@ -122,7 +122,7 @@ public class ListGraph<N> implements Graph<N> {
 
     // returns amount of 'nodes'
     public Set<N> getNodes() {
-        return adjacentNodes.keySet();
+        return new HashSet<>(this.visited);
     }
 
     public Set<Edge<N>> getEdges(N key) {
@@ -133,7 +133,7 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-            for (City city : nodes.keySet()) {
+            for (N city : adjacentNodes.keySet()) {
                 sb.append(city).append("\n");
             }
 
