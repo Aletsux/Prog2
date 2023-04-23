@@ -145,8 +145,14 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
+        for (Edge edge : adjacentNodes.get(node2)) {
+            if (edge.getDestination().equals(node1)) {
+                return edge;
+            }
+        }
         return null;
     }
+
 
     @Override
     public void disconnect(N node1, N node2) {
