@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7a282a4-97bf-4f5c-a189-047eefc3757e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/PROG2_PathFinder/src/ListGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/PROG2_PathFinder/src/ListGraph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +50,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Sara" />
+                        <option value="origin/Sara" />
                       </list>
                     </value>
                   </entry>
