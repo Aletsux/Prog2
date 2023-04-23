@@ -149,7 +149,17 @@ public class ListGraph<N> implements Graph<N> {
     }
 
     @Override
-    public void disconnect(N node1, N node2) {
+    public void disconnect(N node1, N node2) throws NoSuchElementException {
+        try {
+            if (getEdgeBetween(node1, node2) == null) {
+                throw new NoSuchElementException("No connection between the nodes exists");
+            }
+        } catch (NoSuchElementException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+
+        Set<Edge<N>> connections = adjacentNodes.get(node1);
+
 
     }
 
