@@ -130,9 +130,17 @@ public class ListGraph<N> implements Graph<N> {
     }
 
 
+    @Override
     public String toString() {
-        return adjacentNodes.toString();
-    }
+        StringBuilder sb = new StringBuilder();
+            for (City city : nodes.keySet()) {
+                sb.append(city).append("\n");
+            }
+
+            return sb.toString();
+
+        }
+
 
     @Override
     public void setConnectionWeight(N node1, N node2, int weight) {
