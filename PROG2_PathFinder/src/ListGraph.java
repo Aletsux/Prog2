@@ -13,6 +13,7 @@ public class ListGraph<N> implements Graph<N> {
 
     //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
+    public Set<N> visited = new HashSet<N>();
 
     public void add(N node) {
         if (adjacentNodes.containsKey(node)) {
@@ -129,9 +130,17 @@ public class ListGraph<N> implements Graph<N> {
     }
 
 
+    @Override
     public String toString() {
-        return adjacentNodes.toString();
-    }
+        StringBuilder sb = new StringBuilder();
+            for (City city : nodes.keySet()) {
+                sb.append(city).append("\n");
+            }
+
+            return sb.toString();
+
+        }
+
 
     @Override
     public void setConnectionWeight(N node1, N node2, int weight) {
@@ -167,15 +176,21 @@ public class ListGraph<N> implements Graph<N> {
         Set<Edge<N>> connections = adjacentNodes.get(node1);
 
 
+
+
     }
 
     @Override
-    public boolean pathExists(N from, N to) {
-        return false;
+    public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
+        getPath(node1, node2);
+        return visited.contains(node2);
     }
 
     @Override
-    public List<Edge<N>> getPath(N from, N to) {
+    public List<Edge<N>> getPath(N from, N to) { //borde nog vara private
+        visited.add(from);
+        if (from.)
+
         return null;
     }
 
