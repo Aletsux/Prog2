@@ -1,6 +1,6 @@
 import java.util.Objects;
 
-public class City {
+public class City <N> {
     private final String name;
 
     public City(String name) {

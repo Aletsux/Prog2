@@ -171,15 +171,17 @@ public class ListGraph<N> implements Graph<N> {
     }
 
     @Override
-    public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
-        getPath(node1, node2);
-        return visited.contains(node2);
+    public boolean pathExists(N from, N to) { // byt namn på noderna så de följer konventioner
+        getPath(from, to);
+        return visited.contains(to);
     }
 
     @Override
     public List<Edge<N>> getPath(N from, N to) { //borde nog vara private
         visited.add(from);
-        if (from.)
+        if (from.getName().equals(to.getName())) {
+            System.out.println("Path Found!");
+        }
 
         return null;
     }
