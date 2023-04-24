@@ -17,81 +17,79 @@ public class ListGraph<N> implements Graph<N> {
 
     public void add(N node) {
         if (adjacentNodes.containsKey(node)) {
-            System.err.println("Error: Node already exists!");
+            //System.err.println("Error: Node already exists!");
+            return;
         }
         //existingNodes.add(node);
         adjacentNodes.putIfAbsent(node, new HashSet<Edge<N>>());
     }
 
-    // Multiple exceptions need to be thrown
-    // 'bindName' - from user input?
+    // I1 - Should throw IllegalStateException
     public void connect(N currentNode, N newNode, String bindName, int weight) {
 
-        try {
-            //Throw exceptions
-            //checks whether selected nodes exist
-            if (!adjacentNodes.containsKey(currentNode) || !adjacentNodes.containsKey(newNode)) {
-                throw new NoSuchElementException("Node doesn't exist");
-            }
 
-            if (weight < 0) {
-                throw new IllegalArgumentException("Invalid value");
-            }
-
-            if (adjacentNodes.get(currentNode) != null) {
-                throw new IllegalStateException("A connection already exists");
-            }
-
-            System.out.println("Entered connect method");
-
-            //Reference the Set<Edge> for the currentNode in the adjacentNodes map
-            Set<Edge<N>> edges = adjacentNodes.get(currentNode);
-
-            //create a new edge from currentNode to newNode
-            Edge<N> currentToNew = new Edge<N>(bindName, weight, newNode);
-
-            //more optimal version: adjacentNodes.computeIfAbsent(currentNode, k -> new HashSet<Edge<N>>()).add(currentToNew);
-            if (edges != null) {
-                edges.add(currentToNew);
-                adjacentNodes.put(currentNode, edges);
-            } else {
-                edges = new HashSet<>();
-                edges.add(currentToNew);
-                adjacentNodes.put(currentNode, edges);
-            }
-
-            //Reference the Set<Edge> for the newNode in the adjacentNodes map
-            edges = adjacentNodes.get(newNode);
-
-            //Same as above, create edge for newNode to currentNode
-            Edge<N> newToCurrent = new Edge<>(bindName, weight, currentNode);
-            if (edges != null) {
-                edges.add(newToCurrent);
-                adjacentNodes.put(newNode, edges);
-            } else {
-                edges = new HashSet<>();
-                edges.add(newToCurrent);
-                adjacentNodes.put(newNode, edges);
-            }
-
-            //If list is empty create new list of Edges
-            if (edges == null) {
-                edges = new HashSet<>();
-                adjacentNodes.put(currentNode, edges);
+        //checks whether selected nodes exist
+        if (!adjacentNodes.containsKey(currentNode) || !adjacentNodes.containsKey(newNode)) {
+            throw new NoSuchElementException("Node doesn't exist");
+        }
+        //Checks validity of weight value
+        if (weight < 0) {
+            throw new IllegalArgumentException("Invalid value");
+        }
+        //Checks whether node has edges??
+        //Max 1 edge can exist between nodes
+        boolean edgeExists = false;
+        //A set of setOfEdges
+        for (Set<Edge<N>> setOfEdges : adjacentNodes.values()) {
+            for (Edge<N> edge : setOfEdges) {
+                if (edge.equals(getEdgeBetween(currentNode, newNode))) {
+                    edgeExists = true;
+                }
             }
         }
+        if (edgeExists) {
+            throw new IllegalStateException("A connection already exists");
+        }
 
-        //Catch exceptions
-        catch (NoSuchElementException e) {
-            System.err.println("Error: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.err.println("Error: " + e.getMessage());
-        } catch (IllegalStateException e) {
-            System.err.println("Error: " + e.getMessage());
+
+        //Reference the Set<Edge> for the currentNode in the adjacentNodes map
+        Set<Edge<N>> edges = adjacentNodes.get(currentNode);
+
+        //create a new edge from currentNode to newNode
+        Edge<N> currentToNew = new Edge<N>(bindName, weight, newNode);
+
+        //more optimal version: adjacentNodes.computeIfAbsent(currentNode, k -> new HashSet<Edge<N>>()).add(currentToNew);
+        if (edges != null) {
+            edges.add(currentToNew);
+            adjacentNodes.put(currentNode, edges);
+        } else {
+            edges = new HashSet<>();
+            edges.add(currentToNew);
+            adjacentNodes.put(currentNode, edges);
+        }
+
+        //Reference the Set<Edge> for the newNode in the adjacentNodes map
+        edges = adjacentNodes.get(newNode);
+
+        //Same as above, create edge for newNode to currentNode
+        Edge<N> newToCurrent = new Edge<>(bindName, weight, currentNode);
+        if (edges != null) {
+            edges.add(newToCurrent);
+            adjacentNodes.put(newNode, edges);
+        } else {
+            edges = new HashSet<>();
+            edges.add(newToCurrent);
+            adjacentNodes.put(newNode, edges);
+        }
+
+        //If list is empty create new list of Edges
+        if (edges == null) {
+            edges = new HashSet<>();
+            adjacentNodes.put(currentNode, edges);
         }
     }
 
-    //ToDo: Need to remove edges
+
     public void remove(N nodeToRemove) throws NoSuchElementException {
         try {
             System.out.println("Entered remove method!");
@@ -132,13 +130,13 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-            for (City city : nodes.keySet()) {
-                sb.append(city).append("\n");
-            }
-
-            return sb.toString();
-
+        for (N city : adjacentNodes.keySet()) {
+            Set<Edge<N>> edgeToPrint = getEdges(city);
+            sb.append(city).append(" : ").append(edgeToPrint).append("\n");
         }
+
+        return sb.toString();
+    }
 
 
     @Override
@@ -153,6 +151,9 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
+        if (node1 == null || node2 == null) {
+            throw new IllegalStateException("Error: node not registered");
+        }
         for (Edge edge : adjacentNodes.get(node2)) {
             if (edge.getDestination().equals(node1)) {
                 return edge;
@@ -164,48 +165,33 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public void disconnect(N node1, N node2) {
+        if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
+            throw new NoSuchElementException("Nodes not registered in the system");
+        }
+        if (getEdgeBetween(node1, node2) == null) {
+            throw new IllegalStateException("No connection between the nodes exists");
+        }
         Edge edgeToRemove = getEdgeBetween(node1, node2);
-        try {
-            if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
-                throw new NoSuchElementException("Nodes not registered in the system");
-            }
-            if (edgeToRemove == null) {
-                throw new IllegalStateException("No connection between the nodes exists");
-            } else {
-                //iterate over connectionsFrom, remove edges from other nodes
-                Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeToRemove.getDestination());
-                for (Edge<N> edge : connectionsFrom) {
-                    if (edge.getDestination() != node1) {
-                        Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
-                        adjacentEdges.removeIf(e -> e.getDestination() == node1);
-                    }
-                }
 
-                //Iterate over connectionsTo, remove edges to other nodes
-                Set<Edge<N>> connectionsTo = adjacentNodes.get(node2);
-                for (Edge<N> edge : connectionsTo) {
-                    if (edge.getDestination() != node2) {
-                        Set<Edge<N>> adjacentEdges = adjacentNodes.get(node1);
-                        adjacentEdges.removeIf(e -> e.getDestination() == node2);
-                    }
-                }
+        //iterate over connectionsFrom, remove edges from other nodes
+        Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeToRemove.getDestination());
+        for (Edge<N> edge : connectionsFrom) {
+            if (edge.getDestination() != node1) {
+                Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
+                adjacentEdges.removeIf(e -> e.getDestination() == node1);
             }
-
-        } catch (IllegalStateException e) {
-            System.err.println("Error: " + e.getMessage());
-        } catch (NoSuchElementException e) {
-            System.err.println("Error: " + e.getMessage());
         }
 
-<<<<<<< Updated upstream
-        Set<Edge<N>> connections = adjacentNodes.get(node1);
-
-
-
-
-=======
->>>>>>> Stashed changes
+        //Iterate over connectionsTo, remove edges to other nodes
+        Set<Edge<N>> connectionsTo = adjacentNodes.get(node2);
+        for (Edge<N> edge : connectionsTo) {
+            if (edge.getDestination() != node2) {
+                Set<Edge<N>> adjacentEdges = adjacentNodes.get(node1);
+                adjacentEdges.removeIf(e -> e.getDestination() == node2);
+            }
+        }
     }
+
 
     @Override
     public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
@@ -215,8 +201,6 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public List<Edge<N>> getPath(N from, N to) { //borde nog vara private
-        visited.add(from);
-        if (from.)
 
         return null;
     }
