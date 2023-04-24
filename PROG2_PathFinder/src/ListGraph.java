@@ -1,3 +1,4 @@
+import java.nio.file.Path;
 import java.util.*;
 
 /* Suggestions:
@@ -13,7 +14,7 @@ public class ListGraph<N> implements Graph<N> {
 
     //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
-    public Set<N> visited = new HashSet<N>();
+    public Set<N> visitedCities = new HashSet<N>();
 
     public void add(N node) {
         if (adjacentNodes.containsKey(node)) {
@@ -188,17 +189,21 @@ public class ListGraph<N> implements Graph<N> {
     }
 
     @Override
-    public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
-        getPath(node1, node2);
-        return visited.contains(node2);
+    public boolean pathExists(N from, N to) { // byt namn på noderna så de följer konventioner
+        depthFirstSearch(from, to, visitedCities);
+        return visitedCities.contains(to);
     }
 
     @Override
-    public List<Edge<N>> getPath(N from, N to) { //borde nog vara private
-        visited.add(from);
-        if (from.)
+    public List<Edge<N>> getPath(N from, N to) { // dfs ska va private
+        Set<N> visitedCities = new HashSet<>(); // N borde egentligen va City?? Varför har vi annars Node (city) klassen, i föreläsningen är det också 'City'
+        Stack<N> path = new Stack<>();
 
-        return null;
+        path.push(from);
+
+        depthFirstSearch(from, to, visitedCities, path);
+        List<N> pathList = (List<N>) (Object) Arrays.asList(path.toArray());
+        return pathList;
     }
 
 
