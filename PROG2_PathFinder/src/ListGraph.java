@@ -138,28 +138,25 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
-        if (!adjacentNodes.containsKey(node1)) {
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
             throw new NoSuchElementException();
         }
 
-        if (!adjacentNodes.containsKey(node2)) {
-            throw new NoSuchElementException();
-        }
 
         if (newWeight < 0){
             throw new IllegalArgumentException();
         }
 
-
-
-        Set<Edge<N>> edges =adjacentNodes.get(node1);
-        if(edges == null || !edges.contains(node2)) {
+        Set<Edge<N>> edges = adjacentNodes.get(node1);
+        if(edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
         if (newWeight < 0) {
             throw new IllegalArgumentException();
         }
+
+
 
         Edge edge = getEdgeBetween(node1, node2);
         edge.setWeight(newWeight);
@@ -169,14 +166,7 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Collection<Edge<N>> getEdgesFrom(N node) {
-
-        if (!adjacentNodes.containsKey(node1)) {
-            throw new NoSuchElementException();
-        }
-
-        if (!adjacentNodes.containsKey(node2)) {
-            throw new NoSuchElementException();
-        }
+            return null;
     }
 
     @Override
