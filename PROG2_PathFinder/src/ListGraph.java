@@ -141,7 +141,8 @@ public class ListGraph<N> implements Graph<N> {
             sb.append(city).append(" : ").append(edgeToPrint).append("\n");
         }
 
-        return sb.toString();
+        return sb.toString
+                ();
     }
 
 
