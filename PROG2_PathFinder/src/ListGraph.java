@@ -90,7 +90,7 @@ public class ListGraph<N> implements Graph<N> {
     }
 
 
-    public void remove(N nodeToRemove) throws NoSuchElementException {
+    public void remove(N nodeToRemove) {
 
         System.out.println("Entered remove method!");
         if (!adjacentNodes.containsKey(nodeToRemove)) {
