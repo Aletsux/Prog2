@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e7a282a4-97bf-4f5c-a189-047eefc3757e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Prog2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Prog2.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROG2_PathFinder/src/ListGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/PROG2_PathFinder/src/ListGraph.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,16 +24,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Downloaded.Files.Path.Enabled": "false",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.ShowReadmeOnStart": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
+}</component>
+  <component name="RunManager" selected="JUnit.GraphTest">
     <configuration name="GraphTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Prog2" />
       <option name="PACKAGE_NAME" value="" />
@@ -43,9 +43,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="GraphTest.__version" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Prog2" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="GraphTest" />
+      <option name="METHOD_NAME" value="__version" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.GraphTest" />
+        <item itemvalue="JUnit.GraphTest.__version" />
       </list>
     </recent_temporary>
   </component>
