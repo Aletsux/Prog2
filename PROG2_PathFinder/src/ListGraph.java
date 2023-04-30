@@ -170,13 +170,10 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public Collection<Edge<N>> getEdgesFrom(N node) {
 
-        if (!adjacentNodes.containsKey(node1)) {
+        if (!adjacentNodes.containsKey(node) || !adjacentNodes.containsKey() {
             throw new NoSuchElementException();
         }
-
-        if (!adjacentNodes.containsKey(node2)) {
-            throw new NoSuchElementException();
-        }
+        return getEdgesFrom(node);
     }
 
     @Override
