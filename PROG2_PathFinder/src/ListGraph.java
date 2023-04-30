@@ -152,19 +152,15 @@ public class ListGraph<N> implements Graph<N> {
             throw new NoSuchElementException();
         }
 
-        Set<Edge<N>> edges = adjacentNodes.get(node1);
-        if (edges == null || !edges.contains(node2)) {
-            throw new NoSuchElementException();
-        }
-
         if (newWeight < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid weight value");
         }
 
-        Edge edge = getEdgeBetween(node1, node2);
-        edge.setWeight(newWeight);
+        Edge edgeAtoB = getEdgeBetween(node1, node2);
+        edgeAtoB.setWeight(newWeight);
 
-
+        Edge edgeBtoA = getEdgeBetween(node2, node1);
+        edgeBtoA.setWeight(newWeight);
     }
 
     @Override
