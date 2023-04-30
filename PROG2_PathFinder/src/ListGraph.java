@@ -115,7 +115,7 @@ public class ListGraph<N> implements Graph<N> {
 
     // returns amount of 'nodes'
     public Set<N> getNodes() {
-        return new HashSet<>(this.visited);
+        return new HashSet<>(adjacentNodes.keySet());
     }
 
     public Set<Edge<N>> getEdges(N key) {
