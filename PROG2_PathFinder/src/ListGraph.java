@@ -148,13 +148,10 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
-        if (!adjacentNodes.containsKey(node1)) {
+        if (!adjacentNodes.containsKey(node1) ||!adjacentNodes.containsKey(node2) ) {
             throw new NoSuchElementException();
         }
 
-        if (!adjacentNodes.containsKey(node2)) {
-            throw new NoSuchElementException();
-        }
 
         if (newWeight < 0){
             throw new IllegalArgumentException();
@@ -163,7 +160,7 @@ public class ListGraph<N> implements Graph<N> {
 
 
         Set<Edge<N>> edges =adjacentNodes.get(node1);
-        if(edges == null || !edges.contains(node2)) {
+        if(edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
@@ -247,9 +244,36 @@ public class ListGraph<N> implements Graph<N> {
     }
 
     @Override
-    public List<Edge<N>> getPath(N from, N to) { //borde nog vara private
+    public List<Edge<N>> getPath(N from, N to) { //depthFirstSearch behöver va privat
+        Set<Edge<N>> visited = new HashSet<>();
+        Stack<N> stack = new Stack<>();
 
-        return null;
+        stack.push(from);
+
+        depthFirstSearch(from, to, visited, stack);
+        List<Edge<N>> path = new ArrayList<>(Arrays.asList(stack.toArray(new Edge[0])));
+        return path;
+    }
+
+    //ai förslag men chaos
+    private void depthFirstSearch(N node1, N node2, Set<Edge<N>> visited, Stack<N> stack) {
+        visited.add(node1);
+        if (node1.equals(node2)) {
+            return;
+        }
+
+        for (N neighbor : getNeighbors(current)) {
+            Edge<N> edge = getEdge(node1, neighbor);
+            if (!visited.contains(edge)) {
+                visited.add(edge);
+                stack.push(neighbor);
+                depthFirstSearch(neighbor, node2, visited, stack);
+                if (node2.equals(stack.peek())) {
+                    return;
+                }
+                stack.pop();
+            }
+        }
     }
 
 
