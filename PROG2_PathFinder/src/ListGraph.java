@@ -91,30 +91,26 @@ public class ListGraph<N> implements Graph<N> {
 
 
     public void remove(N nodeToRemove) throws NoSuchElementException {
-        try {
-            System.out.println("Entered remove method!");
-            if (!adjacentNodes.containsKey(nodeToRemove)) {
-                throw new NoSuchElementException("Not an existing node!");
-            }
 
-            //save all connections to nodeToRemove
-            Set<Edge<N>> connections = adjacentNodes.get(nodeToRemove);
-
-            //iterate over connections, remove edges from other nodes
-            for (Edge<N> edge : connections) {
-                if (edge.getDestination() != nodeToRemove) {
-                    Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
-                    adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
-                }
-            }
-            //removes the node and all edges from the node
-            adjacentNodes.remove(nodeToRemove);
-
-            System.out.println("All connections should be removed!");
-
-        } catch (NoSuchElementException e) {
-            System.err.println("Error: " + e.getMessage());
+        System.out.println("Entered remove method!");
+        if (!adjacentNodes.containsKey(nodeToRemove)) {
+            throw new NoSuchElementException("Not an existing node!");
         }
+
+        //save all connections to nodeToRemove
+        Set<Edge<N>> connections = adjacentNodes.get(nodeToRemove);
+
+        //iterate over connections, remove edges from other nodes
+        for (Edge<N> edge : connections) {
+            if (edge.getDestination() != nodeToRemove) {
+                Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
+                adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
+            }
+        }
+        //removes the node and all edges from the node
+        adjacentNodes.remove(nodeToRemove);
+
+        System.out.println("All connections should be removed!");
     }
 
     // returns amount of 'nodes'
