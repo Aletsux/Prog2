@@ -12,6 +12,7 @@ public class TestClass {
     private static final String NODETHREE = "Berlin";
 
     ListGraph listGraphClass = new ListGraph();
+    Edge edgeClass;
 
     public static void main(String[] args) {
         TestClass testClass = new TestClass();
@@ -22,6 +23,9 @@ public class TestClass {
         //testClass.disconnectEdge();
         //testClass.getEdge();
         testClass.printSet();
+
+        testClass.testEdge();
+
     }
 
     //Test functionality of connect method
@@ -60,5 +64,8 @@ public class TestClass {
         System.out.println(listGraphClass.toString());
     }
 
-
+    private void testEdge() {
+        Edge edgeA = listGraphClass.getEdgeBetween(NODETHREE, NODEONE);
+        System.out.println(edgeA);
+    }
 }
