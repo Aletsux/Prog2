@@ -90,7 +90,7 @@ public class ListGraph<N> implements Graph<N> {
     }
 
 
-    public void remove(N nodeToRemove) throws NoSuchElementException {
+    public void remove(N nodeToRemove) {
 
         System.out.println("Entered remove method!");
         if (!adjacentNodes.containsKey(nodeToRemove)) {
@@ -101,14 +101,24 @@ public class ListGraph<N> implements Graph<N> {
         Set<Edge<N>> connections = adjacentNodes.get(nodeToRemove);
 
         //iterate over connections, remove edges from other nodes
-        for (Edge<N> edge : connections) {
-            if (edge.getDestination() != nodeToRemove) {
-                Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
-                adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
+        if (connections != null) {
+            for (Edge<N> edge : connections) {
+                if (edge.getDestination() != nodeToRemove) {
+                    Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
+                    adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
+                }
             }
         }
+
         //removes the node and all edges from the node
-        adjacentNodes.remove(nodeToRemove);
+        if (adjacentNodes.get(nodeToRemove) != null) {
+
+
+            adjacentNodes.remove(nodeToRemove);
+        } else {
+            throw new NoSuchElementException("Element was null");
+        }
+
 
         System.out.println("All connections should be removed!");
     }
@@ -166,19 +176,27 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Collection<Edge<N>> getEdgesFrom(N node) {
-            return null;
+
+        return adjacentNodes.get(node);
+
     }
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
         if (node1 == null || node2 == null) {
-            throw new IllegalStateException("Error: node not registered");
+            throw new NoSuchElementException("Error: node not registered");
         }
-        for (Edge edge : adjacentNodes.get(node2)) {
-            if (edge.getDestination().equals(node1)) {
-                return edge;
+        Collection<Edge<N>> edges = adjacentNodes.get(node2);
+        if (edges != null) {
+            for (Edge edge : adjacentNodes.get(node2)) {
+                if (edge.getDestination().equals(node1)) {
+                    return edge;
+                }
             }
+        } else {
+            throw new NoSuchElementException("Error: Node has no edges");
         }
+
         return null;
     }
 
