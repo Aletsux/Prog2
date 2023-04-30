@@ -1,6 +1,12 @@
 import java.util.Set;
 
 public class TestClass {
+    /*
+    NOTE:
+    * Do not write try/catch clauses in listGraph class
+    * I1 - 'NullPointerException' cannot invoke java.util.Set.iterator (methods with problems: getEdgeBetween, disconnect)
+
+    */
     private static final String NODEONE = "New York";
     private static final String NODETWO = "Stockholm";
     private static final String NODETHREE = "Berlin";
@@ -12,7 +18,9 @@ public class TestClass {
         testClass.loadData();
 
         testClass.testConnectMethod();
-        testClass.removeData();
+        //testClass.removeData();
+        //testClass.disconnectEdge();
+        //testClass.getEdge();
         testClass.printSet();
     }
 
@@ -22,6 +30,9 @@ public class TestClass {
 
         listGraphClass.connect(NODEONE, NODETHREE, "aConnection", 300);
         listGraphClass.connect(NODETWO, NODETHREE, "bConnection", 500);
+
+        //Throws exception: IllegalStateException
+        //listGraphClass.connect(NODEONE, NODETHREE, "cConnection", 800);
     }
 
     private void loadData() {
@@ -33,6 +44,15 @@ public class TestClass {
     private void removeData() {
         listGraphClass.remove(NODEONE);
 
+    }
+
+    private void disconnectEdge() {
+        listGraphClass.disconnect(NODEONE, NODETHREE);
+        //listGraphClass.disconnect(NODEONE, NODETWO);
+    }
+
+    private String getEdge() {
+        return listGraphClass.getEdgeBetween(NODEONE, NODETHREE).toString();
     }
 
     private void printSet() {
