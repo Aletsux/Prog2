@@ -197,13 +197,17 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public List<Edge<N>> getPath(N from, N to) { // dfs ska va private
         Set<N> visitedCities = new HashSet<>(); // N borde egentligen va City?? Varför har vi annars Node (city) klassen, i föreläsningen är det också 'City'
-        Stack<N> path = new Stack<>();
+        Stack<N> stack = new Stack<>();
 
-        path.push(from);
+        stack.push(from);
 
-        depthFirstSearch(from, to, visitedCities, path);
-        List<N> pathList = (List<N>) (Object) Arrays.asList(path.toArray());
+        depthFirstSearch(from, to, visitedCities, stack);
+        List<N> pathList = (List<N>) (Object) Arrays.asList(stack.toArray());
         return pathList;
+    }
+
+    private void depthFirstSearch(N from, N to, Set<N> visitedCities, Stack){
+
     }
 
 
