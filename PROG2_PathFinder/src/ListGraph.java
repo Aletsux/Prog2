@@ -148,7 +148,7 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
-        if (!adjacentNodes.containsKey(node1) ||!adjacentNodes.containsKey(node2) ) {
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
             throw new NoSuchElementException();
         }
 
@@ -157,21 +157,20 @@ public class ListGraph<N> implements Graph<N> {
             throw new IllegalArgumentException();
         }
 
-
-
-        Set<Edge<N>> edges =adjacentNodes.get(node1);
+        Set<Edge<N>> edges = adjacentNodes.get(node1);
         if(edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
         if (newWeight < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid weight value");
         }
 
-        Edge edge = getEdgeBetween(node1, node2);
-        edge.setWeight(newWeight);
+        Edge edgeAtoB = getEdgeBetween(node1, node2);
+        edgeAtoB.setWeight(newWeight);
 
-
+        Edge edgeBtoA = getEdgeBetween(node2, node1);
+        edgeBtoA.setWeight(newWeight);
     }
 
     @Override
@@ -189,20 +188,20 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
-        if (node1 == null || node2 == null) {
+        if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException("Error: node not registered");
         }
-        Collection<Edge<N>> edges = adjacentNodes.get(node2);
-        if (edges != null) {
-            for (Edge edge : adjacentNodes.get(node2)) {
-                if (edge.getDestination().equals(node1)) {
+
+        Collection<Edge<N>> edgesTo = adjacentNodes.get(node1);
+        if (edgesTo != null) {
+            for (Edge edge : adjacentNodes.get(node1)) {
+                if (edge.getDestination().equals(node2)) {
                     return edge;
                 }
             }
         } else {
             throw new NoSuchElementException("Error: Node has no edges");
         }
-
         return null;
     }
 
@@ -215,10 +214,10 @@ public class ListGraph<N> implements Graph<N> {
         if (getEdgeBetween(node1, node2) == null) {
             throw new IllegalStateException("No connection between the nodes exists");
         }
-        Edge edgeToRemove = getEdgeBetween(node1, node2);
+        Edge edgeFrom = getEdgeBetween(node2, node1);
 
         //iterate over connectionsFrom, remove edges from other nodes
-        Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeToRemove.getDestination());
+        Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeFrom.getDestination());
         for (Edge<N> edge : connectionsFrom) {
             if (edge.getDestination() != node1) {
                 Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
@@ -239,42 +238,54 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
-        getPath(node1, node2);
+        if (node1 == null || node2 == null) {
+            return false;
+        }
+
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
+            return false;
+        }
+
+       // Set<N> visited = new HashSet<>();
+        depthFirstSearch(node1,node2,visited, new Stack<>());
         return visited.contains(node2);
     }
 
     @Override
-    public List<Edge<N>> getPath(N from, N to) { //depthFirstSearch behöver va privat
-        Set<Edge<N>> visited = new HashSet<>();
-        Stack<N> stack = new Stack<>();
+    public List<Edge<N>> getPath(N node1, N node2) {
+        Set<N> visited = new HashSet<>();
+        Stack<Edge<N>> stack = new Stack<>();
 
-        stack.push(from);
+        depthFirstSearch(node1, node2, visited, stack);
 
-        depthFirstSearch(from, to, visited, stack);
-        List<Edge<N>> path = new ArrayList<>(Arrays.asList(stack.toArray(new Edge[0])));
-        return path;
+        if (stack.isEmpty()) {
+            // If there is no path between the nodes, return null
+            return null;
+        } else {
+            // Otherwise, extract the path from the stack of edges
+            List<Edge<N>> path = new ArrayList<>(stack);
+            Collections.reverse(path);
+            return path;
+        }
     }
 
-    //ai förslag men chaos
-    private void depthFirstSearch(N node1, N node2, Set<Edge<N>> visited, Stack<N> stack) {
+    private List<Edge<N>> depthFirstSearch(N node1, N node2, Set<N> visited, Stack<Edge<N>> stack) {
         visited.add(node1);
-        if (node1.equals(node2)) {
-            return;
+
+        if (node1.equals(node2)){
+            return new ArrayList<>(stack);
         }
 
-        for (N neighbor : getNeighbors(current)) {
-            Edge<N> edge = getEdge(node1, neighbor);
-            if (!visited.contains(edge)) {
-                visited.add(edge);
-                stack.push(neighbor);
-                depthFirstSearch(neighbor, node2, visited, stack);
-                if (node2.equals(stack.peek())) {
-                    return;
+        for (Edge<N> edge : adjacentNodes.get(node1)) {
+            if (!visited.contains(edge.getDestination())) {
+                stack.push(edge);
+                List<Edge<N>> result = depthFirstSearch(edge.getDestination(), node2, visited, stack);
+                if (result != null) {
+                    return result;
                 }
                 stack.pop();
             }
         }
+        return null;
     }
-
-
 }
