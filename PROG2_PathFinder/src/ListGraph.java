@@ -139,24 +139,28 @@ public class ListGraph<N> implements Graph<N> {
             sb.append(city).append(" : ").append(edgeToPrint).append("\n");
         }
 
-        return sb.toString();
+        return sb.toString
+                ();
     }
 
 
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
-        if (!adjacentNodes.containsKey(node1)) {
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
             throw new NoSuchElementException();
         }
 
-        if (!adjacentNodes.containsKey(node2)) {
+
+        if (newWeight < 0){
+            throw new IllegalArgumentException();
+        }
+
+        Set<Edge<N>> edges = adjacentNodes.get(node1);
+        if(edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
-        if (newWeight < 0) {
-            throw new IllegalArgumentException("Invalid weight value");
-        }
 
         Edge edgeAtoB = getEdgeBetween(node1, node2);
         edgeAtoB.setWeight(newWeight);
@@ -173,6 +177,7 @@ public class ListGraph<N> implements Graph<N> {
         }
 
         return adjacentNodes.get(node);
+
     }
 
     @Override
