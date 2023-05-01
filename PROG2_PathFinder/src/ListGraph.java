@@ -148,19 +148,18 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
-        if (!adjacentNodes.containsKey(node1) ||!adjacentNodes.containsKey(node2) ) {
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
             throw new NoSuchElementException();
         }
 
 
-        if (newWeight < 0){
+        if (newWeight < 0) {
             throw new IllegalArgumentException();
         }
 
 
-
-        Set<Edge<N>> edges =adjacentNodes.get(node1);
-        if(edges == null || adjacentNodes.get(node2) == null) {
+        Set<Edge<N>> edges = adjacentNodes.get(node1);
+        if (edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
@@ -181,9 +180,9 @@ public class ListGraph<N> implements Graph<N> {
             throw new NoSuchElementException();
         }
 
-       if (!adjacentNodes.containsValue(getEdges(node))){
-           throw new NoSuchElementException();
-       }
+        if (!adjacentNodes.containsValue(getEdges(node))) {
+            throw new NoSuchElementException();
+        }
         return adjacentNodes.get(node);
     }
 
@@ -202,7 +201,6 @@ public class ListGraph<N> implements Graph<N> {
         } else {
             throw new NoSuchElementException("Error: Node has no edges");
         }
-
         return null;
     }
 
@@ -239,42 +237,54 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
-        getPath(node1, node2);
+        if (node1 == null || node2 == null) {
+            return false;
+        }
+
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
+            return false;
+        }
+
+        // Set<N> visited = new HashSet<>();
+        depthFirstSearch(node1, node2, visited, new Stack<>());
         return visited.contains(node2);
     }
 
     @Override
-    public List<Edge<N>> getPath(N from, N to) { //depthFirstSearch behöver va privat
-        Set<Edge<N>> visited = new HashSet<>();
-        Stack<N> stack = new Stack<>();
+    public List<Edge<N>> getPath(N node1, N node2) {
+        Set<N> visited = new HashSet<>();
+        Stack<Edge<N>> stack = new Stack<>();
 
-        stack.push(from);
+        depthFirstSearch(node1, node2, visited, stack);
 
-        depthFirstSearch(from, to, visited, stack);
-        List<Edge<N>> path = new ArrayList<>(Arrays.asList(stack.toArray(new Edge[0])));
-        return path;
+        if (stack.isEmpty()) {
+            // If there is no path between the nodes, return null
+            return null;
+        } else {
+            // Otherwise, extract the path from the stack of edges
+            List<Edge<N>> path = new ArrayList<>(stack);
+            Collections.reverse(path);
+            return path;
+        }
     }
 
-    //ai förslag men chaos
-    private void depthFirstSearch(N node1, N node2, Set<Edge<N>> visited, Stack<N> stack) {
+    private List<Edge<N>> depthFirstSearch(N node1, N node2, Set<N> visited, Stack<Edge<N>> stack) {
         visited.add(node1);
+
         if (node1.equals(node2)) {
-            return;
+            return new ArrayList<>(stack);
         }
 
-        for (N neighbor : getNeighbors(current)) {
-            Edge<N> edge = getEdge(node1, neighbor);
-            if (!visited.contains(edge)) {
-                visited.add(edge);
-                stack.push(neighbor);
-                depthFirstSearch(neighbor, node2, visited, stack);
-                if (node2.equals(stack.peek())) {
-                    return;
+        for (Edge<N> edge : adjacentNodes.get(node1)) {
+            if (!visited.contains(edge.getDestination())) {
+                stack.push(edge);
+                List<Edge<N>> result = depthFirstSearch(edge.getDestination(), node2, visited, stack);
+                if (result != null) {
+                    return result;
                 }
                 stack.pop();
             }
         }
+        return null;
     }
-
-
 }
