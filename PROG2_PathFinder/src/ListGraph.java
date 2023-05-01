@@ -152,12 +152,12 @@ public class ListGraph<N> implements Graph<N> {
         }
 
 
-        if (newWeight < 0){
+        if (newWeight < 0) {
             throw new IllegalArgumentException();
         }
 
         Set<Edge<N>> edges = adjacentNodes.get(node1);
-        if(edges == null || adjacentNodes.get(node2) == null) {
+        if (edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
@@ -235,6 +235,9 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
+        if (!adjacentNodes.containsKey(node1)) {
+            return false;
+        }
         getPath(node1, node2);
         return visited.contains(node2);
     }
