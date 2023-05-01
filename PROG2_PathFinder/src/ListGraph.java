@@ -90,7 +90,7 @@ public class ListGraph<N> implements Graph<N> {
     }
 
 
-    public void remove(N nodeToRemove) throws NoSuchElementException {
+    public void remove(N nodeToRemove) {
 
         System.out.println("Entered remove method!");
         if (!adjacentNodes.containsKey(nodeToRemove)) {
@@ -101,21 +101,31 @@ public class ListGraph<N> implements Graph<N> {
         Set<Edge<N>> connections = adjacentNodes.get(nodeToRemove);
 
         //iterate over connections, remove edges from other nodes
-        for (Edge<N> edge : connections) {
-            if (edge.getDestination() != nodeToRemove) {
-                Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
-                adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
+        if (connections != null) {
+            for (Edge<N> edge : connections) {
+                if (edge.getDestination() != nodeToRemove) {
+                    Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());
+                    adjacentEdges.removeIf(e -> e.getDestination() == nodeToRemove);
+                }
             }
         }
+
         //removes the node and all edges from the node
-        adjacentNodes.remove(nodeToRemove);
+        if (adjacentNodes.get(nodeToRemove) != null) {
+
+
+            adjacentNodes.remove(nodeToRemove);
+        } else {
+            throw new NoSuchElementException("Element was null");
+        }
+
 
         System.out.println("All connections should be removed!");
     }
 
     // returns amount of 'nodes'
     public Set<N> getNodes() {
-        return new HashSet<>(this.visited);
+        return adjacentNodes.keySet();
     }
 
     public Set<Edge<N>> getEdges(N key) {
@@ -138,40 +148,51 @@ public class ListGraph<N> implements Graph<N> {
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
-        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
+        if (!adjacentNodes.containsKey(node1)) {
             throw new NoSuchElementException();
         }
 
-        Set<Edge<N>> edges =adjacentNodes.get(node1);
-        if(edges == null || !edges.contains(node2)) {
+        if (!adjacentNodes.containsKey(node2)) {
             throw new NoSuchElementException();
         }
 
         if (newWeight < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid weight value");
         }
 
-        Edge edge = getEdgeBetween(node1, node2);
-        edge.setWeight(newWeight);
+        Edge edgeAtoB = getEdgeBetween(node1, node2);
+        edgeAtoB.setWeight(newWeight);
 
-
+        Edge edgeBtoA = getEdgeBetween(node2, node1);
+        edgeBtoA.setWeight(newWeight);
     }
 
     @Override
     public Collection<Edge<N>> getEdgesFrom(N node) {
-        return null;
+
+        if (!adjacentNodes.containsKey(node)) {
+            throw new NoSuchElementException();
+        }
+
+        return adjacentNodes.get(node);
     }
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
         if (node1 == null || node2 == null) {
-            throw new IllegalStateException("Error: node not registered");
+            throw new NoSuchElementException("Error: node not registered");
         }
-        for (Edge edge : adjacentNodes.get(node2)) {
-            if (edge.getDestination().equals(node1)) {
-                return edge;
+        Collection<Edge<N>> edges = adjacentNodes.get(node2);
+        if (edges != null) {
+            for (Edge edge : adjacentNodes.get(node2)) {
+                if (edge.getDestination().equals(node1)) {
+                    return edge;
+                }
             }
+        } else {
+            throw new NoSuchElementException("Error: Node has no edges");
         }
+
         return null;
     }
 
