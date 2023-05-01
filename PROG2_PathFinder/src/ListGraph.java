@@ -112,8 +112,6 @@ public class ListGraph<N> implements Graph<N> {
 
         //removes the node and all edges from the node
         if (adjacentNodes.get(nodeToRemove) != null) {
-
-
             adjacentNodes.remove(nodeToRemove);
         } else {
             throw new NoSuchElementException("Element was null");
@@ -164,19 +162,22 @@ public class ListGraph<N> implements Graph<N> {
         }
 
         if (newWeight < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid weight value");
         }
 
+        Edge edgeAtoB = getEdgeBetween(node1, node2);
+        edgeAtoB.setWeight(newWeight);
 
-
-        Edge edge = getEdgeBetween(node1, node2);
-        edge.setWeight(newWeight);
-
-
+        Edge edgeBtoA = getEdgeBetween(node2, node1);
+        edgeBtoA.setWeight(newWeight);
     }
 
     @Override
     public Collection<Edge<N>> getEdgesFrom(N node) {
+
+        if (!adjacentNodes.containsKey(node)) {
+            throw new NoSuchElementException();
+        }
 
         return adjacentNodes.get(node);
 
@@ -184,20 +185,20 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
-        if (node1 == null || node2 == null) {
+        if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException("Error: node not registered");
         }
-        Collection<Edge<N>> edges = adjacentNodes.get(node2);
-        if (edges != null) {
-            for (Edge edge : adjacentNodes.get(node2)) {
-                if (edge.getDestination().equals(node1)) {
+
+        Collection<Edge<N>> edgesTo = adjacentNodes.get(node1);
+        if (edgesTo != null) {
+            for (Edge edge : adjacentNodes.get(node1)) {
+                if (edge.getDestination().equals(node2)) {
                     return edge;
                 }
             }
         } else {
             throw new NoSuchElementException("Error: Node has no edges");
         }
-
         return null;
     }
 
@@ -210,10 +211,10 @@ public class ListGraph<N> implements Graph<N> {
         if (getEdgeBetween(node1, node2) == null) {
             throw new IllegalStateException("No connection between the nodes exists");
         }
-        Edge edgeToRemove = getEdgeBetween(node1, node2);
+        Edge edgeFrom = getEdgeBetween(node2, node1);
 
         //iterate over connectionsFrom, remove edges from other nodes
-        Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeToRemove.getDestination());
+        Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeFrom.getDestination());
         for (Edge<N> edge : connectionsFrom) {
             if (edge.getDestination() != node1) {
                 Set<Edge<N>> adjacentEdges = adjacentNodes.get(edge.getDestination());

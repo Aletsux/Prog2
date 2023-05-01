@@ -12,15 +12,21 @@ public class TestClass {
     private static final String NODETHREE = "Berlin";
 
     ListGraph listGraphClass = new ListGraph();
+    Edge edgeClass;
 
     public static void main(String[] args) {
         TestClass testClass = new TestClass();
         testClass.loadData();
 
         testClass.testConnectMethod();
-        //testClass.removeData();
+
         //testClass.disconnectEdge();
-        //testClass.getEdge();
+        testClass.printSet();
+
+        testClass.testEdge();
+        testClass.removeData();
+
+        System.out.println("New: ");
         testClass.printSet();
     }
 
@@ -29,7 +35,7 @@ public class TestClass {
     public void testConnectMethod() {
 
         listGraphClass.connect(NODEONE, NODETHREE, "aConnection", 300);
-        listGraphClass.connect(NODETWO, NODETHREE, "bConnection", 500);
+        listGraphClass.connect(NODETWO, NODETHREE, "S -> B", 500);
 
         //Throws exception: IllegalStateException
         //listGraphClass.connect(NODEONE, NODETHREE, "cConnection", 800);
@@ -39,26 +45,27 @@ public class TestClass {
         listGraphClass.add(NODEONE);
         listGraphClass.add(NODETWO);
         listGraphClass.add(NODETHREE);
+
     }
 
     private void removeData() {
-        listGraphClass.remove(NODEONE);
+        listGraphClass.remove(NODETWO);
 
     }
 
     private void disconnectEdge() {
-        listGraphClass.disconnect(NODEONE, NODETHREE);
+        listGraphClass.disconnect(NODETWO, NODETHREE);
         //listGraphClass.disconnect(NODEONE, NODETWO);
-    }
-
-    private String getEdge() {
-        return listGraphClass.getEdgeBetween(NODEONE, NODETHREE).toString();
     }
 
     private void printSet() {
         //System.out.println(listGraphClass.existingNodes);
         System.out.println(listGraphClass.toString());
+
     }
 
-
+    private void testEdge() {
+        Edge edgeA = listGraphClass.getEdgeBetween(NODETWO, NODETHREE);
+        System.out.println(edgeA);
+    }
 }
