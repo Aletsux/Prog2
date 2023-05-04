@@ -112,6 +112,8 @@ public class ListGraph<N> implements Graph<N> {
 
         //removes the node and all edges from the node
         if (adjacentNodes.get(nodeToRemove) != null) {
+
+
             adjacentNodes.remove(nodeToRemove);
         } else {
             throw new NoSuchElementException("Element was null");
@@ -139,8 +141,7 @@ public class ListGraph<N> implements Graph<N> {
             sb.append(city).append(" : ").append(edgeToPrint).append("\n");
         }
 
-        return sb.toString
-                ();
+        return sb.toString();
     }
 
 
@@ -179,8 +180,10 @@ public class ListGraph<N> implements Graph<N> {
             throw new NoSuchElementException();
         }
 
+       if (!adjacentNodes.containsValue(getEdges(node))){
+           throw new NoSuchElementException();
+       }
         return adjacentNodes.get(node);
-
     }
 
     @Override
@@ -235,18 +238,54 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public boolean pathExists(N node1, N node2) { // byt namn på noderna så de följer konventioner
-        if (!adjacentNodes.containsKey(node1)) {
+        if (node1 == null || node2 == null) {
             return false;
         }
-        getPath(node1, node2);
+
+        if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
+            return false;
+        }
+
+       // Set<N> visited = new HashSet<>();
+        depthFirstSearch(node1,node2,visited, new Stack<>());
         return visited.contains(node2);
     }
 
     @Override
-    public List<Edge<N>> getPath(N from, N to) { //borde nog vara private
+    public List<Edge<N>> getPath(N node1, N node2) {
+        Set<N> visited = new HashSet<>();
+        Stack<Edge<N>> stack = new Stack<>();
 
-        return null;
+        depthFirstSearch(node1, node2, visited, stack);
+
+        if (stack.isEmpty()) {
+            // If there is no path between the nodes, return null
+            return null;
+        } else {
+            // Otherwise, extract the path from the stack of edges
+            List<Edge<N>> path = new ArrayList<>(stack);
+            Collections.reverse(path);
+            return path;
+        }
     }
 
+    private List<Edge<N>> depthFirstSearch(N node1, N node2, Set<N> visited, Stack<Edge<N>> stack) {
+        visited.add(node1);
 
+        if (node1.equals(node2)){
+            return new ArrayList<>(stack);
+        }
+
+        for (Edge<N> edge : adjacentNodes.get(node1)) {
+            if (!visited.contains(edge.getDestination())) {
+                stack.push(edge);
+                List<Edge<N>> result = depthFirstSearch(edge.getDestination(), node2, visited, stack);
+                if (result != null) {
+                    return result;
+                }
+                stack.pop();
+            }
+        }
+        return null;
+    }
 }
