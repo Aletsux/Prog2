@@ -24,7 +24,7 @@ public class PathFinder extends Application {
 
         root.setTop(flow);
         root.getChildren().add(createMenu());
-        createMenu().setAlignment(Pos.TOP_LEFT);
+        //createMenu().setAlignment(Pos.TOP_RIGHT);
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
