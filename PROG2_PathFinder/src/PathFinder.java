@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -7,6 +9,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.logging.Handler;
 
 public class PathFinder extends Application {
     @Override
@@ -59,12 +66,18 @@ public class PathFinder extends Application {
         //Adding menu items to the 'menu'
         MenuItem mapItem = new MenuItem("New Map");
         archiveMenu.getItems().add(mapItem);
+
         MenuItem openItem = new MenuItem("Open");
         archiveMenu.getItems().add(openItem);
+        openItem.setOnAction(new OpenHandler());
+
         MenuItem saveItem = new MenuItem("Save");
         archiveMenu.getItems().add(saveItem);
+        saveItem.setOnAction(new SaveHandler());
+
         MenuItem imageItem = new MenuItem("Save Image");
         archiveMenu.getItems().add(imageItem);
+
         MenuItem exitItem = new MenuItem("Exit");
         archiveMenu.getItems().add(exitItem);
 
@@ -77,5 +90,26 @@ public class PathFinder extends Application {
         ImageView imageView = new ImageView(image);
         label.setGraphic(imageView);
         return label;
+    }
+
+    //Open button handler
+    class OpenHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent actionEvent) {
+            try {
+                FileReader fr = new FileReader("europa.graph");
+                BufferedReader br = new BufferedReader(fr);
+
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    class SaveHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent actionEvent) {
+
+        }
     }
 }
