@@ -30,10 +30,9 @@ public class PathFinder extends Application {
         URL url = new URL("file:c:/GitHub/Prog2/europa.gif");
 
         //Declare
-        Label title = new Label("PathFinder");
-        title.setAlignment(Pos.TOP_LEFT);
+        primaryStage.setTitle("PathFinder");
 
-        BorderPane root = new BorderPane(title);
+        BorderPane root = new BorderPane();
         FlowPane flow = new FlowPane();
 
         //Flow
