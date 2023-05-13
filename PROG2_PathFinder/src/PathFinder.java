@@ -5,19 +5,30 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.awt.*;
+import java.io.*;
+import java.net.URL;
 import java.util.logging.Handler;
 
 public class PathFinder extends Application {
+    ListGraph listGraph = new ListGraph();
+    File file = new File("europa.graph");
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //Url för bild fil
+        URL url = new URL("file:c:/GitHub/Prog2/europa.gif");
+
         //Declare
         Label title = new Label("PathFinder");
         title.setAlignment(Pos.TOP_LEFT);
@@ -43,7 +54,7 @@ public class PathFinder extends Application {
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
-        root.setBottom(loadImage());
+        root.setBottom(loadImage(url));
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
@@ -71,9 +82,25 @@ public class PathFinder extends Application {
         archiveMenu.getItems().add(openItem);
         openItem.setOnAction(new OpenHandler());
 
+        //WIP
         MenuItem saveItem = new MenuItem("Save");
         archiveMenu.getItems().add(saveItem);
-        saveItem.setOnAction(new SaveHandler());
+        saveItem.setOnAction(event -> { //Saves all existing nodes to file -> europa.graph
+            try {
+                if (file.exists()) {
+                    System.out.println("Error: File already exists!");
+                    return;
+                }
+                try (PrintWriter writer = new PrintWriter(file)) { //'try with resource' -> autoclose 'writer'
+                    for (Object node : listGraph.getNodes()) {
+                        writer.print(node.toString() + ";");
+                    }
+                } //end of try clause,
+
+            } catch (FileNotFoundException e) { //Note: Might be omitted due to try-with-resource
+                System.err.println("Erro: File not found?");
+            } //try / catch clause
+        }); //end of lambda expression
 
         MenuItem imageItem = new MenuItem("Save Image");
         archiveMenu.getItems().add(imageItem);
@@ -84,9 +111,10 @@ public class PathFinder extends Application {
         return vbox;
     }
 
-    private Label loadImage() {
+    //Make this generic, use parameter for path
+    private Label loadImage(URL url) {
         Label label = new Label();
-        Image image = new Image("file:c:/GitHub/Prog2/europa.gif");
+        Image image = new Image(url.toString());
         ImageView imageView = new ImageView(image);
         label.setGraphic(imageView);
         return label;
@@ -98,18 +126,11 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) {
             try {
                 FileReader fr = new FileReader("europa.graph");
-                BufferedReader br = new BufferedReader(fr);
+                Image image = new Image(fr.toString());
 
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    class SaveHandler implements EventHandler<ActionEvent> {
-        @Override
-        public void handle(ActionEvent actionEvent) {
-
         }
     }
 }
