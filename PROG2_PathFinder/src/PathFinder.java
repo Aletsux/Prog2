@@ -80,7 +80,7 @@ public class PathFinder extends Application {
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
 
-        // action event
+        // change cursor when newPlace has been clicked
         newPlaceB.setOnAction(new EventHandler<ActionEvent>()
 
                 {
@@ -89,6 +89,7 @@ public class PathFinder extends Application {
                     {
                         // change the cursor
                         scene.setCursor(Cursor.CROSSHAIR);
+                        newPlaceB.setDisable(true);
                     }
                 });
 
