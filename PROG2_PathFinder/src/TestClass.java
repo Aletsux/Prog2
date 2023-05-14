@@ -28,6 +28,8 @@ public class TestClass {
 
         System.out.println("New: ");
         testClass.printSet();
+
+
     }
 
     //Test functionality of connect method

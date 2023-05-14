@@ -153,12 +153,12 @@ public class ListGraph<N> implements Graph<N> {
         }
 
 
-        if (newWeight < 0){
+        if (newWeight < 0) {
             throw new IllegalArgumentException();
         }
 
         Set<Edge<N>> edges = adjacentNodes.get(node1);
-        if(edges == null || adjacentNodes.get(node2) == null) {
+        if (edges == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException();
         }
 
