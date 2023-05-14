@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7a282a4-97bf-4f5c-a189-047eefc3757e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -30,17 +31,26 @@
     "Repository.Attach.JavaDocs": "false",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/0swee/Downloads/openjfx-17.0.7_windows-x64_bin-sdk.zip",
+    "last_opened_file_path": "C:/Users/0swee/Downloads/openjfx-17.0.7_windows-x64_bin-sdk/javafx-sdk-17.0.7/lib",
     "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
+    "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
   }
 }]]></component>
-  <component name="RunManager" selected="JUnit.GraphTest">
+  <component name="RunManager" selected="Application.PathFinder">
+    <configuration name="PathFinder" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="PathFinder" />
+      <module name="Prog2" />
+      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\0swee\Downloads\openjfx-17.0.7_windows-x64_bin-sdk.zip\javafx-sdk-17.0.7\lib&quot; --add-modules=javafx.controls,javafx.fxml" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="GraphTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Prog2" />
       <option name="PACKAGE_NAME" value="" />
       <option name="MAIN_CLASS_NAME" value="GraphTest" />
+      <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -56,6 +66,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.PathFinder" />
+      <item itemvalue="JUnit.GraphTest" />
+      <item itemvalue="JUnit.GraphTest.__version" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.GraphTest" />
