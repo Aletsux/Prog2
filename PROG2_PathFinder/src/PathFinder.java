@@ -14,24 +14,39 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import org.junit.platform.engine.support.descriptor.FileSystemSource;
 
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Handler;
 
 public class PathFinder extends Application {
-    ListGraph listGraph = new ListGraph();
-    File file = new File("europa.graph");
+    //Class for testing and loading data
+    TestClass testClass = new TestClass();
+    ListGraph listGraph = testClass.getListGraph();
+    URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    File file = new File(graphUrl.toString()); //Background image
+
+    File graphFile = new File("europa.graph");
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //Url för bild fil
-        File file = new File("file:c:/GitHub/Prog2/europa.gif");
+        testClass.runTests();
 
+        if (listGraph.getNodes().isEmpty()) {
+            System.err.println("Data not loaded!");
+        }
+
+        if (graphUrl == null) {
+            System.out.println("URL IS NULL!");
+        } else {
+            System.out.println("URL EXISTS!");
+        }
         //Declare
         primaryStage.setTitle("PathFinder");
-
         BorderPane root = new BorderPane();
         FlowPane flow = new FlowPane();
 
@@ -86,18 +101,23 @@ public class PathFinder extends Application {
         archiveMenu.getItems().add(saveItem);
         saveItem.setOnAction(event -> { //Saves all existing nodes to file -> europa.graph
             try {
-                if (file.exists()) {
-                    System.out.println("Error: File already exists!");
-                    return;
+                if (!graphFile.exists()) {
+                    graphFile = new File("europa.graph");
                 }
-                try (PrintWriter writer = new PrintWriter(file)) { //'try with resource' -> autoclose 'writer'
-                    for (Object node : listGraph.getNodes()) {
-                        writer.print(node.toString() + ";");
+                try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
+                    //writer.println("HELLO!");
+                    writer.println("File:" + graphFile);
+                    if (listGraph.getNodes().isEmpty()) {
+                        System.err.println("Graph is empty!");
                     }
-                } //end of try clause,
+                    System.out.println("Print nodes!");
+                    writer.println(printNodes());
+                    writer.println(testClass.listGraphClass.toString());
+
+                } //end of try clause
 
             } catch (FileNotFoundException e) { //Note: Might be omitted due to try-with-resource
-                System.err.println("Erro: File not found?");
+                System.err.println("Error: File not found?");
             } //try / catch clause
         }); //end of lambda expression
 
@@ -124,12 +144,29 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
-                FileReader fr = new FileReader("europa.graph");
-                Image image = new Image(fr.toString());
+                FileReader fr = new FileReader(graphUrl.toString());
+                BufferedReader in = new BufferedReader(fr);
+                Image image = new Image(in.toString());
 
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private String printNodes() {
+        StringBuilder sb = new StringBuilder();
+        for (Object city : testClass.listGraphClass.getNodes()) {
+            sb.append(city).append("; ");
+        }
+        return sb.toString();
+    }
+
+    private String printConnections() {
+        StringBuilder sb = new StringBuilder();
+
+
+        sb.append(testClass.listGraphClass.toString());
+        return sb.toString();
     }
 }
