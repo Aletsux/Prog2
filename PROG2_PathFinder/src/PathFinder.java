@@ -27,7 +27,7 @@ public class PathFinder extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //Url för bild fil
-        URL url = new URL("file:c:/GitHub/Prog2/europa.gif");
+        File file = new File("file:c:/GitHub/Prog2/europa.gif");
 
         //Declare
         primaryStage.setTitle("PathFinder");
@@ -53,7 +53,7 @@ public class PathFinder extends Application {
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
-        root.setBottom(loadImage(url));
+        root.setBottom(loadImage(file));
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
@@ -111,9 +111,9 @@ public class PathFinder extends Application {
     }
 
     //Make this generic, use parameter for path
-    private Label loadImage(URL url) {
+    private Label loadImage(File file) {
         Label label = new Label();
-        Image image = new Image(url.toString());
+        Image image = new Image(file.toString());
         ImageView imageView = new ImageView(image);
         label.setGraphic(imageView);
         return label;
