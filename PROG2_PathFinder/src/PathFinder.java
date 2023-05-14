@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.scene.Cursor;
 import org.junit.platform.engine.support.descriptor.FileSystemSource;
 
 import java.awt.*;
@@ -75,6 +76,12 @@ public class PathFinder extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    class newPlaceHandler implements EventHandler<ActionEvent>{
+        @Override public void handle (ActionEvent event){
+            scene.set
+        }
     }
 
     private VBox fileMenu() {
