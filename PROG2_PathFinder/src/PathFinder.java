@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -20,6 +21,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Handler;
 
@@ -31,6 +33,10 @@ public class PathFinder extends Application {
     File file = new File(graphUrl.toString()); //Background image
 
     File graphFile = new File("europa.graph");
+
+    private boolean unsavedChanges = false;
+
+    MenuBar menuBar = new MenuBar();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -81,7 +87,6 @@ public class PathFinder extends Application {
         //A second one is created?
         //Create a menuBar and add it to the VBox to implement menuItems
         VBox vbox = new VBox();
-        MenuBar menuBar = new MenuBar();
         vbox.getChildren().add(menuBar);
 
         //Create menu for menu functionality
@@ -126,6 +131,7 @@ public class PathFinder extends Application {
 
         MenuItem exitItem = new MenuItem("Exit");
         archiveMenu.getItems().add(exitItem);
+        exitItem.setOnAction(event -> {exitProgram();});
 
         return vbox;
     }
@@ -169,4 +175,33 @@ public class PathFinder extends Application {
         sb.append(testClass.listGraphClass.toString());
         return sb.toString();
     }
+
+    private void exitProgram() {
+        if (unsavedChanges) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Unsaved Changes");
+            alert.setTitle("There are unsaved changes, do you wish to save before exiting?");
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.YES) {
+                saveChanges();
+            } else if (result.get() == ButtonType.NO) {
+                unsavedChanges = false;
+            } else {
+                return;
+            }
+        }
+        Platform.exit();
+         }
+
+        public void saveChanges() {
+            unsavedChanges = false;
+            Platform.exit();
+        }
+
+
+
+
 }
+
+
