@@ -144,6 +144,15 @@ public class ListGraph<N> implements Graph<N> {
         return sb.toString();
     }
 
+    public String printConnections() {
+        StringBuilder sb = new StringBuilder();
+        for (N city : adjacentNodes.keySet()) {
+            Set<Edge<N>> adjacentEdges = adjacentNodes.get(city);
+
+        }
+        return sb.toString();
+    }
+
 
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
@@ -180,9 +189,9 @@ public class ListGraph<N> implements Graph<N> {
             throw new NoSuchElementException();
         }
 
-       if (!adjacentNodes.containsValue(getEdges(node))){
-           throw new NoSuchElementException();
-       }
+        if (!adjacentNodes.containsValue(getEdges(node))) {
+            throw new NoSuchElementException();
+        }
         return adjacentNodes.get(node);
     }
 
@@ -246,8 +255,8 @@ public class ListGraph<N> implements Graph<N> {
             return false;
         }
 
-       // Set<N> visited = new HashSet<>();
-        depthFirstSearch(node1,node2,visited, new Stack<>());
+        // Set<N> visited = new HashSet<>();
+        depthFirstSearch(node1, node2, visited, new Stack<>());
         return visited.contains(node2);
     }
 
@@ -272,7 +281,7 @@ public class ListGraph<N> implements Graph<N> {
     private List<Edge<N>> depthFirstSearch(N node1, N node2, Set<N> visited, Stack<Edge<N>> stack) {
         visited.add(node1);
 
-        if (node1.equals(node2)){
+        if (node1.equals(node2)) {
             return new ArrayList<>(stack);
         }
 
