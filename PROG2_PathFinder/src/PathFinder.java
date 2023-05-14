@@ -19,16 +19,27 @@ import org.junit.platform.engine.support.descriptor.FileSystemSource;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Handler;
 
 public class PathFinder extends Application {
-    ListGraph listGraph = new ListGraph();
-    File file = new File("file:c:/GitHub/Prog2/PROG2_PathFinder/src/europa.gif"); //Background image
+    //Class for testing and loading data
+    TestClass testClass = new TestClass();
+    ListGraph listGraph = testClass.getListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    File file = new File(graphUrl.toString()); //Background image
+
     File graphFile = new File("europa.graph");
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        testClass.runTests();
+
+        if (listGraph.getNodes().isEmpty()) {
+            System.err.println("Data not loaded!");
+        }
+
         if (graphUrl == null) {
             System.out.println("URL IS NULL!");
         } else {
@@ -95,16 +106,15 @@ public class PathFinder extends Application {
                 }
                 try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
                     //writer.println("HELLO!");
-                    writer.println("URL:" + graphUrl.toString());
+                    writer.println("File:" + graphFile);
                     if (listGraph.getNodes().isEmpty()) {
                         System.err.println("Graph is empty!");
                     }
-                    for (Object node : listGraph.getNodes()) {
-                        System.out.println("Print nodes!");
-                        writer.print(node.toString() + " ; ");
-                    }
-                } //end of try clause
+                    System.out.println("Print nodes!");
+                    writer.println(printNodes());
+                    writer.println(testClass.listGraphClass.toString());
 
+                } //end of try clause
 
             } catch (FileNotFoundException e) { //Note: Might be omitted due to try-with-resource
                 System.err.println("Error: File not found?");
@@ -142,5 +152,21 @@ public class PathFinder extends Application {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private String printNodes() {
+        StringBuilder sb = new StringBuilder();
+        for (Object city : testClass.listGraphClass.getNodes()) {
+            sb.append(city).append("; ");
+        }
+        return sb.toString();
+    }
+
+    private String printConnections() {
+        StringBuilder sb = new StringBuilder();
+
+
+        sb.append(testClass.listGraphClass.toString());
+        return sb.toString();
     }
 }

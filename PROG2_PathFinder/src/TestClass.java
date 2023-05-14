@@ -32,6 +32,15 @@ public class TestClass {
 
     }
 
+    public void runTests() {
+        loadData();
+        testConnectMethod();
+    }
+
+    public ListGraph getListGraph() {
+        return listGraphClass;
+    }
+
     //Test functionality of connect method
 
     public void testConnectMethod() {
@@ -43,7 +52,7 @@ public class TestClass {
         //listGraphClass.connect(NODEONE, NODETHREE, "cConnection", 800);
     }
 
-    private void loadData() {
+    public void loadData() {
         listGraphClass.add(NODEONE);
         listGraphClass.add(NODETWO);
         listGraphClass.add(NODETHREE);
