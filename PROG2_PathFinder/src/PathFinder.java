@@ -186,7 +186,7 @@ public class PathFinder extends Application {
                 String name = parts[i];
                 float x = Float.parseFloat(parts[i + 1]);
                 float y = Float.parseFloat(parts[i + 2]);
-                City node = new City(name, x, y);
+                City node = new City(x, y, 30, Color.BLUE);
                 graph.add(node);
             }
         }
