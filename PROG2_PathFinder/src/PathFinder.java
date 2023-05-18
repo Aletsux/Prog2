@@ -13,6 +13,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.Cursor;
 import org.junit.platform.engine.support.descriptor.FileSystemSource;
@@ -50,6 +52,13 @@ public class PathFinder extends Application {
         primaryStage.setTitle("PathFinder");
         BorderPane root = new BorderPane();
         FlowPane flow = new FlowPane();
+        HBox cities = new HBox();
+
+
+        //cities
+        City oslo = new City(100, 50, 30, Color.RED);
+        City stockholm = new City(100, 50, 30, Color.RED);
+
 
         //Flow
         Button findPathB = new Button("Find Path");
@@ -63,8 +72,8 @@ public class PathFinder extends Application {
         flow.setHgap(10);
 
         //add nodes to root
-        //root.getChildren().add(fileMenu());
-        //root.getChildren().add(loadImage());
+//        root.getChildren().add(fileMenu());
+//        root.getChildren().add(loadImage());
 
 
 
@@ -72,6 +81,7 @@ public class PathFinder extends Application {
         root.setTop(fileMenu());
         root.setCenter(flow);
         root.setBottom(loadImage(file));
+
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
@@ -92,6 +102,8 @@ public class PathFinder extends Application {
                         newPlaceB.setDisable(true);
                     }
                 });
+
+
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -164,6 +176,8 @@ public class PathFinder extends Application {
         label.setGraphic(imageView);
         return label;
     }
+
+
 
     //Open button handler
     class OpenHandler implements EventHandler<ActionEvent> {
