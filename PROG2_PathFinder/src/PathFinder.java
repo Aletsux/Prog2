@@ -39,8 +39,9 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    File file = new File(graphUrl.toString()); //Background image
+    File imageFile = new File(graphUrl.toString()); //Background image
     File graphFile = new File("europa.graph");
+    Scene scene;
     private boolean changed = false;
 
     public ListGraph getListGraph() {
@@ -91,11 +92,11 @@ public class PathFinder extends Application {
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
-        root.setBottom(loadImage(file));
+        root.setBottom(loadImage(imageFile));
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
-        Scene scene = new Scene(root);
+        scene = new Scene(root);
 
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
@@ -151,17 +152,15 @@ public class PathFinder extends Application {
         MenuItem imageItem = new MenuItem("Save Image");
         archiveMenu.getItems().add(imageItem);
         imageItem.setOnAction(event -> {
-            Scene scene = imageItem.getGraphic().getScene();
-
+            //Get scene
             WritableImage result = new WritableImage((int) scene.getWidth(), (int) scene.getHeight());
             if (scene == null) {
                 System.out.println("Error: scene is null!");
                 return;
             }
             scene.snapshot(result);
-            File outputFile = new File("screenshot.png");
+            File outputFile = new File("capture.png");
             try {
-                FileWriter fw = new FileWriter(outputFile);
                 ImageIO.write(SwingFXUtils.fromFXImage(result, null), "png", outputFile);
                 System.out.println("Snapshot image saved: " + outputFile.getAbsolutePath());
 
@@ -178,13 +177,9 @@ public class PathFinder extends Application {
 
     //Make this generic, use parameter for path
     private Pane loadImage(File imageFile) {
-        Pane mapPane = new Pane();
-        Label label = new Label();
-        Image image = new Image(file.toString());
+        Image image = new Image(imageFile.toString());
         ImageView imageView = new ImageView(image);
-        label.setGraphic(imageView);
-
-        mapPane.getChildren().add(label);
+        Pane mapPane = new Pane(imageView);
         return mapPane;
     }
 
@@ -271,12 +266,13 @@ public class PathFinder extends Application {
                 }
             }
 
+
             //readNodes(), drawNodes(), loadImage()
             try {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
                 readNodes(in); //fixed
-                loadImage(file);
+                loadImage(imageFile);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
