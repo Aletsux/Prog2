@@ -78,6 +78,8 @@ public class PathFinder extends Application {
         //root.getChildren().add(fileMenu());
         //root.getChildren().add(loadImage());
 
+
+
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
@@ -86,6 +88,23 @@ public class PathFinder extends Application {
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
         Scene scene = new Scene(root);
+
+        //Create cursor
+        Cursor cursor = Cursor.CROSSHAIR;
+
+        // change cursor when newPlace has been clicked
+        newPlaceB.setOnAction(new EventHandler<ActionEvent>()
+
+                {
+                    @Override
+                    public void handle(ActionEvent changeCursor)
+                    {
+                        // change the cursor
+                        scene.setCursor(Cursor.CROSSHAIR);
+                        newPlaceB.setDisable(true);
+                    }
+                });
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
