@@ -1,6 +1,6 @@
 import java.util.Objects;
 
-public class City <N> {
+public class City<N> {
     private final String name;
     private float x;
     private float y;
@@ -16,7 +16,7 @@ public class City <N> {
         this.x = newX;
     }
 
-    public void setY(float newY){
+    public void setY(float newY) {
         this.y = newY;
     }
 
@@ -25,20 +25,21 @@ public class City <N> {
     }
 
     @Override
-    public boolean equals (Object other) {
+    public boolean equals(Object other) {
         if (other instanceof City city) {
             return name.equals(city.name);
         } else {
             return false;
         }
     }
+
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hash(name);
     }
 
     @Override
     public String toString() {
-        return name;
+        return name + ";" + x + ";" + y;
     }
 }

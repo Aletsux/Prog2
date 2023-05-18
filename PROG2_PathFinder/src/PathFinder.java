@@ -1,6 +1,7 @@
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,29 +16,40 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Cursor;
+import org.junit.platform.engine.TestEngine;
 import org.junit.platform.engine.support.descriptor.FileSystemSource;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.Dialog;
 import java.io.*;
 import java.net.URL;
-import java.util.Objects;
-import java.util.Set;
+import java.nio.Buffer;
+import java.util.*;
+import java.util.List;
 import java.util.logging.Handler;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
-    TestClass testClass = new TestClass();
-    ListGraph listGraph = testClass.getListGraph();
+    //TestClass testClass = null;
+    //ListGraph listGraph = testClass.getListGraph();
+    private ListGraph graph = new ListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
     File file = new File(graphUrl.toString()); //Background image
-
     File graphFile = new File("europa.graph");
+    private boolean changed = false;
+
+    public ListGraph getListGraph() {
+        return graph;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        testClass.runTests();
+        //for testing
+        TestClass testClass = new TestClass();
+        //graph = testClass.runTests();
 
-        if (listGraph.getNodes().isEmpty()) {
+        if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
         }
 
@@ -78,12 +90,6 @@ public class PathFinder extends Application {
         primaryStage.show();
     }
 
-    class newPlaceHandler implements EventHandler<ActionEvent>{
-        @Override public void handle (ActionEvent event){
-            scene.set
-        }
-    }
-
     private VBox fileMenu() {
         //A second one is created?
         //Create a menuBar and add it to the VBox to implement menuItems
@@ -106,27 +112,17 @@ public class PathFinder extends Application {
         //WIP
         MenuItem saveItem = new MenuItem("Save");
         archiveMenu.getItems().add(saveItem);
-        saveItem.setOnAction(event -> { //Saves all existing nodes to file -> europa.graph
+        /*saveItem.setOnAction(event -> { //Saves all existing nodes to file -> europa.graph + (Screenshot)
+            if (!graphFile.exists()) {
+                graphFile = new File("europa.graph");
+            }
             try {
-                if (!graphFile.exists()) {
-                    graphFile = new File("europa.graph");
-                }
-                try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
-                    //writer.println("HELLO!");
-                    writer.println("File:" + graphFile);
-                    if (listGraph.getNodes().isEmpty()) {
-                        System.err.println("Graph is empty!");
-                    }
-                    System.out.println("Print nodes!");
-                    writer.println(printNodes());
-                    writer.println(testClass.listGraphClass.toString());
-
-                } //end of try clause
-
-            } catch (FileNotFoundException e) { //Note: Might be omitted due to try-with-resource
-                System.err.println("Error: File not found?");
-            } //try / catch clause
-        }); //end of lambda expression
+                saveFile();
+            } catch (IOException e) {
+                System.err.println("Error: saving file");
+            }
+        }); //end of lambda expression*/
+        saveItem.setOnAction(new SaveHandler());
 
         MenuItem imageItem = new MenuItem("Save Image");
         archiveMenu.getItems().add(imageItem);
@@ -146,16 +142,97 @@ public class PathFinder extends Application {
         return label;
     }
 
-    //Open button handler
-    class OpenHandler implements EventHandler<ActionEvent> {
+    //Reads each line, splits it and creates new nodes based on parts
+    private void readNodes(BufferedReader in) throws IOException { //Fixed!
+        String text = in.readLine();
+        while ((text = in.readLine()) != null) {
+            if (!text.contains(";")) { //Hop over lines which don't contain ";"
+                continue;
+            }
+            String[] parts = text.split(";");
+            for (int i = 0; i < parts.length; i += 3) {
+                String name = parts[i];
+                float x = Float.parseFloat(parts[i + 1]);
+                float y = Float.parseFloat(parts[i + 2]);
+                City node = new City(name, x, y);
+                graph.add(node);
+            }
+        }
+
+        System.out.println("Nodes: " + graph.getNodes());
+    }
+
+    private void saveFile() throws IOException {
+        try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
+            //writer.println("HELLO!");
+            writer.println("File:" + graphFile);
+            if (graph.getNodes().isEmpty()) {
+                System.err.println("Graph is empty!");
+            }
+            System.out.println("Print nodes!");
+            writer.println(printNodes()); //writes out node.toString()
+            //writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
+        }
+    }
+
+    private Alert createAlertConf(String title) {
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("There are unsaved changes in the project");
+        alert.setContentText("Save changes?");
+
+        ButtonBar buttonBar = new ButtonBar();
+        ButtonType confirmButton = new ButtonType("confirm");
+        ButtonType cancelButton = new ButtonType("cancel", ButtonBar.ButtonData.CANCEL_CLOSE); //ButtonData = enums for opertations
+
+        buttonBar.getButtons().add(alert.getDialogPane());
+        buttonBar.setPadding(new Insets(0, 0, 0, 50));
+        //alert.getDialogPane().setPadding(new Insets(0, 0, 0, 0));
+
+
+        return alert;
+    }
+
+
+    class SaveHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
-                FileReader fr = new FileReader(graphUrl.toString());
-                BufferedReader in = new BufferedReader(fr);
-                Image image = new Image(in.toString());
+                saveFile();
 
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
+                System.err.println("Error: saving file");
+            }
+        }
+    }
+
+    //Open button handler
+    class OpenHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent actionEvent) { //Fix: dialogue layout
+            if (!graphFile.exists()) {
+                System.out.println("Error: File doesnt exist!");
+            }
+            //Confirmation alert
+            Alert alert = createAlertConf("Unsaved changes");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get().getText().equals("confirm")) {
+                try {
+                    saveFile();
+                } catch (IOException e) {
+                    System.err.println("Error: saving file");
+                }
+            }
+
+            //Load nodes from files
+            try {
+                FileReader fr = new FileReader(graphFile);
+                BufferedReader in = new BufferedReader(fr);
+                readNodes(in); //* not yet tested
+                loadImage(file);
+
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -163,17 +240,13 @@ public class PathFinder extends Application {
 
     private String printNodes() {
         StringBuilder sb = new StringBuilder();
-        for (Object city : testClass.listGraphClass.getNodes()) {
-            sb.append(city).append("; ");
+        for (Object city : graph.getNodes()) {
+            sb.append(city).append(";");
         }
         return sb.toString();
     }
 
     private String printConnections() {
-        StringBuilder sb = new StringBuilder();
-
-
-        sb.append(testClass.listGraphClass.toString());
-        return sb.toString();
+        return graph.printConnections();
     }
 }
