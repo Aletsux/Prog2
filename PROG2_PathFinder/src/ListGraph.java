@@ -135,6 +135,7 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public String toString() {
+        System.out.println("EnteredToString!");
         StringBuilder sb = new StringBuilder();
         for (N city : adjacentNodes.keySet()) {
             Set<Edge<N>> edgeToPrint = getEdges(city);
@@ -148,6 +149,12 @@ public class ListGraph<N> implements Graph<N> {
         StringBuilder sb = new StringBuilder();
         for (N city : adjacentNodes.keySet()) {
             Set<Edge<N>> adjacentEdges = adjacentNodes.get(city);
+            City current = (City) city;
+            for (Edge edge : adjacentEdges) {
+                City destination = (City) edge.getDestination();
+                sb.append(current.getName()).append(";").append(destination.getName()).append(";").append(edge.getName())
+                        .append(";").append(edge.getWeight()).append("\n");
+            }
 
         }
         return sb.toString();
