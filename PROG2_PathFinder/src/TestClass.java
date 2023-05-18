@@ -1,3 +1,5 @@
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 
 public class TestClass {
@@ -7,11 +9,14 @@ public class TestClass {
     * I1 - 'NullPointerException' cannot invoke java.util.Set.iterator (methods with problems: getEdgeBetween, disconnect)
 
     */
-    private static final String NODEONE = "New York";
-    private static final String NODETWO = "Stockholm";
-    private static final String NODETHREE = "Berlin";
+    private static final City NODEONE = new City<>("New York", 100, 100);
+    private static final City NODETWO = new City<>("Stockholm", 150, 150);
+    private static final City NODETHREE = new City<>("Berlin", 200, 100);
 
-    ListGraph listGraphClass = new ListGraph();
+    //ListGraph listGraphClass = new ListGraph();
+    //WIP
+
+    ListGraph graph = new ListGraph();
     Edge edgeClass;
 
     public static void main(String[] args) {
@@ -23,60 +28,68 @@ public class TestClass {
         //testClass.disconnectEdge();
         testClass.printSet();
 
-        testClass.testEdge();
-        testClass.removeData();
+        //testClass.testEdge();
+        //testClass.removeData();
 
-        System.out.println("New: ");
-        testClass.printSet();
+        //System.out.println("New: ");
+        //testClass.printSet();
 
-
+        //PathFinder.start();
     }
 
-    public void runTests() {
+    public ListGraph runTests() {
+        PathFinder pathFinder = new PathFinder();
+        if (pathFinder.getListGraph() == null) {
+            System.err.println("graph is null");
+        } else {
+            graph = pathFinder.getListGraph();
+        }
         loadData();
         testConnectMethod();
+        return graph;
     }
 
-    public ListGraph getListGraph() {
-        return listGraphClass;
-    }
 
     //Test functionality of connect method
 
     public void testConnectMethod() {
 
-        listGraphClass.connect(NODEONE, NODETHREE, "aConnection", 300);
-        listGraphClass.connect(NODETWO, NODETHREE, "S -> B", 500);
+        graph.connect(NODEONE, NODETHREE, "aConnection", 300);
+        graph.connect(NODETWO, NODETHREE, "S -> B", 500);
 
         //Throws exception: IllegalStateException
         //listGraphClass.connect(NODEONE, NODETHREE, "cConnection", 800);
     }
 
     public void loadData() {
-        listGraphClass.add(NODEONE);
-        listGraphClass.add(NODETWO);
-        listGraphClass.add(NODETHREE);
+        graph.add(NODEONE);
+        graph.add(NODETWO);
+        graph.add(NODETHREE);
 
     }
 
     private void removeData() {
-        listGraphClass.remove(NODETWO);
-
+        graph.remove(NODETWO);
     }
 
     private void disconnectEdge() {
-        listGraphClass.disconnect(NODETWO, NODETHREE);
+        graph.disconnect(NODETWO, NODETHREE);
         //listGraphClass.disconnect(NODEONE, NODETWO);
     }
 
     private void printSet() {
         //System.out.println(listGraphClass.existingNodes);
-        System.out.println(listGraphClass.toString());
-
+        //System.out.println(graph.toString());
+        System.out.println(graph.printConnections());
     }
 
+
     private void testEdge() {
-        Edge edgeA = listGraphClass.getEdgeBetween(NODETWO, NODETHREE);
+        Edge edgeA = graph.getEdgeBetween(NODETWO, NODETHREE);
         System.out.println(edgeA);
+    }
+
+    private void testReadNodes() {
+        PathFinder pf = new PathFinder();
     }
 }

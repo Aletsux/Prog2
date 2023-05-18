@@ -1,5 +1,2 @@
 File:europa.graph
-New York; Berlin; Stockholm; New York : [till Berlin med aConnection tar 300]
-Berlin : [till New York med aConnection tar 300, till Stockholm med S -> B tar 500]
-Stockholm : [till Berlin med S -> B tar 500]
-
+New York;100.0;100.0;Berlin;200.0;100.0;Stockholm;150.0;150.0;
