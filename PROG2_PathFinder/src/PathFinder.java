@@ -177,13 +177,13 @@ public class PathFinder extends Application {
     }
 
     //Make this generic, use parameter for path
-    private Pane loadImage(File file) {
+    private Pane loadImage(File imageFile) {
         Pane mapPane = new Pane();
         Label label = new Label();
         Image image = new Image(file.toString());
         ImageView imageView = new ImageView(image);
         label.setGraphic(imageView);
-        
+
         mapPane.getChildren().add(label);
         return mapPane;
     }
