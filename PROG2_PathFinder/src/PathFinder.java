@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -13,6 +14,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -20,7 +22,9 @@ import javafx.stage.Stage;
 import javafx.scene.Cursor;
 import org.junit.platform.engine.TestEngine;
 import org.junit.platform.engine.support.descriptor.FileSystemSource;
+import javafx.scene.SnapshotParameters;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.Dialog;
@@ -74,9 +78,14 @@ public class PathFinder extends Application {
 
         //Flow
         Button findPathB = new Button("Find Path");
+
         Button showConnectionB = new Button("Show Connection");
+
         Button newPlaceB = new Button("New Place");
+
         Button newConnectionB = new Button("New Connection");
+        //newConnectionB.setOnAction();
+
         Button changeConnectionB = new Button("Change Connection");
 
         flow.getChildren().addAll(findPathB, showConnectionB, newPlaceB, newConnectionB, changeConnectionB);
@@ -86,7 +95,6 @@ public class PathFinder extends Application {
         //add nodes to root
 //        root.getChildren().add(fileMenu());
 //        root.getChildren().add(loadImage());
-
 
 
         //Set position in BorderPane
@@ -103,17 +111,14 @@ public class PathFinder extends Application {
         Cursor cursor = Cursor.CROSSHAIR;
 
         // change cursor when newPlace has been clicked
-        newPlaceB.setOnAction(new EventHandler<ActionEvent>()
-
-                {
-                    @Override
-                    public void handle(ActionEvent changeCursor)
-                    {
-                        // change the cursor
-                        scene.setCursor(Cursor.CROSSHAIR);
-                        newPlaceB.setDisable(true);
-                    }
-                });
+        newPlaceB.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent changeCursor) {
+                // change the cursor
+                scene.setCursor(Cursor.CROSSHAIR);
+                newPlaceB.setDisable(true);
+            }
+        });
 
 
 
@@ -157,6 +162,25 @@ public class PathFinder extends Application {
 
         MenuItem imageItem = new MenuItem("Save Image");
         archiveMenu.getItems().add(imageItem);
+        imageItem.setOnAction(event -> {
+            Scene scene = imageItem.getGraphic().getScene();
+
+            WritableImage result = new WritableImage((int) scene.getWidth(), (int) scene.getHeight());
+            if (scene == null) {
+                System.out.println("Error: scene is null!");
+                return;
+            }
+            scene.snapshot(result);
+            File outputFile = new File("screenshot.png");
+            try {
+                FileWriter fw = new FileWriter(outputFile);
+                ImageIO.write(SwingFXUtils.fromFXImage(result, null), "png", outputFile);
+                System.out.println("Snapshot image saved: " + outputFile.getAbsolutePath());
+
+            } catch (IOException e) {
+                System.err.println("Error: problem when saving snapshot!");
+            }
+        });
 
         MenuItem exitItem = new MenuItem("Exit");
         archiveMenu.getItems().add(exitItem);
@@ -165,12 +189,15 @@ public class PathFinder extends Application {
     }
 
     //Make this generic, use parameter for path
-    private Label loadImage(File file) {
+    private Pane loadImage(File imageFile) {
+        Pane mapPane = new Pane();
         Label label = new Label();
         Image image = new Image(file.toString());
         ImageView imageView = new ImageView(image);
         label.setGraphic(imageView);
-        return label;
+
+        mapPane.getChildren().add(label);
+        return mapPane;
     }
 
 
@@ -190,6 +217,7 @@ public class PathFinder extends Application {
                 graph.add(node);
             }
         }
+        in.close();
 
         System.out.println("Nodes: " + graph.getNodes());
     }
@@ -221,7 +249,6 @@ public class PathFinder extends Application {
         buttonBar.getButtons().add(alert.getDialogPane());
         buttonBar.setPadding(new Insets(0, 0, 0, 50));
         //alert.getDialogPane().setPadding(new Insets(0, 0, 0, 0));
-
 
         return alert;
     }
@@ -258,11 +285,11 @@ public class PathFinder extends Application {
                 }
             }
 
-            //Load nodes from files
+            //readNodes(), drawNodes(), loadImage()
             try {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
-                readNodes(in); //* not yet tested
+                readNodes(in); //fixed
                 loadImage(file);
 
             } catch (IOException e) {
