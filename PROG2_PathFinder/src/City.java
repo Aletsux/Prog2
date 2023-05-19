@@ -4,7 +4,7 @@ import java.util.Objects;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
-public class City extends Circle {
+public class City <N> extends Circle {
 
     public City(double x, double y, double radius, Paint fill) {
         super(x, y, radius);

@@ -2,7 +2,6 @@ import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,23 +16,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.Cursor;
-import org.junit.platform.engine.TestEngine;
-import org.junit.platform.engine.support.descriptor.FileSystemSource;
-import javafx.scene.SnapshotParameters;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.Dialog;
 import java.io.*;
 import java.net.URL;
-import java.nio.Buffer;
 import java.util.*;
-import java.util.List;
-import java.util.logging.Handler;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
@@ -41,7 +30,7 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    File file = new File(graphUrl.toString()); //Background image
+
     File graphFile = new File("europa.graph");
     private boolean changed = false;
 
@@ -67,13 +56,27 @@ public class PathFinder extends Application {
         //Declare
         primaryStage.setTitle("PathFinder");
         BorderPane root = new BorderPane();
+        Pane mainField = new Pane();
+        Pane background = new Pane();
         FlowPane flow = new FlowPane();
-        HBox cities = new HBox();
+
 
 
         //cities
-        City oslo = new City(100, 50, 30, Color.RED);
-        City stockholm = new City(100, 50, 30, Color.RED);
+        City oslo = new City(500, 500, 10, Color.RED);
+        City stockholm = new City(100, 20, 30, Color.RED);
+        Pane cities = new Pane();
+        cities.getChildren().addAll(oslo, stockholm);
+
+        // Background
+        File imageFile = new File(graphUrl.toString());
+        Image image = new Image(imageFile.toString());
+        ImageView imageView = new ImageView(image);
+        background.getChildren().add(imageView);
+
+        mainField.getChildren().addAll(background, cities);
+
+
 
 
         //Flow
@@ -100,7 +103,7 @@ public class PathFinder extends Application {
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
-        root.setBottom(loadImage(file));
+        root.setBottom(mainField);
 
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
@@ -189,16 +192,15 @@ public class PathFinder extends Application {
     }
 
     //Make this generic, use parameter for path
-    private Pane loadImage(File imageFile) {
-        Pane mapPane = new Pane();
-        Label label = new Label();
-        Image image = new Image(file.toString());
-        ImageView imageView = new ImageView(image);
-        label.setGraphic(imageView);
-
-        mapPane.getChildren().add(label);
-        return mapPane;
-    }
+//     Pane loadImage(File imageFile) {
+//        Pane mapPane = new Pane();
+//        Image image = new Image(imageFile.toString());
+//        ImageView imageView = new ImageView(image);
+//
+//
+//        mapPane.getChildren().add(label);
+//        return mapPane;
+//    }
 
 
     //Reads each line, splits it and creates new nodes based on parts
@@ -290,7 +292,7 @@ public class PathFinder extends Application {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
                 readNodes(in); //fixed
-                loadImage(file);
+               // loadImage(imageFile);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

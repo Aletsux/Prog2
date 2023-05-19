@@ -1,3 +1,5 @@
+import javafx.scene.paint.Color;
+
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
@@ -9,9 +11,9 @@ public class TestClass {
     * I1 - 'NullPointerException' cannot invoke java.util.Set.iterator (methods with problems: getEdgeBetween, disconnect)
 
     */
-    private static final City NODEONE = new City<>("New York", 100, 100);
-    private static final City NODETWO = new City<>("Stockholm", 150, 150);
-    private static final City NODETHREE = new City<>("Berlin", 200, 100);
+    private static final City NODEONE = new City<>(100, 100, 30, Color.BLUE);
+    private static final City NODETWO = new City<>(150, 150, 30, Color.BLUE);
+    private static final City NODETHREE = new City<>(200, 100, 30, Color.BLUE);
 
     //ListGraph listGraphClass = new ListGraph();
     //WIP
