@@ -76,7 +76,19 @@ public class PathFinder extends Application {
         Button newPlaceB = new Button("New Place");
 
         Button newConnectionB = new Button("New Connection");
-        //newConnectionB.setOnAction();
+        newConnectionB.setOnAction(event -> {
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!");
+            alert.setContentText("Two places need to be selected!");
+
+            ButtonBar buttonBar = new ButtonBar();
+            buttonBar.getButtons().add(alert.getDialogPane());
+            buttonBar.setPadding(new Insets(0, 0, 0, 50));
+
+            ButtonType okButton = new ButtonType("Ok", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getDialogPane();
+        });
 
         Button changeConnectionB = new Button("Change Connection");
 
