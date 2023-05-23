@@ -7,20 +7,31 @@ import javafx.scene.paint.Paint;
 
 public class City<N> extends Circle {
     private String name = "";
+    private double xPos;
+    private double yPos;
 
     public City(double x, double y, double radius, Paint fill) {
         super(x, y, radius);
         setFill(Color.BLUE);
     }
 
-    public City(String name, float x, float y) {
+    public City(String name, double x, double y) {
         this.name = name;
+        xPos = x;
+        yPos = y;
     }
 
     public String getName() {
         return name;
     }
 
+    public String getxPos() {
+        return "" + xPos;
+    }
+
+    public String getyPos() {
+        return "" + yPos;
+    }
 
     @Override
     public boolean equals(Object other) {
@@ -38,6 +49,6 @@ public class City<N> extends Circle {
 
     @Override
     public String toString() {
-        return name;
+        return name + ";" + getxPos() + ";" + getyPos();
     }
 }
