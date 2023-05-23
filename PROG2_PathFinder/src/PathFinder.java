@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.logging.Handler;
 
 
-
 public class PathFinder extends Application {
     //Class for testing and loading data
     //TestClass testClass = null;
@@ -53,8 +52,7 @@ public class PathFinder extends Application {
 
     private boolean fromDestinationChosen;
     private boolean toDestinationChosen;
-    private String fromDestination;
-    private String toDestination;
+    private City[] selectedNodes = new City[2];
 
     public ListGraph getListGraph() {
         return graph;
@@ -93,17 +91,7 @@ public class PathFinder extends Application {
 
         Button newConnectionB = new Button("New Connection");
         newConnectionB.setOnAction(event -> {
-
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error!");
-            alert.setContentText("Two places need to be selected!");
-
-            ButtonBar buttonBar = new ButtonBar();
-            buttonBar.getButtons().add(alert.getDialogPane());
-            buttonBar.setPadding(new Insets(0, 0, 0, 50));
-
-            ButtonType okButton = new ButtonType("Ok", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getDialogPane();
+            openConnectionWindow();
         });
 
         Button changeConnectionB = new Button("Change Connection");
@@ -198,7 +186,9 @@ public class PathFinder extends Application {
 
         MenuItem exitItem = new MenuItem("Exit");
         archiveMenu.getItems().add(exitItem);
-        exitItem.setOnAction(event -> {exitProgram();});
+        exitItem.setOnAction(event -> {
+            exitProgram();
+        });
 
         return vbox;
     }
@@ -263,6 +253,9 @@ public class PathFinder extends Application {
         return alert;
     }
 
+    private void setNodes() {
+
+    }
 
     class SaveHandler implements EventHandler<ActionEvent> {
         @Override
@@ -336,87 +329,82 @@ public class PathFinder extends Application {
             }
         }
         Platform.exit();
-         }
+    }
 
-        public void saveChanges() {
-            unsavedChanges = false;
-            Platform.exit();
-        }
+    public void saveChanges() {
+        unsavedChanges = false;
+        Platform.exit();
+    }
 
-        private void openConnectionWindow() {
+    private void openConnectionWindow() {
             /*if (getListGraph().pathExists() {
                 showErrorMessage("Select two destinations, please.");
                     return;
                 }*/
 
-                if (connectionExist(fromDestination, toDestination)) {
-                   showErrorMessage("Connection already exist between the two destinations.");
-                   return;
-            }
-
-              javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
-                dialog.setTitle("New Connection");
-                dialog.setHeaderText("Create new connection between " + fromDestination + " and " + toDestination);
-
-            javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
-                javafx.scene.control.TextField timeField = new javafx.scene.control.TextField();
-
-                ButtonType okButton = new ButtonType("ok");
-            dialog.getDialogPane().setContent(new HBox(10, nameField, timeField));
-            dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
-
-            dialog.setResultConverter(ButtonType -> {
-                if (okButton == ButtonType.OK) {
-
-                    String name = nameField.getText();
-                    String time = timeField.getText();
-
-                    if (name.isEmpty() || !time.matches("\\d+")) {
-                        showErrorMessage("Input is not valid. Name cannot be empty.");
-                        return false;
-                    }
-
-                    //createConnection(name, Integer.parseInt(time));
-                    return true;
-
-                }
-
-                return false;
-
-            });
-
-            dialog.showAndWait();
-
+        if (connectionExist(selectedNodes[0], selectedNodes[1])) {
+            showErrorMessage("Connection already exist between the two destinations.");
+            return;
         }
 
-        private void showErrorMessage(String message) {
+        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("New Connection");
+        dialog.setHeaderText("Create new connection between " + selectedNodes[0].getName() + " and " + selectedNodes[1].getName());
+
+        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
+        javafx.scene.control.TextField timeField = new javafx.scene.control.TextField();
+
+        ButtonType okButton = new ButtonType("ok");
+        dialog.getDialogPane().setContent(new HBox(10, nameField, timeField));
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+
+        dialog.setResultConverter(ButtonType -> {
+            String name = nameField.getText();
+            String time = timeField.getText();
+            CreateConnection(name, time);
+            if (okButton == ButtonType.OK) {
+                if (name.isEmpty() || !time.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Name cannot be empty.");
+                    return false;
+                }
+
+                //createConnection(name, Integer.parseInt(time));
+                return true;
+            }
+
+            return false;
+        });
+
+        dialog.showAndWait();
+    }
+
+    private void showErrorMessage(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    //Checks if connection exists
+    private boolean connectionExist(City fromDestination, City toDestination) {
+        if (getListGraph().getEdgeBetween(fromDestination, toDestination) != null) {
+            return true;
         }
+        return false;
+    }
 
-        private boolean connectionExist(String fromDestination, String toDestination) {
-
-            return false;
-
-        }
-
-        private void CreateConnection(String name, int time) {
+    private void CreateConnection(String name, String time) {
+        graph.connect(selectedNodes[0], selectedNodes[1], name, Integer.parseInt(time));
+        //draw connection
 
 
-            }
-
-        }
-
-
-
-
-
-
-
+    }
 
 }
+
+
+
+
 
 
