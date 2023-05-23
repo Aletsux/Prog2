@@ -13,7 +13,7 @@ public class City<N> extends Circle {
         setFill(Color.BLUE);
     }
 
-    public City(String name) {
+    public City(String name, float x, float y) {
         this.name = name;
     }
 
