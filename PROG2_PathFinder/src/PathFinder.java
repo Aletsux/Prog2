@@ -429,15 +429,24 @@ public class PathFinder extends Application {
             javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
 
             ButtonType okButton = new ButtonType("ok");
+            ButtonType cancelButton = new ButtonType("cancel");
             dialog.getDialogPane().setContent(new HBox(10, nameField));
-            dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+            dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
 
+            dialog.setResultConverter(buttonType -> {
                 if (okButton == ButtonType.OK) {
 
                     String name = nameField.getText();
+                    return true;
                 }
+                    return false;
+
+            });
+
+                dialog.showAndWait();
 
                 return dialog.getDialogPane();
+
 
         }
 
