@@ -11,9 +11,9 @@ public class TestClass {
     * I1 - 'NullPointerException' cannot invoke java.util.Set.iterator (methods with problems: getEdgeBetween, disconnect)
 
     */
-    private static final City NODEONE = new City<>(100, 100, 30, Color.BLUE);
-    private static final City NODETWO = new City<>(150, 150, 30, Color.BLUE);
-    private static final City NODETHREE = new City<>(200, 100, 30, Color.BLUE);
+    private static final City NODEONE = new City<>("New York");
+    private static final City NODETWO = new City<>("Stockholm");
+    private static final City NODETHREE = new City<>("Berlin");
 
     //ListGraph listGraphClass = new ListGraph();
     //WIP
