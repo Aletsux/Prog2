@@ -54,6 +54,7 @@ public class PathFinder extends Application {
         //for testing
         TestClass testClass = new TestClass();
         graph = testClass.runTests();
+        System.out.println(graph.getNodes());
 
         if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
@@ -202,8 +203,9 @@ public class PathFinder extends Application {
             if (graph.getNodes().isEmpty()) {
                 System.err.println("Graph is empty!");
             }
-            System.out.println("Print nodes!");
+            System.out.println("Save nodes!");
             writer.println(printNodes()); //writes out node.toString()
+            //System.out.println(printNodes());
             //writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         }
     }
@@ -338,8 +340,8 @@ public class PathFinder extends Application {
             String[] parts = text.split(";");
             for (int i = 0; i < parts.length; i += 3) {
                 String name = parts[i];
-                float x = Float.parseFloat(parts[i + 1]);
-                float y = Float.parseFloat(parts[i + 2]);
+                double x = Double.parseDouble(parts[i + 1]);
+                double y = Double.parseDouble(parts[i + 2]);
                 City node = new City(name, x, y);
                 graph.add(node);
             }
@@ -350,8 +352,8 @@ public class PathFinder extends Application {
 
     private String printNodes() {
         StringBuilder sb = new StringBuilder();
-        for (Object city : graph.getNodes()) {
-            sb.append(city).append(";");
+        for (Object obj : graph.getNodes()) {
+            sb.append(obj).append(";");
         }
         return sb.toString();
     }
@@ -392,7 +394,6 @@ public class PathFinder extends Application {
 
         dialog.setResultConverter(buttonType -> {
             if (okButton == ButtonType.OK) {
-
                 String name = nameField.getText();
                 return true;
             }
