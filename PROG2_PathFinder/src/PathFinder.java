@@ -30,7 +30,6 @@ import java.util.Set;
 import java.nio.Buffer;
 import java.util.*;
 
-
 public class PathFinder extends Application {
     //Class for testing and loading data
     //TestClass testClass = null;
@@ -77,8 +76,6 @@ public class PathFinder extends Application {
         Pane background = new Pane();
         FlowPane flow = new FlowPane();
 
-
-
         //cities
         City oslo = new City(500, 500, 10, Color.RED);
         City stockholm = new City(100, 20, 30, Color.RED);
@@ -92,8 +89,6 @@ public class PathFinder extends Application {
         background.getChildren().add(imageView);
 
         mainField.getChildren().addAll(background, cities);
-
-
 
 
         //Flow
@@ -134,15 +129,17 @@ public class PathFinder extends Application {
         Cursor cursor = Cursor.CROSSHAIR;
 
         // change cursor when newPlace has been clicked
-        newPlaceB.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent changeCursor) {
-                // change the cursor
-                scene.setCursor(Cursor.CROSSHAIR);
-                newPlaceB.setDisable(true);
-            }
-        });
+        newPlaceB.setOnAction(event -> {
+            //Place new node
+            scene.setCursor(Cursor.CROSSHAIR);
+            newPlaceB.setDisable(true);
 
+            //Name new node + create new node
+            //String name = nameWindow();
+
+            //Draw new node
+
+        });
 
 
         primaryStage.setScene(scene);
@@ -361,7 +358,7 @@ public class PathFinder extends Application {
                     return;
                 }*/
 
-        if (connectionExist(selectedNodes[0], selectedNodes[1])) {
+        if (graph.pathExists(selectedNodes[0], selectedNodes[1])) {
             showErrorMessage("Connection already exist between the two destinations.");
             return;
         }
@@ -407,6 +404,7 @@ public class PathFinder extends Application {
 
     //Checks if connection exists
     private boolean connectionExist(City fromDestination, City toDestination) {
+        //Call find path
         if (getListGraph().getEdgeBetween(fromDestination, toDestination) != null) {
             return true;
         }
@@ -416,7 +414,6 @@ public class PathFinder extends Application {
     private void CreateConnection(String name, String time) {
         graph.connect(selectedNodes[0], selectedNodes[1], name, Integer.parseInt(time));
         //draw connection
-
 
     }
 
