@@ -152,8 +152,7 @@ public class ListGraph<N> implements Graph<N> {
             City current = (City) city;
             for (Edge edge : adjacentEdges) {
                 City destination = (City) edge.getDestination();
-                sb.append(current.getName()).append(";").append(destination.getName()).append(";").append(edge.getName())
-                        .append(";").append(edge.getWeight()).append("\n");
+                sb.append(edge.getName()).append(";").append(edge.getWeight()).append("\n");
             }
 
         }

@@ -3,7 +3,6 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,16 +16,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Cursor;
-import org.junit.platform.engine.TestEngine;
-import org.junit.platform.engine.support.descriptor.FileSystemSource;
-import javafx.scene.SnapshotParameters;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.Dialog;
 import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
@@ -35,8 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.nio.Buffer;
 import java.util.*;
-import java.util.List;
-import java.util.logging.Handler;
 
 
 public class PathFinder extends Application {
@@ -46,6 +38,7 @@ public class PathFinder extends Application {
     private ListGraph graph = new ListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
     File imageFile = new File(graphUrl.toString()); //Background image
+
     File graphFile = new File("europa.graph");
     Scene scene;
     private boolean changed = false;
@@ -80,7 +73,28 @@ public class PathFinder extends Application {
         //Declare
         primaryStage.setTitle("PathFinder");
         BorderPane root = new BorderPane();
+        Pane mainField = new Pane();
+        Pane background = new Pane();
         FlowPane flow = new FlowPane();
+
+
+
+        //cities
+        City oslo = new City(500, 500, 10, Color.RED);
+        City stockholm = new City(100, 20, 30, Color.RED);
+        Pane cities = new Pane();
+        cities.getChildren().addAll(oslo, stockholm);
+
+        // Background
+        File imageFile = new File(graphUrl.toString());
+        Image image = new Image(imageFile.toString());
+        ImageView imageView = new ImageView(image);
+        background.getChildren().add(imageView);
+
+        mainField.getChildren().addAll(background, cities);
+
+
+
 
         //Flow
         Button findPathB = new Button("Find Path");
@@ -101,14 +115,16 @@ public class PathFinder extends Application {
         flow.setHgap(10);
 
         //add nodes to root
-        //root.getChildren().add(fileMenu());
-        //root.getChildren().add(loadImage());
+//        root.getChildren().add(fileMenu());
+//        root.getChildren().add(loadImage());
 
 
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
         root.setBottom(loadImage(imageFile));
+        root.setBottom(mainField);
+
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
@@ -126,6 +142,8 @@ public class PathFinder extends Application {
                 newPlaceB.setDisable(true);
             }
         });
+
+
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -213,7 +231,7 @@ public class PathFinder extends Application {
                 String name = parts[i];
                 float x = Float.parseFloat(parts[i + 1]);
                 float y = Float.parseFloat(parts[i + 2]);
-                City node = new City(name, x, y);
+                City node = new City(x, y, 30, Color.BLUE);
                 graph.add(node);
             }
         }
@@ -258,6 +276,7 @@ public class PathFinder extends Application {
     }
 
     class SaveHandler implements EventHandler<ActionEvent> {
+
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
