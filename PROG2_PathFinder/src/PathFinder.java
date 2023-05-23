@@ -93,7 +93,7 @@ public class PathFinder extends Application {
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
 
-        mainField.getChildren().addAll(background, cities);
+        mainField.getChildren().addAll(background, cities, nameWindow());
 
 
 
@@ -139,6 +139,7 @@ public class PathFinder extends Application {
                 // change the cursor
                 scene.setCursor(Cursor.CROSSHAIR);
                 newPlaceB.setDisable(true);
+                nameWindow();
             }
         });
 
@@ -419,7 +420,7 @@ public class PathFinder extends Application {
 
             }
 
-            private void nameWindow() {
+            private Pane nameWindow() {
 
             javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
             dialog.setTitle("Name");
@@ -435,6 +436,8 @@ public class PathFinder extends Application {
 
                     String name = nameField.getText();
                 }
+
+                return dialog.getDialogPane();
 
         }
 
