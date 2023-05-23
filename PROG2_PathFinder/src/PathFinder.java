@@ -69,6 +69,8 @@ public class PathFinder extends Application {
         TestClass testClass = new TestClass();
         //graph = testClass.runTests();
 
+        nameWindow();
+
         if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
         }
@@ -400,8 +402,26 @@ public class PathFinder extends Application {
 
             }
 
+            private void nameWindow() {
+
+            javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+            dialog.setTitle("Name");
+            dialog.setHeaderText("Name of place:");
+
+            javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
+
+            ButtonType okButton = new ButtonType("ok");
+            dialog.getDialogPane().setContent(new HBox(10, nameField));
+            dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+
+                if (okButton == ButtonType.OK) {
+
+                    String name = nameField.getText();
+                }
+
         }
 
+    }
 
 
 
@@ -409,6 +429,7 @@ public class PathFinder extends Application {
 
 
 
-}
+
+
 
 
