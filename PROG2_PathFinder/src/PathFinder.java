@@ -60,6 +60,8 @@ public class PathFinder extends Application {
         TestClass testClass = new TestClass();
         //graph = testClass.runTests();
 
+        nameWindow();
+
         if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
         }
@@ -88,7 +90,7 @@ public class PathFinder extends Application {
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
 
-        mainField.getChildren().addAll(background, cities);
+        mainField.getChildren().addAll(background, cities, nameWindow());
 
 
         //Flow
@@ -414,10 +416,58 @@ public class PathFinder extends Application {
     private void CreateConnection(String name, String time) {
         graph.connect(selectedNodes[0], selectedNodes[1], name, Integer.parseInt(time));
         //draw connection
+        private boolean connectionExist(String fromDestination, String toDestination) {
+
+            return false;
+
+        }
+
+        private void CreateConnection(String name, int time) {
+
+
+            }
+
+            private Pane nameWindow() {
+
+            javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+            dialog.setTitle("Name");
+            dialog.setHeaderText("Name of place:");
+
+            javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
+
+            ButtonType okButton = new ButtonType("ok");
+            ButtonType cancelButton = new ButtonType("cancel");
+            dialog.getDialogPane().setContent(new HBox(10, nameField));
+            dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
+
+            dialog.setResultConverter(buttonType -> {
+                if (okButton == ButtonType.OK) {
+
+                    String name = nameField.getText();
+                    return true;
+                }
+                    return false;
+
+            });
+
+                dialog.showAndWait();
+
+                return dialog.getDialogPane();
+
+
+        }
 
     }
 
-}
+
+
+
+
+
+
+
+    }
+
 
 
 
