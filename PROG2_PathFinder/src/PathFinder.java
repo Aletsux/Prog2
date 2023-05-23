@@ -40,10 +40,6 @@ public class PathFinder extends Application {
 
     File graphFile = new File("europa.graph");
     Scene scene;
-    private boolean changed = false;
-
-    private boolean fromDestinationChosen;
-    private boolean toDestinationChosen;
     private City[] selectedNodes = new City[2];
 
     public ListGraph getListGraph() {
@@ -51,16 +47,13 @@ public class PathFinder extends Application {
     }
 
     private boolean unsavedChanges = false;
-
     MenuBar menuBar = new MenuBar();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         //for testing
         TestClass testClass = new TestClass();
-        //graph = testClass.runTests();
-
-        nameWindow();
+        graph = testClass.runTests();
 
         if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
@@ -78,11 +71,6 @@ public class PathFinder extends Application {
         Pane background = new Pane();
         FlowPane flow = new FlowPane();
 
-        //cities
-        City oslo = new City(500, 500, 10, Color.RED);
-        City stockholm = new City(100, 20, 30, Color.RED);
-        Pane cities = new Pane();
-        cities.getChildren().addAll(oslo, stockholm);
 
         // Background
         File imageFile = new File(graphUrl.toString());
@@ -90,7 +78,7 @@ public class PathFinder extends Application {
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
 
-        mainField.getChildren().addAll(background, cities, nameWindow());
+        mainField.getChildren().addAll(background);
 
 
         //Flow
@@ -137,10 +125,9 @@ public class PathFinder extends Application {
             newPlaceB.setDisable(true);
 
             //Name new node + create new node
-            //String name = nameWindow();
+            nameWindow();
 
             //Draw new node
-
         });
 
 
@@ -169,16 +156,6 @@ public class PathFinder extends Application {
         //WIP
         MenuItem saveItem = new MenuItem("Save");
         archiveMenu.getItems().add(saveItem);
-        /*saveItem.setOnAction(event -> { //Saves all existing nodes to file -> europa.graph + (Screenshot)
-            if (!graphFile.exists()) {
-                graphFile = new File("europa.graph");
-            }
-            try {
-                saveFile();
-            } catch (IOException e) {
-                System.err.println("Error: saving file");
-            }
-        }); //end of lambda expression*/
         saveItem.setOnAction(new SaveHandler());
 
         MenuItem imageItem = new MenuItem("Save Image");
@@ -218,27 +195,6 @@ public class PathFinder extends Application {
         return mapPane;
     }
 
-    //Reads each line, splits it and creates new nodes based on parts
-    private void readNodes(BufferedReader in) throws IOException { //Fixed!
-        String text = in.readLine();
-        while ((text = in.readLine()) != null) {
-            if (!text.contains(";")) { //Hop over lines which don't contain ";"
-                continue;
-            }
-            String[] parts = text.split(";");
-            for (int i = 0; i < parts.length; i += 3) {
-                String name = parts[i];
-                float x = Float.parseFloat(parts[i + 1]);
-                float y = Float.parseFloat(parts[i + 2]);
-                City node = new City(x, y, 30, Color.BLUE);
-                graph.add(node);
-            }
-        }
-        in.close();
-
-        System.out.println("Nodes: " + graph.getNodes());
-    }
-
     private void saveFile() throws IOException {
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
             //writer.println("HELLO!");
@@ -250,6 +206,16 @@ public class PathFinder extends Application {
             writer.println(printNodes()); //writes out node.toString()
             //writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         }
+    }
+
+    public void saveChanges() {
+        try {
+            saveFile();
+        } catch (IOException e) {
+            System.err.println("Error: problem when saving changes!");
+        }
+        unsavedChanges = false;
+        Platform.exit();
     }
 
     private Alert createAlertConf(String title) {
@@ -270,12 +236,54 @@ public class PathFinder extends Application {
         return alert;
     }
 
-    private void setNodes() {
+    private void openConnectionWindow() {
+        //Check whether connection exists
+        if (graph.pathExists(selectedNodes[0], selectedNodes[1])) {
+            showErrorMessage("Connection already exist between the two destinations.");
+            return;
+        }
 
+        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("New Connection");
+        dialog.setHeaderText("Create new connection between " + selectedNodes[0].getName() + " and " + selectedNodes[1].getName());
+
+        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
+        javafx.scene.control.TextField timeField = new javafx.scene.control.TextField();
+
+        ButtonType okButton = new ButtonType("ok");
+        dialog.getDialogPane().setContent(new HBox(10, nameField, timeField));
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+
+        dialog.setResultConverter(ButtonType -> {
+            String name = nameField.getText();
+            String time = timeField.getText();
+
+            //create a connection from first node to second node
+            graph.connect(selectedNodes[0], selectedNodes[1], name, Integer.parseInt(time));
+
+            if (okButton == ButtonType.OK) {
+                if (name.isEmpty() || !time.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Name cannot be empty.");
+                    return false;
+                }
+
+                //createConnection(name, Integer.parseInt(time));
+                return true;
+            }
+            return false;
+        });
+        dialog.showAndWait();
+    }
+
+    private void showErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     class SaveHandler implements EventHandler<ActionEvent> {
-
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
@@ -287,6 +295,7 @@ public class PathFinder extends Application {
         }
     }
 
+
     //Open button handler
     class OpenHandler implements EventHandler<ActionEvent> {
         @Override
@@ -295,17 +304,17 @@ public class PathFinder extends Application {
                 System.out.println("Error: File doesnt exist!");
             }
             //Confirmation alert
-            Alert alert = createAlertConf("Unsaved changes");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get().getText().equals("confirm")) {
-                try {
-                    saveFile();
-                } catch (IOException e) {
-                    System.err.println("Error: saving file");
+            if (unsavedChanges) {
+                Alert alert = createAlertConf("Unsaved changes");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get().getText().equals("confirm")) {
+                    try {
+                        saveFile();
+                    } catch (IOException e) {
+                        System.err.println("Error: saving file");
+                    }
                 }
             }
-
-
             //readNodes(), drawNodes(), loadImage()
             try {
                 FileReader fr = new FileReader(graphFile);
@@ -317,6 +326,26 @@ public class PathFinder extends Application {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    //Reads each line, splits it and creates new nodes based on parts
+    private void readNodes(BufferedReader in) throws IOException { //Fixed!
+        String text = "";
+        while ((text = in.readLine()) != null) {
+            if (!text.contains(";")) { //Hop over lines which don't contain ";"
+                continue;
+            }
+            String[] parts = text.split(";");
+            for (int i = 0; i < parts.length; i += 3) {
+                String name = parts[i];
+                float x = Float.parseFloat(parts[i + 1]);
+                float y = Float.parseFloat(parts[i + 2]);
+                City node = new City(name, x, y);
+                graph.add(node);
+            }
+        }
+        in.close();
+        System.out.println("Nodes: " + graph.getNodes());
     }
 
     private String printNodes() {
@@ -349,124 +378,31 @@ public class PathFinder extends Application {
         Platform.exit();
     }
 
-    public void saveChanges() {
-        unsavedChanges = false;
-        Platform.exit();
-    }
-
-    private void openConnectionWindow() {
-            /*if (getListGraph().pathExists() {
-                showErrorMessage("Select two destinations, please.");
-                    return;
-                }*/
-
-        if (graph.pathExists(selectedNodes[0], selectedNodes[1])) {
-            showErrorMessage("Connection already exist between the two destinations.");
-            return;
-        }
-
+    private Pane nameWindow() {
         javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
-        dialog.setTitle("New Connection");
-        dialog.setHeaderText("Create new connection between " + selectedNodes[0].getName() + " and " + selectedNodes[1].getName());
+        dialog.setTitle("Name");
+        dialog.setHeaderText("Name of place:");
 
         javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
-        javafx.scene.control.TextField timeField = new javafx.scene.control.TextField();
 
         ButtonType okButton = new ButtonType("ok");
-        dialog.getDialogPane().setContent(new HBox(10, nameField, timeField));
-        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+        ButtonType cancelButton = new ButtonType("cancel");
+        dialog.getDialogPane().setContent(new HBox(10, nameField));
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
 
-        dialog.setResultConverter(ButtonType -> {
-            String name = nameField.getText();
-            String time = timeField.getText();
-            CreateConnection(name, time);
+        dialog.setResultConverter(buttonType -> {
             if (okButton == ButtonType.OK) {
-                if (name.isEmpty() || !time.matches("\\d+")) {
-                    showErrorMessage("Input is not valid. Name cannot be empty.");
-                    return false;
-                }
 
-                //createConnection(name, Integer.parseInt(time));
+                String name = nameField.getText();
                 return true;
             }
-
             return false;
+
         });
-
         dialog.showAndWait();
+        return dialog.getDialogPane();
     }
-
-    private void showErrorMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    //Checks if connection exists
-    private boolean connectionExist(City fromDestination, City toDestination) {
-        //Call find path
-        if (getListGraph().getEdgeBetween(fromDestination, toDestination) != null) {
-            return true;
-        }
-        return false;
-    }
-
-    private void CreateConnection(String name, String time) {
-        graph.connect(selectedNodes[0], selectedNodes[1], name, Integer.parseInt(time));
-        //draw connection
-        private boolean connectionExist(String fromDestination, String toDestination) {
-
-            return false;
-
-        }
-
-        private void CreateConnection(String name, int time) {
-
-
-            }
-
-            private Pane nameWindow() {
-
-            javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
-            dialog.setTitle("Name");
-            dialog.setHeaderText("Name of place:");
-
-            javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
-
-            ButtonType okButton = new ButtonType("ok");
-            ButtonType cancelButton = new ButtonType("cancel");
-            dialog.getDialogPane().setContent(new HBox(10, nameField));
-            dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
-
-            dialog.setResultConverter(buttonType -> {
-                if (okButton == ButtonType.OK) {
-
-                    String name = nameField.getText();
-                    return true;
-                }
-                    return false;
-
-            });
-
-                dialog.showAndWait();
-
-                return dialog.getDialogPane();
-
-
-        }
-
-    }
-
-
-
-
-
-
-
-
-    }
+}
 
 
 
