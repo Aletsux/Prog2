@@ -10,8 +10,10 @@ public class City<N> extends Circle {
     private double xPos;
     private double yPos;
 
-    public City(double x, double y, double radius, Paint fill) {
-        super(x, y, radius);
+    public static double RADIUS = 10;
+    public City(double x, double y, Paint fill) {
+        super(x, y, RADIUS);
+        setCenterY(getCenterY() - RADIUS);
         setFill(Color.BLUE);
     }
 

@@ -15,6 +15,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -42,6 +43,12 @@ public class PathFinder extends Application {
     Scene scene;
     private City[] selectedNodes = new City[2];
 
+    BorderPane root = new BorderPane();
+
+    Pane cities = new Pane();
+
+    Scene scene;
+
     public ListGraph getListGraph() {
         return graph;
     }
@@ -67,19 +74,42 @@ public class PathFinder extends Application {
         }
         //Declare
         primaryStage.setTitle("PathFinder");
-        BorderPane root = new BorderPane();
+
         Pane mainField = new Pane();
         Pane background = new Pane();
         FlowPane flow = new FlowPane();
+        scene = new Scene(root);
 
 
+
+
+
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
         // Background
         File imageFile = new File(graphUrl.toString());
         Image image = new Image(imageFile.toString());
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
 
+<<<<<<< Updated upstream
         mainField.getChildren().addAll(background);
+=======
+        mainField.getChildren().addAll(background, cities);
+
+// Förvirrad över placering så gör det här
+        // detta är för newplace del 2 när stad ska skapas av klick.
+        EventHandler<MouseEvent> clickHandler = new cityClickHandler();
+        scene.setOnMouseClicked(clickHandler);
+
+
+
+
+
+>>>>>>> Stashed changes
 
 
         //Flow
@@ -114,7 +144,10 @@ public class PathFinder extends Application {
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
         //Show stage
+<<<<<<< Updated upstream
         scene = new Scene(root);
+=======
+>>>>>>> Stashed changes
 
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
@@ -134,6 +167,29 @@ public class PathFinder extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    // Handler for citynode buttons
+
+    public void createCity(double x, double y){
+        //cities
+        City oslo = new City(x, y, Color.RED);
+      //  City stockholm = new City(100, 20, 30, Color.RED);
+        cities.getChildren().addAll(oslo);
+    }
+
+    class cityClickHandler implements EventHandler<MouseEvent>{
+        @Override public void handle(MouseEvent event){
+            double x = event.getX();
+            //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
+            double y = event.getY() - 62;
+// chats förslag för att cirkeln skapas för lågt ner
+            //double localX = root.sceneToLocal(x, y).getX();
+           // double localY = root.sceneToLocal(x, y).getY();
+            createCity(x, y);
+
+
+        }
     }
 
     private VBox fileMenu() {
@@ -189,11 +245,44 @@ public class PathFinder extends Application {
     }
 
     //Make this generic, use parameter for path
+<<<<<<< Updated upstream
     private Pane loadImage(File imageFile) {
         Image image = new Image(imageFile.toString());
         ImageView imageView = new ImageView(image);
         Pane mapPane = new Pane(imageView);
         return mapPane;
+=======
+//     Pane loadImage(File imageFile) {
+//        Pane mapPane = new Pane();
+//        Image image = new Image(imageFile.toString());
+//        ImageView imageView = new ImageView(image);
+//
+//
+//        mapPane.getChildren().add(label);
+//        return mapPane;
+//    }
+
+
+    //Reads each line, splits it and creates new nodes based on parts
+    private void readNodes(BufferedReader in) throws IOException { //Fixed!
+        String text = in.readLine();
+        while ((text = in.readLine()) != null) {
+            if (!text.contains(";")) { //Hop over lines which don't contain ";"
+                continue;
+            }
+            String[] parts = text.split(";");
+            for (int i = 0; i < parts.length; i += 3) {
+                String name = parts[i];
+                float x = Float.parseFloat(parts[i + 1]);
+                float y = Float.parseFloat(parts[i + 2]);
+                City node = new City(x, y, Color.BLUE);
+                graph.add(node);
+            }
+        }
+        in.close();
+
+        System.out.println("Nodes: " + graph.getNodes());
+>>>>>>> Stashed changes
     }
 
     private void saveFile() throws IOException {
@@ -399,11 +488,30 @@ public class PathFinder extends Application {
             }
             return false;
 
+<<<<<<< Updated upstream
         });
         dialog.showAndWait();
         return dialog.getDialogPane();
     }
 }
+=======
+        }
+
+        private void CreateConnection(String name, int time) {
+
+
+            }
+
+        }
+
+
+
+
+
+
+
+
+>>>>>>> Stashed changes
 
 
 
