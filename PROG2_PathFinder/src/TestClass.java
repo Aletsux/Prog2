@@ -15,7 +15,7 @@ public class TestClass {
     private static final City NODETWO = new City<>("Stockholm", 200.0, 300.0);
     private static final City NODETHREE = new City<>("Berlin", 300.0, 400.0);
     private static final City NODEFOUR = new City<>("Tokyo", 400, 500);
-    private static final City NODEFIVE = new City<>("Bangladesh", 500, 600);
+    private static final City NODEFIVE = new City<>("London", 500, 600);
 
     //ListGraph listGraphClass = new ListGraph();
     //WIP
