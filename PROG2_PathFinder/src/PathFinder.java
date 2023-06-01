@@ -40,7 +40,7 @@ public class PathFinder extends Application {
 
     File graphFile = new File("europa.graph");
     Scene scene;
-    private City[] selectedNodes = new City[2];
+    public static City[] selectedNodes = new City[2]; //temporary public for testing
 
     public ListGraph getListGraph() {
         return graph;
@@ -54,6 +54,8 @@ public class PathFinder extends Application {
         //for testing
         TestClass testClass = new TestClass();
         graph = testClass.runTests();
+        //showConnectionHandler(selectedNodes[0], selectedNodes[1]);
+
         System.out.println(graph.getNodes());
 
         if (graph.getNodes().isEmpty()) {
@@ -65,6 +67,7 @@ public class PathFinder extends Application {
         } else {
             System.out.println("URL EXISTS!");
         }
+
         //Declare
         primaryStage.setTitle("PathFinder");
         BorderPane root = new BorderPane();
@@ -86,6 +89,7 @@ public class PathFinder extends Application {
         Button findPathB = new Button("Find Path");
 
         Button showConnectionB = new Button("Show Connection");
+        showConnectionB.setOnAction(e -> showConnectionHandler(selectedNodes[0], selectedNodes[1]));
 
         Button newPlaceB = new Button("New Place");
 
@@ -149,6 +153,10 @@ public class PathFinder extends Application {
         //Adding menu items to the 'menu'
         MenuItem mapItem = new MenuItem("New Map");
         archiveMenu.getItems().add(mapItem);
+        mapItem.setOnAction(event -> {
+            //Clear all present nodes
+
+        });
 
         MenuItem openItem = new MenuItem("Open");
         archiveMenu.getItems().add(openItem);
@@ -240,41 +248,82 @@ public class PathFinder extends Application {
 
     private void openConnectionWindow() {
         //Check whether connection exists
-        if (graph.pathExists(selectedNodes[0], selectedNodes[1])) {
-            showErrorMessage("Connection already exist between the two destinations.");
-            return;
-        }
-
         javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
         dialog.setTitle("New Connection");
-        dialog.setHeaderText("Create new connection between " + selectedNodes[0].getName() + " and " + selectedNodes[1].getName());
+        dialog.setHeaderText("Create new connection between " + selectedNodes[0].getName().toUpperCase() + " and " + selectedNodes[1].getName().toUpperCase());
 
         javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
         javafx.scene.control.TextField timeField = new javafx.scene.control.TextField();
+        Label name = new Label("Name: ");
+        Label time = new Label("Time:   ");
+        HBox hbName = new HBox();
+        hbName.getChildren().addAll(name, nameField);
+        hbName.setAlignment(Pos.CENTER);
+        HBox hbTime = new HBox();
+        hbTime.getChildren().addAll(time, timeField);
+        hbTime.setAlignment(Pos.CENTER);
 
         ButtonType okButton = new ButtonType("ok");
-        dialog.getDialogPane().setContent(new HBox(10, nameField, timeField));
+        dialog.getDialogPane().setContent(new VBox(hbName, hbTime));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
+        String nameInput = nameField.getText();
+        String timeInput = timeField.getText();
+
         dialog.setResultConverter(ButtonType -> {
-            String name = nameField.getText();
-            String time = timeField.getText();
-
-            //create a connection from first node to second node
-            graph.connect(selectedNodes[0], selectedNodes[1], name, Integer.parseInt(time));
-
             if (okButton == ButtonType.OK) {
-                if (name.isEmpty() || !time.matches("\\d+")) {
-                    showErrorMessage("Input is not valid. Name cannot be empty.");
+                if (graph.pathExists(selectedNodes[0], selectedNodes[1])) {
+                    showErrorMessage("Connection already exist between the two destinations.");
                     return false;
                 }
 
+                if (nameInput.isEmpty() || !timeInput.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Name cannot be empty.");
+                    return false;
+                }
+                //create a connection from first node to second node
+                graph.connect(selectedNodes[0], selectedNodes[1], nameInput, Integer.parseInt(timeInput));
                 //createConnection(name, Integer.parseInt(time));
                 return true;
             }
             return false;
         });
         dialog.showAndWait();
+    }
+
+    public void showConnectionHandler(City from, City to) { //Done!
+        if (from == null || to == null) { //selected less than 2 nodes
+            showErrorMessage("Please select two nodes");
+        }
+
+        if (graph.getEdgeBetween(from, to) == null) { //No connection between nodes
+            showErrorMessage("No connection between selected nodes");
+        }
+
+        //Display alert with information on connection
+        Edge edge = graph.getEdgeBetween(from, to);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Connection");
+        alert.setHeaderText("From " + from.getName().toUpperCase() + " to " + to.getName().toUpperCase());
+
+        HBox hbName = new HBox();
+        HBox hbTime = new HBox();
+        //VBox vb = new VBox();
+
+        Label name = new Label("Name: ");
+        TextField nameText = new TextField(edge.getName());
+        nameText.setEditable(false); //Makes it read only?
+        hbName.getChildren().addAll(name, nameText);
+        hbName.setAlignment(Pos.CENTER);
+
+        Label time = new Label("Time:   ");
+        TextField timeField = new TextField("" + edge.getWeight());
+        timeField.setEditable(false);
+        hbTime.getChildren().addAll(time, timeField);
+        hbTime.setAlignment(Pos.CENTER);
+
+        alert.getDialogPane().setContent(new VBox(hbName, hbTime));
+        alert.showAndWait();
     }
 
     private void showErrorMessage(String message) {
@@ -321,7 +370,7 @@ public class PathFinder extends Application {
             try {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
-                readNodes(in); //fixed
+                readNodes(in); //Adds saved nodes to graph
                 loadImage(imageFile);
 
             } catch (IOException e) {
