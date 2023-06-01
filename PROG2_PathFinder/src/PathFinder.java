@@ -95,8 +95,6 @@ public class PathFinder extends Application {
 
         // Förvirrad över placering så gör det här
         // detta är för newplace del 2 när stad ska skapas av klick.
-        EventHandler<MouseEvent> clickHandler = new cityClickHandler();
-        scene.setOnMouseClicked(clickHandler);
 
 
         //Flow
@@ -142,8 +140,12 @@ public class PathFinder extends Application {
             scene.setCursor(Cursor.CROSSHAIR);
             newPlaceB.setDisable(true);
 
+            EventHandler<MouseEvent> clickHandler = new cityClickHandler();
+            scene.setOnMousePressed(clickHandler);
+
+            newPlaceB.setDisable(false);
+
             //Name new node + create new node
-            nameWindow();
 
             //Draw new node
         });
@@ -177,8 +179,6 @@ public class PathFinder extends Application {
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
             createCity(x, y);
-
-
         }
     }
 
