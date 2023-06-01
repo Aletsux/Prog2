@@ -171,6 +171,7 @@ public class PathFinder extends Application {
     class cityClickHandler implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
+            nameWindow();
             System.out.println("Mouse clicked");
             double x = event.getX();
             //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
