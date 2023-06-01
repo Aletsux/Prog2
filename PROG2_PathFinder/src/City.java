@@ -39,7 +39,7 @@ public class City<N> extends Circle {
     @Override
     public boolean equals(Object other) {
         if (other instanceof City city) {
-            return name.equals(city.name);
+            return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos;
         } else {
             return false;
         }

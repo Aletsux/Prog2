@@ -94,8 +94,6 @@ public class PathFinder extends Application {
 
         // Förvirrad över placering så gör det här
         // detta är för newplace del 2 när stad ska skapas av klick.
-        EventHandler<MouseEvent> clickHandler = new cityClickHandler();
-        scene.setOnMouseClicked(clickHandler);
 
 
 
@@ -142,8 +140,12 @@ public class PathFinder extends Application {
             scene.setCursor(Cursor.CROSSHAIR);
             newPlaceB.setDisable(true);
 
+            EventHandler<MouseEvent> clickHandler = new cityClickHandler();
+            scene.setOnMousePressed(clickHandler);
+
+            newPlaceB.setDisable(false);
+
             //Name new node + create new node
-            nameWindow();
 
             //Draw new node
         });
@@ -155,15 +157,18 @@ public class PathFinder extends Application {
 
     public void createCity(double x, double y){
         //cities
-        City oslo = new City(x, y, Color.BLUE);
+        City city = new City(x, y, Color.BLUE);
         //  City stockholm = new City(100, 20, 30, Color.RED);
-        cities.getChildren().add(oslo);
+        if (!cities.getChildren().contains(city)){
+            cities.getChildren().add(city);
+            System.out.println("city added");
+        }
     }
 
 
     class cityClickHandler implements EventHandler<MouseEvent>{
         @Override public void handle(MouseEvent event){
-            System.out.println("Mouse clicked");
+            nameWindow();
             double x = event.getX();
             //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
             double y = event.getY() - 62;
@@ -171,10 +176,6 @@ public class PathFinder extends Application {
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
             createCity(x, y);
-
-
-
-
         }
     }
 
