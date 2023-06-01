@@ -24,8 +24,9 @@ public class Edge<N> {
         return destination;
     }
 
-    public void setDestination() {
-        this.destination = destination;
+    public String getDestinationName() {
+        City city = (City) destination;
+        return city.getName();
     }
 
     public String getName() {
@@ -34,6 +35,6 @@ public class Edge<N> {
 
     @Override
     public String toString() {
-        return  "till " + this.destination + " med " + this.name + " " + "tar " + getWeight();
+        return  "till " + getDestinationName()+ " med " + this.name + " " + "tar " + getWeight();
     }
 }

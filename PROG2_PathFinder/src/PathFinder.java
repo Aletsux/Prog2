@@ -96,9 +96,9 @@ public class PathFinder extends Application {
         // detta är för newplace del 2 när stad ska skapas av klick.
 
 
-
         //Flow
         Button findPathB = new Button("Find Path");
+        findPathB.setOnAction(e -> findPath());
 
         Button showConnectionB = new Button("Show Connection");
         showConnectionB.setOnAction(e -> showConnectionHandler(selectedNodes[0], selectedNodes[1]));
@@ -155,19 +155,20 @@ public class PathFinder extends Application {
         primaryStage.show();
     }
 
-    public void createCity(double x, double y){
+    public void createCity(double x, double y) {
         //cities
         City city = new City(x, y, Color.BLUE);
         //  City stockholm = new City(100, 20, 30, Color.RED);
-        if (!cities.getChildren().contains(city)){
+        if (!cities.getChildren().contains(city)) {
             cities.getChildren().add(city);
             System.out.println("city added");
         }
     }
 
 
-    class cityClickHandler implements EventHandler<MouseEvent>{
-        @Override public void handle(MouseEvent event){
+    class cityClickHandler implements EventHandler<MouseEvent> {
+        @Override
+        public void handle(MouseEvent event) {
             nameWindow();
             double x = event.getX();
             //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
@@ -491,6 +492,40 @@ public class PathFinder extends Application {
         });
         dialog.showAndWait();
         return dialog.getDialogPane();
+    }
+
+    private Pane findPath() {
+        List<Edge<City>> path = graph.getPath(selectedNodes[0], selectedNodes[1]);
+        TextArea result = new TextArea();
+
+        if (selectedNodes[0] == null || selectedNodes[1] == null){
+            showErrorMessage("Connection must be selected.");
+
+        }
+
+        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("Message");
+        dialog.setHeaderText("The path from " + selectedNodes[0].getName() + " to " + selectedNodes[1].getName());
+
+        StringBuilder message = new StringBuilder();
+        for(Edge edge : path) {
+            message.append(edge.toString());
+        }
+        result.setText(message.toString());
+
+        ButtonType okButton = new ButtonType("ok");
+        dialog.getDialogPane().setContent(result);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton);
+
+        dialog.setResultConverter(buttonType -> {
+            if (okButton == ButtonType.OK) {
+                return true;
+            }
+            return false;
+        });
+        dialog.showAndWait();
+        return dialog.getDialogPane();
+
     }
 }
 
