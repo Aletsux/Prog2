@@ -19,6 +19,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Cursor;
+import javafx.scene.input.MouseEvent;
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -40,7 +41,11 @@ public class PathFinder extends Application {
 
     File graphFile = new File("europa.graph");
     Scene scene;
+
     public static City[] selectedNodes = new City[2]; //temporary public for testing
+
+    Pane cities = new Pane();
+
 
     public ListGraph getListGraph() {
         return graph;
@@ -48,6 +53,7 @@ public class PathFinder extends Application {
 
     private boolean unsavedChanges = false;
     MenuBar menuBar = new MenuBar();
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -74,6 +80,8 @@ public class PathFinder extends Application {
         Pane mainField = new Pane();
         Pane background = new Pane();
         FlowPane flow = new FlowPane();
+        //Show stage
+        scene = new Scene(root);
 
 
         // Background
@@ -82,7 +90,13 @@ public class PathFinder extends Application {
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
 
-        mainField.getChildren().addAll(background);
+        mainField.getChildren().addAll(background, cities);
+
+        // Förvirrad över placering så gör det här
+        // detta är för newplace del 2 när stad ska skapas av klick.
+        EventHandler<MouseEvent> clickHandler = new cityClickHandler();
+        scene.setOnMouseClicked(clickHandler);
+
 
 
         //Flow
@@ -112,13 +126,12 @@ public class PathFinder extends Application {
         //Set position in BorderPane
         root.setTop(fileMenu());
         root.setCenter(flow);
-        root.setBottom(loadImage(imageFile));
+        //root.setBottom(loadImage(imageFile));
         root.setBottom(mainField);
 
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
-        //Show stage
-        scene = new Scene(root);
+
 
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
@@ -139,6 +152,32 @@ public class PathFinder extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+    public void createCity(double x, double y){
+        //cities
+        City oslo = new City(x, y, Color.BLUE);
+        //  City stockholm = new City(100, 20, 30, Color.RED);
+        cities.getChildren().add(oslo);
+    }
+
+
+    class cityClickHandler implements EventHandler<MouseEvent>{
+        @Override public void handle(MouseEvent event){
+            System.out.println("Mouse clicked");
+            double x = event.getX();
+            //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
+            double y = event.getY() - 62;
+// chats förslag för att cirkeln skapas för lågt ner
+            //double localX = root.sceneToLocal(x, y).getX();
+            // double localY = root.sceneToLocal(x, y).getY();
+            createCity(x, y);
+
+
+
+
+        }
+    }
+
 
     private VBox fileMenu() {
         //A second one is created?
