@@ -182,6 +182,12 @@ public class PathFinder extends Application {
         }
     }
 
+    class changeCityColorHandler implements EventHandler <MouseEvent>{
+        @Override public void handle(MouseEvent event){
+            
+        }
+    }
+
 
     private VBox fileMenu() {
         //A second one is created?
