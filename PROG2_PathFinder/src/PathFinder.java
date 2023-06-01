@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -98,7 +99,6 @@ public class PathFinder extends Application {
         scene.setOnMouseClicked(clickHandler);
 
 
-
         //Flow
         Button findPathB = new Button("Find Path");
 
@@ -153,16 +153,22 @@ public class PathFinder extends Application {
         primaryStage.show();
     }
 
-    public void createCity(double x, double y){
+    public void createCity(double x, double y) {
         //cities
-        City oslo = new City(x, y, Color.BLUE);
+        City node = new City(x, y, Color.BLUE);
+
         //  City stockholm = new City(100, 20, 30, Color.RED);
-        cities.getChildren().add(oslo);
+        if (cities.getChildren().contains(node)) {
+            System.out.println("Node already exists");
+            return;
+        }
+        cities.getChildren().addAll(new Pane(node)); //Temporary solution?
     }
 
 
-    class cityClickHandler implements EventHandler<MouseEvent>{
-        @Override public void handle(MouseEvent event){
+    class cityClickHandler implements EventHandler<MouseEvent> {
+        @Override
+        public void handle(MouseEvent event) {
             System.out.println("Mouse clicked");
             double x = event.getX();
             //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
@@ -171,8 +177,6 @@ public class PathFinder extends Application {
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
             createCity(x, y);
-
-
 
 
         }
@@ -193,8 +197,13 @@ public class PathFinder extends Application {
         MenuItem mapItem = new MenuItem("New Map");
         archiveMenu.getItems().add(mapItem);
         mapItem.setOnAction(event -> {
-            //Clear all present nodes
+            if (unsavedChanges) {
+                createAlertConf("Unsaved Changes");
+            }
 
+            //Clear all present nodes
+            Collection<Node> remove = cities.getChildren();
+            cities.getChildren().removeAll(remove); //remove all nodes in cities pane?
         });
 
         MenuItem openItem = new MenuItem("Open");
@@ -275,11 +284,24 @@ public class PathFinder extends Application {
         alert.setContentText("Save changes?");
 
         ButtonBar buttonBar = new ButtonBar();
-        ButtonType confirmButton = new ButtonType("confirm");
+        ButtonType confirmButton = new ButtonType("OK");
         ButtonType cancelButton = new ButtonType("cancel", ButtonBar.ButtonData.CANCEL_CLOSE); //ButtonData = enums for opertations
 
         buttonBar.getButtons().add(alert.getDialogPane());
         buttonBar.setPadding(new Insets(0, 0, 0, 50));
+
+        if (unsavedChanges) {
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get().getText().equals("OK")) {
+                try {
+                    saveFile();
+
+                } catch (IOException e) {
+                    System.err.println("Error: saving file");
+                }
+            }
+        }
+
         //alert.getDialogPane().setPadding(new Insets(0, 0, 0, 0));
 
         return alert;
@@ -395,22 +417,15 @@ public class PathFinder extends Application {
             }
             //Confirmation alert
             if (unsavedChanges) {
-                Alert alert = createAlertConf("Unsaved changes");
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get().getText().equals("confirm")) {
-                    try {
-                        saveFile();
-                    } catch (IOException e) {
-                        System.err.println("Error: saving file");
-                    }
-                }
+                createAlertConf("Unsaved Changes");
             }
             //readNodes(), drawNodes(), loadImage()
             try {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
-                readNodes(in); //Adds saved nodes to graph
+                readNodes(in); //Add saved nodes to graph, draw nodes
                 loadImage(imageFile);
+
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -432,6 +447,8 @@ public class PathFinder extends Application {
                 double y = Double.parseDouble(parts[i + 2]);
                 City node = new City(name, x, y);
                 graph.add(node);
+                createCity(x, y);
+                System.out.println("Coordinates: " + x + ";" + y);//Draw the node added
             }
         }
         in.close();
