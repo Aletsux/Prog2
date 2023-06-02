@@ -194,7 +194,7 @@ public class PathFinder extends Application {
 
             if (mouseEvent.getSource() instanceof City) {
                 City c = (City) mouseEvent.getSource();
-                
+
                 if (selectedNodes.length == 2) {
                     selectedNodes[0] = null;
                     selectedNodes[1] = null;
@@ -206,7 +206,6 @@ public class PathFinder extends Application {
                     selectedNodes[1] = c;
                 }
             }
-
 
         }
     }
@@ -226,7 +225,7 @@ public class PathFinder extends Application {
         City city = new City(name, x, y);
         graph.add(city);
         System.out.println("Node created!");
-        Label label = new Label (name);
+        Label label = new Label(name);
         label.setLayoutX(x + 2);
         label.setLayoutY(y - 2);
         mainField.getChildren().addAll(label);
@@ -250,7 +249,9 @@ public class PathFinder extends Application {
 // chats förslag för att cirkeln skapas för lågt ner
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
-            nameWindow(x, y);
+            if (cursorIsCrossHair) {
+                nameWindow(x, y);
+            }
             //createCity(x, y);
             disableCrosshair();
             newPlaceB.setDisable(false);
@@ -645,11 +646,12 @@ public class PathFinder extends Application {
         dialog.showAndWait();
         return dialog.getDialogPane();
     }
-    public boolean getCrosshairBoolean(){
+
+    public boolean getCrosshairBoolean() {
         return cursorIsCrossHair;
     }
 
-    public void disableCrosshair(){
+    public void disableCrosshair() {
         this.cursorIsCrossHair = false;
         scene.setCursor(Cursor.DEFAULT);
     }
