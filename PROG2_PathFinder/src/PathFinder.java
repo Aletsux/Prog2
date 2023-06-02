@@ -166,9 +166,13 @@ public class PathFinder extends Application {
         }
     }
 
-    public void createCity(double x, double y) {
+    public void createCity(String name, double x, double y) {
         //cities
         City node = new City(x, y, Color.BLUE);
+
+        City city = new City(name, x, y);
+        graph.add(city);
+        System.out.println("Node created!");
 
         //  City stockholm = new City(100, 20, 30, Color.RED);
         if (cities.getChildren().contains(node)) {
@@ -182,7 +186,7 @@ public class PathFinder extends Application {
     class cityClickHandler implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
-            nameWindow();
+
             System.out.println("Mouse clicked");
             double x = event.getX();
             //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
@@ -190,13 +194,15 @@ public class PathFinder extends Application {
 // chats förslag för att cirkeln skapas för lågt ner
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
-            createCity(x, y);
+            nameWindow(x, y);
+            //createCity(x, y);
         }
     }
 
-    class changeCityColorHandler implements EventHandler <MouseEvent>{
-        @Override public void handle(MouseEvent event){
-            
+    class changeCityColorHandler implements EventHandler<MouseEvent> {
+        @Override
+        public void handle(MouseEvent event) {
+
         }
     }
 
@@ -327,7 +333,7 @@ public class PathFinder extends Application {
 
     private void openConnectionWindow() {
         //Check whether connection exists
-        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("New Connection");
         dialog.setHeaderText("Create new connection between " + selectedNodes[0].getName().toUpperCase() + " and " + selectedNodes[1].getName().toUpperCase());
 
@@ -349,26 +355,23 @@ public class PathFinder extends Application {
         String nameInput = nameField.getText();
         String timeInput = timeField.getText();
 
-        dialog.setResultConverter(ButtonType -> {
-            if (okButton == ButtonType.OK) {
+        dialog.showAndWait().ifPresent(buttonType -> {
+            if (buttonType.getText() == "ok") {
                 if (graph.pathExists(selectedNodes[0], selectedNodes[1])) {
                     showErrorMessage("Connection already exist between the two destinations.");
-                    return false;
+                    return;
                 }
 
                 if (nameInput.isEmpty() || !timeInput.matches("\\d+")) {
                     showErrorMessage("Input is not valid. Name cannot be empty.");
-                    return false;
+                    return;
                 }
                 //create a connection from first node to second node
                 graph.connect(selectedNodes[0], selectedNodes[1], nameInput, Integer.parseInt(timeInput));
                 //createConnection(name, Integer.parseInt(time));
-
-                return true;
+                System.out.println("Create connections!");
             }
-            return false;
         });
-        dialog.showAndWait();
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Done!
@@ -477,9 +480,8 @@ public class PathFinder extends Application {
                 String name = parts[i];
                 double x = Double.parseDouble(parts[i + 1]);
                 double y = Double.parseDouble(parts[i + 2]);
-                City node = new City(name, x, y);
-                graph.add(node);
-                createCity(x, y);
+
+                createCity(name, x, y);
                 System.out.println("Coordinates: " + x + ";" + y);//Draw the node added
             }
         }
@@ -517,37 +519,38 @@ public class PathFinder extends Application {
         Platform.exit();
     }
 
-    private Pane nameWindow() {
-        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+    private void nameWindow(double x, double y) {
+        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Name");
         dialog.setHeaderText("Name of place:");
 
-        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
+        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField("Node1");
 
         ButtonType okButton = new ButtonType("ok");
-        ButtonType cancelButton = new ButtonType("cancel");
+        ButtonType cancelButton = new ButtonType("close");
         dialog.getDialogPane().setContent(new HBox(10, nameField));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
 
-        dialog.setResultConverter(buttonType -> {
-            if (okButton == ButtonType.OK) {
-                String name = nameField.getText();
-                return true;
+        dialog.showAndWait().ifPresent(buttonType -> {
+            if (buttonType.getText() == "close") {
+                dialog.close();
+                return;
             }
-            return false;
 
+            System.out.println("Ok button clicked");
+            String name = nameField.getText();
+            Character.toUpperCase(name.charAt(0));
+            Label nameTag = new Label(name); //create node?
+            createCity(name, x, y);
         });
-        dialog.showAndWait();
-        return dialog.getDialogPane();
     }
 
     private Pane findPath() {
         List<Edge<City>> path = graph.getPath(selectedNodes[0], selectedNodes[1]);
         TextArea result = new TextArea();
 
-        if (selectedNodes[0] == null || selectedNodes[1] == null){
+        if (selectedNodes[0] == null || selectedNodes[1] == null) {
             showErrorMessage("Connection must be selected.");
-
         }
 
         javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
@@ -555,8 +558,8 @@ public class PathFinder extends Application {
         dialog.setHeaderText("The path from " + selectedNodes[0].getName() + " to " + selectedNodes[1].getName());
 
         StringBuilder message = new StringBuilder();
-        for(Edge edge : path) {
-            message.append(edge.toString());
+        for (Edge edge : path) {
+            message.append(edge.toString() + "\n");
         }
         result.setText(message.toString());
 
