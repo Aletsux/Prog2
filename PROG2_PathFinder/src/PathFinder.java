@@ -1,3 +1,4 @@
+import com.sun.scenario.effect.impl.sw.java.JSWBlend_BLUEPeer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -32,6 +33,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.nio.Buffer;
 import java.util.*;
+
+import static javafx.scene.paint.Color.BLUE;
+import static javafx.scene.paint.Color.RED;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
@@ -155,11 +159,11 @@ public class PathFinder extends Application {
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
 
-        // change cursor when newPlace has been clicked
+        // handles newPlace Button
         newPlaceB.setOnAction(event -> {
             cursorIsCrossHair = true;
 
-            //Place new node
+            //sets cursor to crosshair, and disables newPlace button
             if (cursorIsCrossHair) {
                 scene.setCursor(Cursor.CROSSHAIR);
                 newPlaceB.setDisable(true);
@@ -169,19 +173,7 @@ public class PathFinder extends Application {
                 scene.setOnMousePressed(clickHandler);
 
 
-                if (cursorIsCrossHair==false){
-                    newPlaceB.setDisable(false);
-                }
             }
-
-
-
-
-
-
-
-
-
             //Name new node + create new node
 
             //Draw new node
@@ -202,7 +194,7 @@ public class PathFinder extends Application {
 
     public void createCity(String name, double x, double y) {
         //cities
-        City node = new City(x, y, Color.BLUE);
+        City node = new City(x, y, BLUE);
 
         City city = new City(name, x, y);
         graph.add(city);
@@ -234,12 +226,21 @@ public class PathFinder extends Application {
             nameWindow(x, y);
             //createCity(x, y);
             disableCrosshair();
+            newPlaceB.setDisable(false);
         }
     }
 
     class changeCityColorHandler implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
+            // när ingen node är vald ska SelectedNodes vara tom
+            // den första staden man väljer ska hamna i SelectedNodes på index 0 och den andra staden på index 1
+//            int clickCount = 0;
+//            
+//            if(clickCount == 0)
+//            City city = (City) event.getSource();
+//            city.setFill(RED);
+
 
         }
     }
