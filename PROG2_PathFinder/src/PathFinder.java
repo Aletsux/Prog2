@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.nio.Buffer;
 import java.util.*;
+import javafx.scene.shape.Line;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
@@ -392,6 +393,15 @@ public class PathFinder extends Application {
 
         String nameInput = nameField.getText();
         String timeInput = timeField.getText();
+
+        double node1x = selectedNodes[0].getLayoutX();
+        double node1y = selectedNodes[0].getLayoutY();
+        double node2x = selectedNodes[1].getLayoutX();
+        double node2y = selectedNodes[1].getLayoutY();
+
+        Line line = new Line (node1x, node1y, node2x, node2y);
+
+        mainField.getChildren().addAll(line);
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getText() == "ok") {
