@@ -1,3 +1,5 @@
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
 import java.util.Objects;
@@ -9,6 +11,7 @@ public class City<N> extends Circle {
     private String name = "";
     private double xPos;
     private double yPos;
+    private int clickCount = 0;
 
     public static double RADIUS = 10;
 
@@ -22,6 +25,7 @@ public class City<N> extends Circle {
         this.name = name;
         xPos = x;
         yPos = y;
+
     }
 
     public String getName() {
@@ -38,11 +42,23 @@ public class City<N> extends Circle {
 
     @Override
     public boolean equals(Object other) {
+//        if (other instanceof City city) {
+//            return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos;
+//        } else {
+//            return false;
+//        }
+//        if (other instanceof City city) {
+//            return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos && clickCount == city.clickCount;
+//        } else {
+//            return false;
+//        }
+
         if (other instanceof City city) {
             return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos;
         } else {
             return false;
         }
+
     }
 
     @Override
@@ -54,4 +70,7 @@ public class City<N> extends Circle {
     public String toString() {
         return name + ";" + getxPos() + ";" + getyPos();
     }
+
+
+
 }

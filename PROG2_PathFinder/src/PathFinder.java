@@ -72,7 +72,9 @@ public class PathFinder extends Application {
     Button newConnectionB;
     Button changeConnectionB;
 
-    public boolean cursorIsCrossHair = false;
+    public boolean cursorIsCrossHair = false; // tempo public
+
+
 
 
     @Override
@@ -222,6 +224,8 @@ public class PathFinder extends Application {
         //cities
         City node = new City(x, y, BLUE);
 
+        node.setOnMouseClicked(new changeCityColorHandler());
+
         City city = new City(name, x, y);
         graph.add(city);
         System.out.println("Node created!");
@@ -258,18 +262,29 @@ public class PathFinder extends Application {
         }
     }
 
-    class changeCityColorHandler implements EventHandler<MouseEvent> {
+     class changeCityColorHandler implements EventHandler<MouseEvent> {
+        private int clickCount = 0;
+        private City lastClickedCity = null;
+
         @Override
         public void handle(MouseEvent event) {
-            // när ingen node är vald ska SelectedNodes vara tom
-            // den första staden man väljer ska hamna i SelectedNodes på index 0 och den andra staden på index 1
-//            int clickCount = 0;
-//            
-//            if(clickCount == 0)
-//            City city = (City) event.getSource();
-//            city.setFill(RED);
+            City city = (City) event.getSource();
 
 
+            System.out.println(lastClickedCity);
+            if (!city.equals(lastClickedCity)) {
+                clickCount = 0;
+                lastClickedCity = city;
+            }
+
+            clickCount++;
+
+            if (clickCount == 1) {
+                city.setFill(Color.RED);
+            } else if (clickCount == 2) {
+                city.setFill(Color.BLUE);
+                city.setOnMouseClicked(null); // Disable further clicks
+            }
         }
     }
 
