@@ -99,6 +99,7 @@ public class PathFinder extends Application {
 
         //Flow
         Button findPathB = new Button("Find Path");
+        findPathB.setOnAction(e -> findPath());
 
         Button showConnectionB = new Button("Show Connection");
         showConnectionB.setOnAction(e -> {
@@ -190,6 +191,12 @@ public class PathFinder extends Application {
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
             createCity(x, y);
+        }
+    }
+
+    class changeCityColorHandler implements EventHandler <MouseEvent>{
+        @Override public void handle(MouseEvent event){
+            
         }
     }
 
@@ -532,6 +539,40 @@ public class PathFinder extends Application {
         });
         dialog.showAndWait();
         return dialog.getDialogPane();
+    }
+
+    private Pane findPath() {
+        List<Edge<City>> path = graph.getPath(selectedNodes[0], selectedNodes[1]);
+        TextArea result = new TextArea();
+
+        if (selectedNodes[0] == null || selectedNodes[1] == null){
+            showErrorMessage("Connection must be selected.");
+
+        }
+
+        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("Message");
+        dialog.setHeaderText("The path from " + selectedNodes[0].getName() + " to " + selectedNodes[1].getName());
+
+        StringBuilder message = new StringBuilder();
+        for(Edge edge : path) {
+            message.append(edge.toString());
+        }
+        result.setText(message.toString());
+
+        ButtonType okButton = new ButtonType("ok");
+        dialog.getDialogPane().setContent(result);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton);
+
+        dialog.setResultConverter(buttonType -> {
+            if (okButton == ButtonType.OK) {
+                return true;
+            }
+            return false;
+        });
+        dialog.showAndWait();
+        return dialog.getDialogPane();
+
     }
 }
 
