@@ -6,7 +6,7 @@ public class Edge<N> {
     private int weight;
     private N destination;
 
-    public Edge(String name, int weight, N destination)  {
+    public Edge(String name, int weight, N destination) {
         this.name = name;
         this.weight = weight;
         this.destination = destination;
@@ -32,8 +32,12 @@ public class Edge<N> {
         return name;
     }
 
+    public void setName(String n) {
+        name = n;
+    }
+
     @Override
     public String toString() {
-        return  "till " + this.destination + " med " + this.name + " " + "tar " + getWeight();
+        return "till " + this.destination + " med " + this.name + " " + "tar " + getWeight();
     }
 }
