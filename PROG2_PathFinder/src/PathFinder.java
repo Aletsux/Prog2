@@ -229,7 +229,7 @@ public class PathFinder extends Application {
         Label label = new Label(name);
         label.setLayoutX(x + 2);
         label.setLayoutY(y - 2);
-        mainField.getChildren().addAll(label);
+        cities.getChildren().addAll(label);
 
         //  City stockholm = new City(100, 20, 30, Color.RED);
         if (cities.getChildren().contains(node)) {
@@ -637,11 +637,13 @@ public class PathFinder extends Application {
         dialog.setTitle("Message");
         dialog.setHeaderText("The path from " + selectedNodes[0].getName() + " to " + selectedNodes[1].getName());
 
+        int totalweight = 0;
         StringBuilder message = new StringBuilder();
         for (Edge edge : path) {
             message.append(edge.toString() + "\n");
+            totalweight += edge.getWeight();
         }
-        result.setText(message.toString());
+        result.setText(message.toString() + "\n" + "total " + totalweight);
 
         ButtonType okButton = new ButtonType("ok");
         dialog.getDialogPane().setContent(result);
