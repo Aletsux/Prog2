@@ -55,6 +55,12 @@ public class PathFinder extends Application {
 
     private boolean unsavedChanges = false;
     MenuBar menuBar = new MenuBar();
+    //Panes
+    BorderPane root;
+    Pane mainField;
+    Pane background;
+    FlowPane flow;
+
     //Buttons
     Button findPathB;
     Button showConnectionB;
@@ -86,10 +92,11 @@ public class PathFinder extends Application {
 
         //Declare
         primaryStage.setTitle("PathFinder");
-        BorderPane root = new BorderPane();
-        Pane mainField = new Pane();
-        Pane background = new Pane();
-        FlowPane flow = new FlowPane();
+        root = new BorderPane();
+        mainField = new Pane();
+        background = new Pane();
+        flow = new FlowPane();
+
         //Show stage
         scene = new Scene(root);
 
@@ -112,7 +119,7 @@ public class PathFinder extends Application {
         findPathB.setOnAction(e -> findPath());
 
         showConnectionB = new Button("Show Connection");
-        showConnectionB.setOnAction(e -> {
+        showConnectionB.setOnAction(event -> {
             showConnectionHandler(selectedNodes[0], selectedNodes[1], false);
         });
 
@@ -226,7 +233,6 @@ public class PathFinder extends Application {
             nameWindow(x, y);
             //createCity(x, y);
             disableCrosshair();
-
         }
     }
 
@@ -405,21 +411,25 @@ public class PathFinder extends Application {
         });
     }
 
-    public void showConnectionHandler(City from, City to, boolean edit) { //Done!
+    public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
         if (from == null || to == null) { //selected less than 2 nodes
             showErrorMessage("Please select two nodes");
+            return;
         }
 
         if (graph.getEdgeBetween(from, to) == null) { //No connection between nodes
             showErrorMessage("No connection between selected nodes");
+            return;
         }
 
         //Display alert with information on connection
         Edge edge = graph.getEdgeBetween(from, to);
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION); //not null...
         alert.setTitle("Connection");
         alert.setHeaderText("From " + from.getName().toUpperCase() + " to " + to.getName().toUpperCase());
 
+        System.out.println("Visible: " + alert.isShowing());
         HBox hbName = new HBox();
         HBox hbTime = new HBox();
         //VBox vb = new VBox();
@@ -449,7 +459,7 @@ public class PathFinder extends Application {
         }
 
         alert.getDialogPane().setContent(new VBox(hbName, hbTime));
-
+        alert.showAndWait();
     }
 
     private void showErrorMessage(String message) {
