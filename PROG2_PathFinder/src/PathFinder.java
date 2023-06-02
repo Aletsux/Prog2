@@ -101,7 +101,9 @@ public class PathFinder extends Application {
         Button findPathB = new Button("Find Path");
 
         Button showConnectionB = new Button("Show Connection");
-        showConnectionB.setOnAction(e -> showConnectionHandler(selectedNodes[0], selectedNodes[1]));
+        showConnectionB.setOnAction(e -> {
+            showConnectionHandler(selectedNodes[0], selectedNodes[1], false);
+        });
 
         Button newPlaceB = new Button("New Place");
 
@@ -111,6 +113,7 @@ public class PathFinder extends Application {
         });
 
         Button changeConnectionB = new Button("Change Connection");
+        changeConnectionB.setOnAction(event -> showConnectionHandler(selectedNodes[0], selectedNodes[1], true));
 
         flow.getChildren().addAll(findPathB, showConnectionB, newPlaceB, newConnectionB, changeConnectionB);
         flow.setAlignment(Pos.CENTER);
@@ -153,6 +156,13 @@ public class PathFinder extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void clearNodes() { //clear nodes from system, graph.getNodes()
+        graph.getNodes().clear();
+        if (graph.getNodes().isEmpty()) {
+            System.out.println("All nodes cleared!");
+        }
     }
 
     public void createCity(double x, double y) {
@@ -201,8 +211,8 @@ public class PathFinder extends Application {
             if (unsavedChanges) {
                 createAlertConf("Unsaved Changes");
             }
-
-            //Clear all present nodes
+            clearNodes();
+            //Clear all visible nodes
             Collection<Node> remove = cities.getChildren();
             cities.getChildren().removeAll(remove); //remove all nodes in cities pane?
         });
@@ -211,7 +221,7 @@ public class PathFinder extends Application {
         archiveMenu.getItems().add(openItem);
         openItem.setOnAction(new OpenHandler());
 
-        //WIP
+
         MenuItem saveItem = new MenuItem("Save");
         archiveMenu.getItems().add(saveItem);
         saveItem.setOnAction(new SaveHandler());
@@ -346,6 +356,7 @@ public class PathFinder extends Application {
                 //create a connection from first node to second node
                 graph.connect(selectedNodes[0], selectedNodes[1], nameInput, Integer.parseInt(timeInput));
                 //createConnection(name, Integer.parseInt(time));
+
                 return true;
             }
             return false;
@@ -353,7 +364,7 @@ public class PathFinder extends Application {
         dialog.showAndWait();
     }
 
-    public void showConnectionHandler(City from, City to) { //Done!
+    public void showConnectionHandler(City from, City to, boolean edit) { //Done!
         if (from == null || to == null) { //selected less than 2 nodes
             showErrorMessage("Please select two nodes");
         }
@@ -373,19 +384,31 @@ public class PathFinder extends Application {
         //VBox vb = new VBox();
 
         Label name = new Label("Name: ");
-        TextField nameText = new TextField(edge.getName());
-        nameText.setEditable(false); //Makes it read only?
-        hbName.getChildren().addAll(name, nameText);
-        hbName.setAlignment(Pos.CENTER);
+        TextField nameField = new TextField(edge.getName());
 
         Label time = new Label("Time:   ");
         TextField timeField = new TextField("" + edge.getWeight());
-        timeField.setEditable(false);
+
+        hbName.getChildren().addAll(name, nameField);
+        hbName.setAlignment(Pos.CENTER);
         hbTime.getChildren().addAll(time, timeField);
         hbTime.setAlignment(Pos.CENTER);
 
+        if (edit) { //To be tested
+            nameField.setEditable(true);
+            timeField.setEditable(true);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                edge.setWeight(Integer.parseInt(timeField.getText()));
+                edge.setName(nameField.getText());
+            }
+        } else {
+            nameField.setEditable(false);
+            timeField.setEditable(false);
+        }
+
         alert.getDialogPane().setContent(new VBox(hbName, hbTime));
-        alert.showAndWait();
+
     }
 
     private void showErrorMessage(String message) {
@@ -420,13 +443,14 @@ public class PathFinder extends Application {
             if (unsavedChanges) {
                 createAlertConf("Unsaved Changes");
             }
+
+
             //readNodes(), drawNodes(), loadImage()
             try {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
                 readNodes(in); //Add saved nodes to graph, draw nodes
                 loadImage(imageFile);
-
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
