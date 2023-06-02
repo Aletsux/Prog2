@@ -63,7 +63,9 @@ public class TestClass {
 
         graph.connect(NODEONE, NODETHREE, "aConnection", 300);
         graph.connect(NODETWO, NODETHREE, "S -> B", 500);
-        graph.connect(NODEFOUR, NODEFIVE, "Flight", 12);
+        //graph.connect(NODEFOUR, NODEFIVE, "Flight", 12);
+        graph.connect(NODETWO, NODEFIVE, "S -> L", 300);
+        graph.connect(NODEFIVE, NODEFOUR, "L -> T", 500);
 
         //Throws exception: IllegalStateException
         //listGraphClass.connect(NODEONE, NODETHREE, "cConnection", 800);
@@ -104,8 +106,8 @@ public class TestClass {
     }
 
     private void addSelectedNodes(City[] nodes) {
-        nodes[0] = NODEFOUR;
-        nodes[1] = NODEFIVE;
+        nodes[0] = NODETWO;
+        nodes[1] = NODEFOUR;
         System.out.println(nodes.toString());
     }
 
