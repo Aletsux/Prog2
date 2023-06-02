@@ -100,7 +100,8 @@ public class PathFinder extends Application {
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
 
-        mainField.getChildren().addAll(background, cities);
+
+        mainField.getChildren().addAll(background, cities,label);
 
         // Förvirrad över placering så gör det här
         // detta är för newplace del 2 när stad ska skapas av klick.
@@ -199,6 +200,9 @@ public class PathFinder extends Application {
         City city = new City(name, x, y);
         graph.add(city);
         System.out.println("Node created!");
+        Label label = new Label (name);
+        label.setLayoutX(x + 2);
+        label.setLayoutY(y - 2);
 
         //  City stockholm = new City(100, 20, 30, Color.RED);
         if (cities.getChildren().contains(node)) {
@@ -222,7 +226,7 @@ public class PathFinder extends Application {
             nameWindow(x, y);
             //createCity(x, y);
             disableCrosshair();
-            createCity(x, y);
+
         }
     }
 
