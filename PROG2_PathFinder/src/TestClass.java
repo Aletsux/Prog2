@@ -29,7 +29,7 @@ public class TestClass {
         testClass.loadData();
 
         //testClass.testConnectMethod();
-        //testClass.addSelectedNodes();
+        testClass.addSelectedNodes(PathFinder.selectedNodes);
 
         //testClass.disconnectEdge();
         //testClass.printSet();
