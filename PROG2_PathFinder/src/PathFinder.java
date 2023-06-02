@@ -1,3 +1,4 @@
+import com.sun.scenario.effect.impl.sw.java.JSWBlend_BLUEPeer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -33,6 +34,9 @@ import java.util.Set;
 import java.nio.Buffer;
 import java.util.*;
 import javafx.scene.shape.Line;
+
+import static javafx.scene.paint.Color.BLUE;
+import static javafx.scene.paint.Color.RED;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
@@ -156,11 +160,11 @@ public class PathFinder extends Application {
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
 
-        // change cursor when newPlace has been clicked
+        // handles newPlace Button
         newPlaceB.setOnAction(event -> {
             cursorIsCrossHair = true;
 
-            //Place new node
+            //sets cursor to crosshair, and disables newPlace button
             if (cursorIsCrossHair) {
                 scene.setCursor(Cursor.CROSSHAIR);
                 newPlaceB.setDisable(true);
@@ -170,28 +174,41 @@ public class PathFinder extends Application {
                 scene.setOnMousePressed(clickHandler);
 
 
-                if (cursorIsCrossHair==false){
-                    newPlaceB.setDisable(false);
-                }
             }
-
-
-
-
-
-
-
-
-
             //Name new node + create new node
 
             //Draw new node
         });
 
+        EventHandler<MouseEvent> clickHandler = new SelectCityHandler();
+        scene.setOnMousePressed(clickHandler);
 
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    class SelectCityHandler implements EventHandler<MouseEvent> {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            System.out.println("Clicked!");
+
+            if (mouseEvent.getSource() instanceof City) {
+                City c = (City) mouseEvent.getSource();
+
+                if (selectedNodes.length == 2) {
+                    selectedNodes[0] = null;
+                    selectedNodes[1] = null;
+                }
+
+                if (selectedNodes.length == 0) {
+                    selectedNodes[0] = c;
+                } else {
+                    selectedNodes[1] = c;
+                }
+            }
+
+        }
     }
 
     private void clearNodes() { //clear nodes from system, graph.getNodes()
@@ -201,14 +218,15 @@ public class PathFinder extends Application {
         }
     }
 
+
     public void createCity(String name, double x, double y) {
         //cities
-        City node = new City(x, y, Color.BLUE);
+        City node = new City(x, y, BLUE);
 
         City city = new City(name, x, y);
         graph.add(city);
         System.out.println("Node created!");
-        Label label = new Label (name);
+        Label label = new Label(name);
         label.setLayoutX(x + 2);
         label.setLayoutY(y - 2);
         mainField.getChildren().addAll(label);
@@ -232,19 +250,29 @@ public class PathFinder extends Application {
 // chats förslag för att cirkeln skapas för lågt ner
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
-            nameWindow(x, y);
+            if (cursorIsCrossHair) {
+                nameWindow(x, y);
+            }
             //createCity(x, y);
             disableCrosshair();
+            newPlaceB.setDisable(false);
         }
     }
 
     class changeCityColorHandler implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
+            // när ingen node är vald ska SelectedNodes vara tom
+            // den första staden man väljer ska hamna i SelectedNodes på index 0 och den andra staden på index 1
+//            int clickCount = 0;
+//            
+//            if(clickCount == 0)
+//            City city = (City) event.getSource();
+//            city.setFill(RED);
+
 
         }
     }
-
 
     private VBox fileMenu() {
         //A second one is created?
@@ -627,13 +655,13 @@ public class PathFinder extends Application {
         });
         dialog.showAndWait();
         return dialog.getDialogPane();
-
     }
-    public boolean getCrosshairBoolean(){
+
+    public boolean getCrosshairBoolean() {
         return cursorIsCrossHair;
     }
 
-    public void disableCrosshair(){
+    public void disableCrosshair() {
         this.cursorIsCrossHair = false;
         scene.setCursor(Cursor.DEFAULT);
     }

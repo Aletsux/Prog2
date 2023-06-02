@@ -106,8 +106,8 @@ public class TestClass {
     }
 
     private void addSelectedNodes(City[] nodes) {
-        nodes[0] = NODETWO;
-        nodes[1] = NODEFOUR;
+        nodes[0] = NODEONE;
+        nodes[1] = NODETHREE;
         System.out.println(nodes.toString());
     }
 
