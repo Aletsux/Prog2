@@ -108,7 +108,7 @@ public class PathFinder extends Application {
         background.getChildren().add(imageView);
 
 
-        mainField.getChildren().addAll(background, cities,label);
+        mainField.getChildren().addAll(background, cities);
 
         // Förvirrad över placering så gör det här
         // detta är för newplace del 2 när stad ska skapas av klick.
@@ -210,6 +210,7 @@ public class PathFinder extends Application {
         Label label = new Label (name);
         label.setLayoutX(x + 2);
         label.setLayoutY(y - 2);
+        mainField.getChildren().addAll(label);
 
         //  City stockholm = new City(100, 20, 30, Color.RED);
         if (cities.getChildren().contains(node)) {
