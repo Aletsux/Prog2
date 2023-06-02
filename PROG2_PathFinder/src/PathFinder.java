@@ -23,6 +23,7 @@ import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
@@ -54,6 +55,8 @@ public class PathFinder extends Application {
 
     private boolean unsavedChanges = false;
     MenuBar menuBar = new MenuBar();
+
+    public boolean cursorIsCrossHair = false;
 
 
     @Override
@@ -136,19 +139,36 @@ public class PathFinder extends Application {
 
         // change cursor when newPlace has been clicked
         newPlaceB.setOnAction(event -> {
+            cursorIsCrossHair = true;
+
             //Place new node
-            scene.setCursor(Cursor.CROSSHAIR);
-            newPlaceB.setDisable(true);
+            if (cursorIsCrossHair) {
+                scene.setCursor(Cursor.CROSSHAIR);
+                newPlaceB.setDisable(true);
 
-            EventHandler<MouseEvent> clickHandler = new cityClickHandler();
-            scene.setOnMousePressed(clickHandler);
 
-            newPlaceB.setDisable(false);
+                EventHandler<MouseEvent> clickHandler = new cityClickHandler();
+                scene.setOnMousePressed(clickHandler);
+
+
+                if (cursorIsCrossHair==false){
+                    newPlaceB.setDisable(false);
+                }
+            }
+
+
+
+
+
+
+
+
 
             //Name new node + create new node
 
             //Draw new node
         });
+
 
 
         primaryStage.setScene(scene);
@@ -167,7 +187,6 @@ public class PathFinder extends Application {
         cities.getChildren().addAll(new Pane(node)); //Temporary solution?
     }
 
-
     class cityClickHandler implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
@@ -179,6 +198,7 @@ public class PathFinder extends Application {
 // chats förslag för att cirkeln skapas för lågt ner
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
+            disableCrosshair();
             createCity(x, y);
         }
     }
@@ -515,6 +535,16 @@ public class PathFinder extends Application {
         dialog.showAndWait();
         return dialog.getDialogPane();
     }
+
+    public boolean getCrosshairBoolean(){
+        return cursorIsCrossHair;
+    }
+
+    public void disableCrosshair(){
+        this.cursorIsCrossHair = false;
+        scene.setCursor(Cursor.DEFAULT);
+    }
+
 }
 
 
