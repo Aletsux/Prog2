@@ -166,9 +166,35 @@ public class PathFinder extends Application {
             //Draw new node
         });
 
+        EventHandler<MouseEvent> clickHandler = new SelectCityHandler();
+        scene.setOnMousePressed(clickHandler);
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    class SelectCityHandler implements EventHandler<MouseEvent> {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            System.out.println("Clicked!");
+
+            if (mouseEvent.getSource() instanceof City) {
+                City c = (City) mouseEvent.getSource();
+                
+                if (selectedNodes.length == 2) {
+                    selectedNodes[0] = null;
+                    selectedNodes[1] = null;
+                }
+
+                if (selectedNodes.length == 0) {
+                    selectedNodes[0] = c;
+                } else {
+                    selectedNodes[1] = c;
+                }
+            }
+
+
+        }
     }
 
     private void clearNodes() { //clear nodes from system, graph.getNodes()
@@ -177,6 +203,7 @@ public class PathFinder extends Application {
             System.out.println("All nodes cleared!");
         }
     }
+
 
     public void createCity(String name, double x, double y) {
         //cities
@@ -207,6 +234,7 @@ public class PathFinder extends Application {
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
             nameWindow(x, y);
+
         }
     }
 
@@ -216,7 +244,6 @@ public class PathFinder extends Application {
 
         }
     }
-
 
     private VBox fileMenu() {
         //A second one is created?
@@ -590,7 +617,6 @@ public class PathFinder extends Application {
         });
         dialog.showAndWait();
         return dialog.getDialogPane();
-
     }
 }
 
