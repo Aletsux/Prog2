@@ -54,7 +54,12 @@ public class PathFinder extends Application {
 
     private boolean unsavedChanges = false;
     MenuBar menuBar = new MenuBar();
-
+    //Buttons
+    Button findPathB;
+    Button showConnectionB;
+    Button newPlaceB;
+    Button newConnectionB;
+    Button changeConnectionB;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -98,22 +103,22 @@ public class PathFinder extends Application {
 
 
         //Flow
-        Button findPathB = new Button("Find Path");
+        findPathB = new Button("Find Path");
         findPathB.setOnAction(e -> findPath());
 
-        Button showConnectionB = new Button("Show Connection");
+        showConnectionB = new Button("Show Connection");
         showConnectionB.setOnAction(e -> {
             showConnectionHandler(selectedNodes[0], selectedNodes[1], false);
         });
 
-        Button newPlaceB = new Button("New Place");
+        newPlaceB = new Button("New Place");
 
-        Button newConnectionB = new Button("New Connection");
+        newConnectionB = new Button("New Connection");
         newConnectionB.setOnAction(event -> {
             openConnectionWindow();
         });
 
-        Button changeConnectionB = new Button("Change Connection");
+        changeConnectionB = new Button("Change Connection");
         changeConnectionB.setOnAction(event -> showConnectionHandler(selectedNodes[0], selectedNodes[1], true));
 
         flow.getChildren().addAll(findPathB, showConnectionB, newPlaceB, newConnectionB, changeConnectionB);
