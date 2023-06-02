@@ -1,3 +1,4 @@
+import com.sun.scenario.effect.impl.sw.java.JSWBlend_BLUEPeer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -23,6 +24,7 @@ import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
@@ -31,6 +33,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.nio.Buffer;
 import java.util.*;
+
+import static javafx.scene.paint.Color.BLUE;
+import static javafx.scene.paint.Color.RED;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
@@ -67,6 +72,9 @@ public class PathFinder extends Application {
     Button newConnectionB;
     Button changeConnectionB;
 
+    public boolean cursorIsCrossHair = false;
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         //for testing
@@ -102,6 +110,7 @@ public class PathFinder extends Application {
         Image image = new Image(imageFile.toString());
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
+
 
         mainField.getChildren().addAll(background, cities);
 
@@ -150,17 +159,21 @@ public class PathFinder extends Application {
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
 
-        // change cursor when newPlace has been clicked
+        // handles newPlace Button
         newPlaceB.setOnAction(event -> {
-            //Place new node
-            scene.setCursor(Cursor.CROSSHAIR);
-            newPlaceB.setDisable(true);
+            cursorIsCrossHair = true;
 
-            EventHandler<MouseEvent> clickHandler = new cityClickHandler();
-            scene.setOnMousePressed(clickHandler);
+            //sets cursor to crosshair, and disables newPlace button
+            if (cursorIsCrossHair) {
+                scene.setCursor(Cursor.CROSSHAIR);
+                newPlaceB.setDisable(true);
 
-            newPlaceB.setDisable(false);
 
+                EventHandler<MouseEvent> clickHandler = new cityClickHandler();
+                scene.setOnMousePressed(clickHandler);
+
+
+            }
             //Name new node + create new node
 
             //Draw new node
@@ -168,6 +181,7 @@ public class PathFinder extends Application {
 
         EventHandler<MouseEvent> clickHandler = new SelectCityHandler();
         scene.setOnMousePressed(clickHandler);
+
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -207,11 +221,15 @@ public class PathFinder extends Application {
 
     public void createCity(String name, double x, double y) {
         //cities
-        City node = new City(x, y, Color.BLUE);
+        City node = new City(x, y, BLUE);
 
         City city = new City(name, x, y);
         graph.add(city);
         System.out.println("Node created!");
+        Label label = new Label (name);
+        label.setLayoutX(x + 2);
+        label.setLayoutY(y - 2);
+        mainField.getChildren().addAll(label);
 
         //  City stockholm = new City(100, 20, 30, Color.RED);
         if (cities.getChildren().contains(node)) {
@@ -220,7 +238,6 @@ public class PathFinder extends Application {
         }
         cities.getChildren().addAll(new Pane(node)); //Temporary solution?
     }
-
 
     class cityClickHandler implements EventHandler<MouseEvent> {
         @Override
@@ -234,13 +251,23 @@ public class PathFinder extends Application {
             //double localX = root.sceneToLocal(x, y).getX();
             // double localY = root.sceneToLocal(x, y).getY();
             nameWindow(x, y);
-
+            //createCity(x, y);
+            disableCrosshair();
+            newPlaceB.setDisable(false);
         }
     }
 
     class changeCityColorHandler implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
+            // när ingen node är vald ska SelectedNodes vara tom
+            // den första staden man väljer ska hamna i SelectedNodes på index 0 och den andra staden på index 1
+//            int clickCount = 0;
+//            
+//            if(clickCount == 0)
+//            City city = (City) event.getSource();
+//            city.setFill(RED);
+
 
         }
     }
@@ -618,6 +645,15 @@ public class PathFinder extends Application {
         dialog.showAndWait();
         return dialog.getDialogPane();
     }
+    public boolean getCrosshairBoolean(){
+        return cursorIsCrossHair;
+    }
+
+    public void disableCrosshair(){
+        this.cursorIsCrossHair = false;
+        scene.setCursor(Cursor.DEFAULT);
+    }
+
 }
 
 
