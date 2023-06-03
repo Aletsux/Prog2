@@ -36,15 +36,15 @@ public class PathFinder extends Application {
     //TestClass testClass = null;
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
-    URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    File imageFile = new File(graphUrl.toString()); //Background image
+    private URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    private File imageFile = new File(graphUrl.toString()); //Background image
 
-    File graphFile = new File("europa.graph");
-    Scene scene;
+    private File graphFile = new File("europa.graph");
+    private Scene scene;
 
-    public static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
+    private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
 
-    Pane cities = new Pane();
+    private Pane cities = new Pane(); //Important positioning
 
 
     public ListGraph getListGraph() {
@@ -52,19 +52,19 @@ public class PathFinder extends Application {
     }
 
     private boolean unsavedChanges = false;
-    MenuBar menuBar = new MenuBar();
+    private MenuBar menuBar = new MenuBar();
     //Panes
-    BorderPane root;
-    Pane mainField;
-    Pane background;
-    FlowPane flow;
+    private BorderPane root;
+    private Pane mainField; //not necessary?
+    private Pane background;
+    private FlowPane flow;
 
     //Buttons
-    Button findPathB;
-    Button showConnectionB;
-    Button newPlaceB;
-    Button newConnectionB;
-    Button changeConnectionB;
+    private Button findPathB;
+    private Button showConnectionB;
+    private Button newPlaceB;
+    private Button newConnectionB;
+    private Button changeConnectionB;
 
     public boolean cursorIsCrossHair = false; // tempo public
 
@@ -204,7 +204,7 @@ public class PathFinder extends Application {
         cities.getChildren().addAll(label);
 
 
-        mainField.getChildren().addAll(city);//Temporary solution?
+        cities.getChildren().addAll(city);//Temporary solution?
         //EventHandler<MouseEvent> selectCityHandler = new selectCityHandler();
         //city.setOnMouseClicked(new selectCityHandler());
         city.setOnMouseClicked(event -> {
@@ -424,22 +424,29 @@ public class PathFinder extends Application {
     }
 
     private void createLine(City nodeFrom, City nodeTo) {
-        double radius = nodeFrom.getRadius();
-        double node1x = Double.parseDouble(nodeFrom.getxPos());
-        double node1y = Double.parseDouble(nodeFrom.getyPos());
-        double node2x = Double.parseDouble(nodeTo.getxPos());
-        double node2y = Double.parseDouble(nodeTo.getyPos());
+
+        double radius;
+        double node1x;
+        double node1y;
+        double node2x;
+        double node2y;
 
         if (nodeFrom == null && nodeTo == null) {
+            radius = selectedNodes.get(0).getRadius();
             node1x = Double.parseDouble(selectedNodes.get(0).getxPos());
             node1y = Double.parseDouble(selectedNodes.get(0).getyPos()) - radius;
             node2x = Double.parseDouble(selectedNodes.get(1).getxPos());
             node2y = Double.parseDouble(selectedNodes.get(1).getyPos()) - radius;
+        } else {
+            node1x = Double.parseDouble(nodeFrom.getxPos());
+            node1y = Double.parseDouble(nodeFrom.getyPos());
+            node2x = Double.parseDouble(nodeTo.getxPos());
+            node2y = Double.parseDouble(nodeTo.getyPos());
         }
 
         Line line = new Line(node1x, node1y, node2x, node2y);
         line.setStrokeWidth(2);
-        mainField.getChildren().add(line);
+        cities.getChildren().add(line);
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
@@ -578,7 +585,7 @@ public class PathFinder extends Application {
                 int weight = Integer.parseInt(parts[i + 3]);
 
                 //Create connection
-                System.out.println("Connections: " + connectionCount + "\n" + printConnections());
+                //System.out.println("Connections: " + connectionCount + "\n" + printConnections());
                 createConnection(node1, node2, edgeName, weight);
 
                 connectionCount++;
@@ -601,6 +608,7 @@ public class PathFinder extends Application {
         }
         return sb.toString();
     }
+
 
     private String printNodes() {
         StringBuilder sb = new StringBuilder();
@@ -628,8 +636,6 @@ public class PathFinder extends Application {
         if (graph.getEdgeBetween(node1, node2) == null) {
             graph.connect(node1, node2, name, weight);
         }
-
-
     }
 
     private void exitProgram() {
