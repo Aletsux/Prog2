@@ -185,7 +185,7 @@ public class PathFinder extends Application {
     }
 
 
-    public void createCity(String name, double x, double y) {
+    private void createCity(String name, double x, double y) {
         //cities
         //City node = new City(x, y);
 
@@ -397,20 +397,17 @@ public class PathFinder extends Application {
         dialog.getDialogPane().setContent(new VBox(hbName, hbTime));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
-        String nameInput = nameField.getText();
-        String timeInput = timeField.getText();
 
-        double node1x = selectedNodes.get(0).getLayoutX();
-        double node1y = selectedNodes.get(0).getLayoutY();
-        double node2x = selectedNodes.get(1).getLayoutX();
-        double node2y = selectedNodes.get(1).getLayoutY();
 
-        Line line = new Line(node1x, node1y, node2x, node2y);
 
-        mainField.getChildren().addAll(line);
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getText() == "ok") {
+                String nameInput = nameField.getText();
+                String timeInput = timeField.getText();
+
+                createLine();
+
                 if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
                     showErrorMessage("Connection already exist between the two destinations.");
                     return;
@@ -424,8 +421,21 @@ public class PathFinder extends Application {
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
                 //createConnection(name, Integer.parseInt(time));
                 System.out.println("Create connections!");
+
             }
         });
+    }
+
+    private void createLine() {
+        double radius = selectedNodes.get(0).getRadius();
+        double node1x = Double.parseDouble(selectedNodes.get(0).getxPos());
+        double node1y = Double.parseDouble(selectedNodes.get(0).getyPos()) - radius;
+        double node2x = Double.parseDouble(selectedNodes.get(1).getxPos());
+        double node2y = Double.parseDouble(selectedNodes.get(1).getyPos()) - radius;
+
+        Line line = new Line(node1x, node1y, node2x, node2y);
+        line.setStrokeWidth(2);
+        mainField.getChildren().add(line);
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
