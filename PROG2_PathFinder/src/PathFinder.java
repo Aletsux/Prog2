@@ -397,20 +397,30 @@ public class PathFinder extends Application {
         dialog.getDialogPane().setContent(new VBox(hbName, hbTime));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
+        double radius = selectedNodes.get(0).getRadius();
 
-        double node1x = selectedNodes.get(0).getLayoutX();
-        double node1y = selectedNodes.get(0).getLayoutY();
-        double node2x = selectedNodes.get(1).getLayoutX();
-        double node2y = selectedNodes.get(1).getLayoutY();
 
-        Line line = new Line(node1x, node1y, node2x, node2y);
+        double node1x = Double.parseDouble(selectedNodes.get(0).getxPos());
+        double node1y = Double.parseDouble(selectedNodes.get(0).getyPos()) - radius;
+        double node2x = Double.parseDouble(selectedNodes.get(1).getxPos());
+        double node2y = Double.parseDouble(selectedNodes.get(1).getyPos()) - radius;
+        System.out.println("Testar node1x innehåll" + " " + node1x);
 
-        mainField.getChildren().addAll(line);
+
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getText() == "ok") {
                 String nameInput = nameField.getText();
                 String timeInput = timeField.getText();
+
+                Line line = new Line(node1x, node1y, node2x, node2y);
+                line.setStrokeWidth(2);
+                //line.setStroke(Color.RED);
+
+                mainField.getChildren().add(line);
+                System.out.println("Line should be created");
+                System.out.println(mainField.getChildren());
+
 
                 if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
                     showErrorMessage("Connection already exist between the two destinations.");
@@ -425,6 +435,7 @@ public class PathFinder extends Application {
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
                 //createConnection(name, Integer.parseInt(time));
                 System.out.println("Create connections!");
+
             }
         });
     }
