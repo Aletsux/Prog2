@@ -397,8 +397,6 @@ public class PathFinder extends Application {
         dialog.getDialogPane().setContent(new VBox(hbName, hbTime));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
-        String nameInput = nameField.getText();
-        String timeInput = timeField.getText();
 
         double node1x = selectedNodes.get(0).getLayoutX();
         double node1y = selectedNodes.get(0).getLayoutY();
@@ -411,6 +409,9 @@ public class PathFinder extends Application {
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getText() == "ok") {
+                String nameInput = nameField.getText();
+                String timeInput = timeField.getText();
+
                 if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
                     showErrorMessage("Connection already exist between the two destinations.");
                     return;
