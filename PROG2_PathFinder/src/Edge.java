@@ -24,7 +24,7 @@ public class Edge<N> {
         return destination;
     }
 
-    public String getDestinationName() {
+    public String getDestinationName() { //Not compatable with part 1
         City city = (City) destination;
         return city.getName();
     }
@@ -39,6 +39,6 @@ public class Edge<N> {
 
     @Override
     public String toString() {
-        return  "to " + getDestinationName()+ " by " + this.name + " " + "takes " + getWeight();
+        return "to " + getDestinationName() + " by " + this.name + " " + "takes " + getWeight();
     }
 }
