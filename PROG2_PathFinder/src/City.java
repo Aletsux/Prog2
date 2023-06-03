@@ -11,21 +11,34 @@ public class City<N> extends Circle {
     private String name = "";
     private double xPos;
     private double yPos;
-    private int clickCount = 0;
+    private boolean blue = true;
 
     public static double RADIUS = 10;
 
-    public City(double x, double y, Paint fill) {
+    public City(double x, double y) {
         super(x, y, RADIUS);
         setCenterY(getCenterY() - RADIUS);
         setFill(Color.BLUE);
     }
 
     public City(String name, double x, double y) {
+        super(x, y, RADIUS);
+        setCenterY(getCenterY() - RADIUS);
         this.name = name;
         xPos = x;
         yPos = y;
+        setFill(Color.BLUE);
+        blue = true;
 
+    }
+
+    public void toggleColor() {
+        blue = !blue;
+        if (blue) {
+            setFill(Color.BLUE);
+        } else {
+            setFill(Color.RED);
+        }
     }
 
     public String getName() {
@@ -53,8 +66,9 @@ public class City<N> extends Circle {
 //            return false;
 //        }
 
-        if (other instanceof City city) {
-            return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos;
+        if (other instanceof City) {
+            City c = (City) other;
+            return name.equals(c.name) && xPos == c.xPos && yPos == c.yPos;
         } else {
             return false;
         }
@@ -70,7 +84,6 @@ public class City<N> extends Circle {
     public String toString() {
         return name + ";" + getxPos() + ";" + getyPos();
     }
-
 
 
 }
