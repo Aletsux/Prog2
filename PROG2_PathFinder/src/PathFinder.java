@@ -185,14 +185,14 @@ public class PathFinder extends Application {
     }
 
 
-    private void createCity(String name, double x, double y) {
+    private City createCity(String name, double x, double y) {
         //cities
         //City node = new City(x, y);
 
         City city = new City(name, x, y);
         if (graph.getNodes().contains(city)) {
             System.out.println("Node already exists");
-            return;
+            return city;
         } else {
             graph.add(city);
             System.out.println("Node created!");
@@ -219,6 +219,7 @@ public class PathFinder extends Application {
             }
             System.out.println("SelectedNodes: " + selectedNodes.toString());
         });
+        return city;
     }
 
     class cityClickHandler implements EventHandler<MouseEvent> { //Fixed place
@@ -398,15 +399,12 @@ public class PathFinder extends Application {
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
 
-
-
-
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getText() == "ok") {
                 String nameInput = nameField.getText();
                 String timeInput = timeField.getText();
 
-                createLine();
+                createLine(null, null);
 
                 if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
                     showErrorMessage("Connection already exist between the two destinations.");
@@ -419,19 +417,25 @@ public class PathFinder extends Application {
                 }
                 //create a connection from first node to second node
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
-                //createConnection(name, Integer.parseInt(time));
                 System.out.println("Create connections!");
 
             }
         });
     }
 
-    private void createLine() {
-        double radius = selectedNodes.get(0).getRadius();
-        double node1x = Double.parseDouble(selectedNodes.get(0).getxPos());
-        double node1y = Double.parseDouble(selectedNodes.get(0).getyPos()) - radius;
-        double node2x = Double.parseDouble(selectedNodes.get(1).getxPos());
-        double node2y = Double.parseDouble(selectedNodes.get(1).getyPos()) - radius;
+    private void createLine(City nodeFrom, City nodeTo) {
+        double radius = nodeFrom.getRadius();
+        double node1x = Double.parseDouble(nodeFrom.getxPos());
+        double node1y = Double.parseDouble(nodeFrom.getyPos());
+        double node2x = Double.parseDouble(nodeTo.getxPos());
+        double node2y = Double.parseDouble(nodeTo.getyPos());
+
+        if (nodeFrom == null && nodeTo == null) {
+            node1x = Double.parseDouble(selectedNodes.get(0).getxPos());
+            node1y = Double.parseDouble(selectedNodes.get(0).getyPos()) - radius;
+            node2x = Double.parseDouble(selectedNodes.get(1).getxPos());
+            node2y = Double.parseDouble(selectedNodes.get(1).getyPos()) - radius;
+        }
 
         Line line = new Line(node1x, node1y, node2x, node2y);
         line.setStrokeWidth(2);
@@ -522,8 +526,6 @@ public class PathFinder extends Application {
                 createAlertConf("Unsaved Changes");
             }
 
-
-            //readNodes(), drawNodes(), loadImage()
             try {
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
@@ -542,6 +544,7 @@ public class PathFinder extends Application {
     private void readNodes(BufferedReader in) throws IOException { //Fixed!
         String text = "";
         in.readLine(); //skip first line
+        int cityCount = 0;
 
         text = in.readLine();
         if (text != null) {
@@ -577,11 +580,12 @@ public class PathFinder extends Application {
                 //Create connection
                 System.out.println("Connections: " + connectionCount + "\n" + graph.printConnections());
                 createConnection(node1, node2, edgeName, weight);
+
                 connectionCount++;
 
             }
         }
-        System.out.println("Connections: " + graph.printConnections());
+        //System.out.println("Connections: " + graph.printConnections());
         System.out.println("Amount: " + connectionCount);
     }
 
@@ -597,6 +601,7 @@ public class PathFinder extends Application {
         Set<City> cities = graph.getNodes();
         City node1 = null;
         City node2 = null;
+
         for (City c : cities) {
             if (c.getName().equals(from)) {
                 node1 = c;
@@ -605,7 +610,13 @@ public class PathFinder extends Application {
                 node2 = c;
             }
         }
-        graph.connect(node1, node2, name, weight);
+        createLine(node1, node2);
+
+        if (graph.getEdgeBetween(node1, node2) == null) {
+            graph.connect(node1, node2, name, weight);
+        }
+
+
     }
 
     private void exitProgram() {
@@ -654,38 +665,39 @@ public class PathFinder extends Application {
         return "";
     }
 
-    private Pane findPath() {
-        List<Edge<City>> path = graph.getPath(selectedNodes.get(0), selectedNodes.get(1));
-        TextArea result = new TextArea();
+    private void findPath() { //Fixed
+        if (selectedNodes.size() == 2) {
+            List<Edge<City>> path = graph.getPath(selectedNodes.get(0), selectedNodes.get(1)); //sends reverse!
+            Collections.reverse(path);
+            TextArea result = new TextArea();
 
-        if (selectedNodes.get(0) == null || selectedNodes.get(1) == null) {
+            javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+            dialog.setTitle("Message");
+            dialog.setHeaderText("The path from " + selectedNodes.get(0).getName() + " to " + selectedNodes.get(1).getName());
+
+            int totalweight = 0;
+            StringBuilder message = new StringBuilder();
+            for (Edge edge : path) {
+                City cityToPrint = (City) edge.getDestination();
+                message.append("to " + cityToPrint.getName() + " by " + edge.getName() + " takes " + edge.getWeight()).append("\n");
+                totalweight += edge.getWeight();
+            }
+            result.setText(message.toString() + "\n" + "total " + totalweight);
+
+            ButtonType okButton = new ButtonType("ok");
+            dialog.getDialogPane().setContent(result);
+            dialog.getDialogPane().getButtonTypes().addAll(okButton);
+
+            dialog.setResultConverter(buttonType -> {
+                if (okButton == ButtonType.OK) {
+                    return true;
+                }
+                return false;
+            });
+            dialog.showAndWait();
+        } else {
             showErrorMessage("Connection must be selected.");
         }
-
-        javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
-        dialog.setTitle("Message");
-        dialog.setHeaderText("The path from " + selectedNodes.get(0).getName() + " to " + selectedNodes.get(1).getName());
-
-        int totalweight = 0;
-        StringBuilder message = new StringBuilder();
-        for (Edge edge : path) {
-            message.append(edge.toString() + "\n");
-            totalweight += edge.getWeight();
-        }
-        result.setText(message.toString() + "\n" + "total " + totalweight);
-
-        ButtonType okButton = new ButtonType("ok");
-        dialog.getDialogPane().setContent(result);
-        dialog.getDialogPane().getButtonTypes().addAll(okButton);
-
-        dialog.setResultConverter(buttonType -> {
-            if (okButton == ButtonType.OK) {
-                return true;
-            }
-            return false;
-        });
-        dialog.showAndWait();
-        return dialog.getDialogPane();
     }
 
     public boolean getCrosshairBoolean() {
