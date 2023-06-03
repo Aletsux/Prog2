@@ -13,7 +13,7 @@ public class ListGraph<N> implements Graph<N> {
 
     //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
-    public Set<N> visited = new HashSet<N>();
+    private Set<N> visited = new HashSet<N>();
 
     public void add(N node) {
         if (adjacentNodes.containsKey(node)) {
@@ -89,8 +89,6 @@ public class ListGraph<N> implements Graph<N> {
 
 
     public void remove(N nodeToRemove) {
-
-        System.out.println("Entered remove method!");
         if (!adjacentNodes.containsKey(nodeToRemove)) {
             throw new NoSuchElementException("Not an existing node!");
         }
@@ -114,7 +112,6 @@ public class ListGraph<N> implements Graph<N> {
         } else {
             throw new NoSuchElementException("Element was null");
         }
-        System.out.println("All connections should be removed!");
     }
 
     // returns amount of 'nodes'
@@ -234,14 +231,14 @@ public class ListGraph<N> implements Graph<N> {
 
         //Edge edgeFrom = getEdgeBetween(node1, node2);
         //iterate over connectionsFrom, remove edges from other nodes
-        Set<Edge<N>> connections = adjacentNodes.get(node2); //Works on TestClass not I1
+        Set<Edge<N>> connections = adjacentNodes.get(node2);
+        Set<Edge<N>> adjacentEdgesFrom = adjacentNodes.get(node2);
+        Set<Edge<N>> adjacentEdgesTo = adjacentNodes.get(node1);
         for (Edge<N> edge : connections) {
             if (edge.getDestination() == node1) {
-                Set<Edge<N>> adjacentEdges = adjacentNodes.get(node2);
-                adjacentEdges.removeIf(e -> e.getDestination().equals(node1));
-            } else {
-                Set<Edge<N>> adjacentEdges = adjacentNodes.get(node1);
-                adjacentEdges.removeIf(e -> e.getDestination().equals(node2));
+                adjacentEdgesFrom.removeIf(e -> e.getDestination().equals(node1));
+            } else if (adjacentEdgesFrom.isEmpty()) {
+                adjacentEdgesTo.removeIf(e -> e.getDestination().equals(node2));
             }
         }
     }
@@ -300,17 +297,4 @@ public class ListGraph<N> implements Graph<N> {
         return null;
     }
 
-    public String printConnections() {
-        StringBuilder sb = new StringBuilder();
-        for (N city : adjacentNodes.keySet()) {
-            Set<Edge<N>> adjacentEdges = adjacentNodes.get(city);
-            City current = (City) city;
-            for (Edge edge : adjacentEdges) {
-                City destination = (City) edge.getDestination();
-                sb.append(current.getName()).append(" to ").append(destination.getName() + ": ").append(edge.getName()).append(";").append(edge.getWeight()).append("\n");
-            }
-
-        }
-        return sb.toString();
-    }
 }

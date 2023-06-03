@@ -23,7 +23,7 @@ public class Edge<N> {
     public N getDestination() {
         return destination;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -34,6 +34,6 @@ public class Edge<N> {
 
     @Override
     public String toString() {
-        return "to " + getDestination() + " by " + this.name + " " + "takes " + getWeight();
+        return "till " + getDestination() + " med " + this.name + " " + "tar " + getWeight();
     }
 }

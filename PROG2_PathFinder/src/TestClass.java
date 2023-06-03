@@ -86,17 +86,17 @@ public class TestClass {
     }
 
     private void disconnectEdge() {
-        System.out.println("Before: " + graph.printConnections());
+        System.out.println("Before: " + graph.toString());
         graph.disconnect(NODETWO, NODETHREE); //S -> B
         graph.disconnect(NODETWO, NODEFIVE); //One way connection -> selectable
         //listGraphClass.disconnect(NODEONE, NODETWO);
-        System.out.println("After: " + graph.printConnections());
+        System.out.println("After: " + graph.toString());
     }
 
     private void printSet() {
         //System.out.println(listGraphClass.existingNodes);
         System.out.println(graph.toString());
-        System.out.println(graph.printConnections());
+
     }
 
 
@@ -113,6 +113,11 @@ public class TestClass {
         nodes[0] = NODEONE;
         nodes[1] = NODETHREE;
         System.out.println(nodes.toString());
+    }
+
+    @Override
+    public String toString() {
+        return graph.toString();
     }
 
 }

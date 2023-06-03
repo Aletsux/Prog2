@@ -578,7 +578,7 @@ public class PathFinder extends Application {
                 int weight = Integer.parseInt(parts[i + 3]);
 
                 //Create connection
-                System.out.println("Connections: " + connectionCount + "\n" + graph.printConnections());
+                System.out.println("Connections: " + connectionCount + "\n" + printConnections());
                 createConnection(node1, node2, edgeName, weight);
 
                 connectionCount++;
@@ -587,6 +587,19 @@ public class PathFinder extends Application {
         }
         //System.out.println("Connections: " + graph.printConnections());
         System.out.println("Amount: " + connectionCount);
+    }
+
+    public String printConnections() {
+        StringBuilder sb = new StringBuilder();
+        for (Object city : graph.getNodes()) {
+            Set<Edge> adjacentEdges = graph.getNodes();
+            City current = (City) city;
+            for (Edge edge : adjacentEdges) {
+                City destination = (City) edge.getDestination();
+                sb.append(current.getName()).append(" to ").append(destination.getName() + ": ").append(edge.getName()).append(";").append(edge.getWeight()).append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     private String printNodes() {
