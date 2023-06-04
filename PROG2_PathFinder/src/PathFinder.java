@@ -451,7 +451,7 @@ public class PathFinder extends Application {
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
-        if (selectedNodes.size() != 2) { //selected less than 2 nodes
+        if (selectedNodes.size() < 2) { //selected less than 2 nodes
             noSelectedNodesAlert();
             // showErrorMessage("Test");
             return;
