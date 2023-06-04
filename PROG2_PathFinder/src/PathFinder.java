@@ -301,6 +301,9 @@ public class PathFinder extends Application {
         imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
+        stage.centerOnScreen();
+        stage.setWidth(635);
+        stage.setHeight(818);
         //background.getChildren().add(imageView);
     }
 
