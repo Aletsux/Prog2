@@ -114,15 +114,24 @@ public class PathFinder extends Application {
 
         showConnectionB = new Button("Show Connection");
         showConnectionB.setOnAction(event -> {
-            showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), false);
+            if (selectedNodes.size() >= 2) {
+                showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), false);
+            } else {
+                noSelectedNodesAlert();
+            }
         });
 
         newPlaceB = new Button("New Place");
 
         newConnectionB = new Button("New Connection");
         newConnectionB.setOnAction(event -> {
-            openConnectionWindow();
+            if (selectedNodes.size() != 2){
+                noSelectedNodesAlert();
+            } else {
+                openConnectionWindow();
+            }
         });
+
 
         changeConnectionB = new Button("Change Connection");
         changeConnectionB.setOnAction(event -> showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), true));
@@ -383,6 +392,25 @@ public class PathFinder extends Application {
         return alert;
     }
 
+    private void noSelectedNodesAlert (){
+        Alert newAlert = new Alert(Alert.AlertType.ERROR);
+        newAlert.setTitle("Error!");
+        newAlert.setHeaderText(null);
+        newAlert.setContentText("Two places must be selected!");
+        newAlert.showAndWait();
+    }
+
+//    private void noSelectedNodesAlert() {
+//        Alert alert = new Alert(Alert.AlertType.ERROR);
+//        alert.setTitle("Error!");
+//        alert.setHeaderText("Two places must be selected!");
+//
+//        ButtonType okButton = new ButtonType("OK");
+//        alert.getButtonTypes().setAll(okButton);
+//
+//        alert.showAndWait();
+//    }
+
     private void openConnectionWindow() {
         //Check whether connection exists
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -410,17 +438,26 @@ public class PathFinder extends Application {
                 String nameInput = nameField.getText();
                 String timeInput = timeField.getText();
 
-                createLine(null, null);
 
                 if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
                     showErrorMessage("Connection already exist between the two destinations.");
                     return;
                 }
 
-                if (nameInput.isEmpty() || !timeInput.matches("\\d+")) {
+                if (nameInput.isEmpty() && !timeInput.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Name cannot be empty and Time must contain a numeric value");
+                    return;
+                } else if(!timeInput.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Time must contain numeric value");
+                    return;
+                } else if (nameInput.isEmpty()) {
                     showErrorMessage("Input is not valid. Name cannot be empty.");
                     return;
                 }
+
+                createLine();
+
+
                 //create a connection from first node to second node
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
                 System.out.println("Create connections!");
@@ -456,8 +493,10 @@ public class PathFinder extends Application {
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
-        if (from == null || to == null) { //selected less than 2 nodes
-            showErrorMessage("Please select two nodes");
+        if (selectedNodes.size() != 2) { //selected less than 2 nodes
+            System.out.println(selectedNodes);
+            noSelectedNodesAlert();
+           // showErrorMessage("Test");
             return;
         }
 
