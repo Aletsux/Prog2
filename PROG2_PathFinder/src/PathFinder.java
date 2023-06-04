@@ -65,13 +65,15 @@ public class PathFinder extends Application {
     private Button newPlaceB;
     private Button newConnectionB;
     private Button changeConnectionB;
-    public boolean cursorIsCrossHair = false; // tempo public
+    private boolean cursorIsCrossHair = false; // tempo public
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //for testing
-        //TestClass testClass = new TestClass();
-        //graph = testClass.runTests();
+        //SetId
+        menuBar.setId("menu");
+        fileMenu().setId("menuFile");
+
+
 
         System.out.println(graph.getNodes());
         System.out.println(Arrays.asList(selectedNodes).toString());
@@ -92,6 +94,7 @@ public class PathFinder extends Application {
         mainField = new Pane();
         background = new Pane();
         flow = new FlowPane();
+        mainField.setId("outPutArea");
 
         //Show stage
         scene = new Scene(root);
@@ -104,15 +107,14 @@ public class PathFinder extends Application {
 
         mainField.getChildren().addAll(background, cities);
 
-        // Förvirrad över placering så gör det här
-        // detta är för newplace del 2 när stad ska skapas av klick.
-
 
         //Flow
         findPathB = new Button("Find Path");
+        findPathB.setId("btnFindPath");
         findPathB.setOnAction(e -> findPath());
 
         showConnectionB = new Button("Show Connection");
+        showConnectionB.setId("btnShowConnection");
         showConnectionB.setOnAction(event -> {
             if (selectedNodes.size() >= 2) {
                 showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), false);
@@ -122,8 +124,10 @@ public class PathFinder extends Application {
         });
 
         newPlaceB = new Button("New Place");
+        newPlaceB.setId("btnNewPlace");
 
         newConnectionB = new Button("New Connection");
+        newConnectionB.setId("btnNewConnection");
         newConnectionB.setOnAction(event -> {
             if (selectedNodes.size() != 2) {
                 noSelectedNodesAlert();
@@ -134,6 +138,7 @@ public class PathFinder extends Application {
 
 
         changeConnectionB = new Button("Change Connection");
+        changeConnectionB.setId("btnChangeConnection");
         changeConnectionB.setOnAction(event -> showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), true));
 
         flow.getChildren().addAll(findPathB, showConnectionB, newPlaceB, newConnectionB, changeConnectionB);
@@ -225,6 +230,7 @@ public class PathFinder extends Application {
             }
             System.out.println("SelectedNodes: " + selectedNodes.toString());
         });
+        city.setId(name);
         return city;
     }
 
@@ -272,6 +278,7 @@ public class PathFinder extends Application {
 
         //Adding menu items to the 'menu'
         MenuItem mapItem = new MenuItem("New Map");
+        mapItem.setId("menuNewMap");
         archiveMenu.getItems().add(mapItem);
         mapItem.setOnAction(event -> {
 
@@ -286,15 +293,18 @@ public class PathFinder extends Application {
         });
 
         MenuItem openItem = new MenuItem("Open");
+        openItem.setId("menuOpenFile");
         archiveMenu.getItems().add(openItem);
         openItem.setOnAction(new OpenHandler());
 
 
         MenuItem saveItem = new MenuItem("Save");
+        saveItem.setId("menuSaveFile");
         archiveMenu.getItems().add(saveItem);
         saveItem.setOnAction(new SaveHandler());
 
         MenuItem imageItem = new MenuItem("Save Image");
+        imageItem.setId("menuSaveImage");
         archiveMenu.getItems().add(imageItem);
         imageItem.setOnAction(event -> {
             //Get scene
@@ -315,6 +325,7 @@ public class PathFinder extends Application {
         });
 
         MenuItem exitItem = new MenuItem("Exit");
+        exitItem.setId("menuExit");
         archiveMenu.getItems().add(exitItem);
         exitItem.setOnAction(event -> {
             exitProgram();
