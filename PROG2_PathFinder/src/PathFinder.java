@@ -37,7 +37,7 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
     //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    String imageUrl = "file:europa.gif";//Background image
+    String imageUrl = "File:europa.gif";//Background image
     File graphFile = new File("europa.graph");
 
     //Background
@@ -310,7 +310,7 @@ public class PathFinder extends Application {
         }
 
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
-            writer.println("File:" + imageUrl);
+            writer.println(imageUrl);
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         } catch (FileNotFoundException e) {
