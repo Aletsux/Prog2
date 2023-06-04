@@ -18,14 +18,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 
 import javax.imageio.ImageIO;
 import java.io.*;
-import java.net.URL;
 import java.util.Optional;
 import java.util.*;
 
@@ -35,32 +33,25 @@ public class PathFinder extends Application {
     //Class for testing and loading data
     //TestClass testClass = null;
     //ListGraph listGraph = testClass.getListGraph();
-    private ListGraph graph = new ListGraph();
+    private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
     //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    String imageUrl = "File:europa.gif";//Background image
-    File graphFile = new File("europa.graph");
+    private ListGraph graph = new ListGraph();
+    private File graphFile = new File("europa.graph");
+    private Pane cities = new Pane(); //Important positioning
+    private Pane mainField = new Pane();
+    private MenuBar menuBar = new MenuBar();
+    private BorderPane root = new BorderPane();
+    private String imageUrl = "File:europa.gif";//Background image
+    private boolean unsavedChanges = false; //Changes at: New Place, New Connection, Change Connection, Open
+    private boolean cursorIsCrossHair = false; // tempo public
 
     //Background
     //Image image = new Image(imageFile.toString());
-    ImageView imageView;
-
+    private Pane background;
+    private ImageView imageView;
     private Scene scene;
-
-    private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
-
-    private Pane cities = new Pane(); //Important positioning
-    private Pane mainField = new Pane();
-    private Pane background = new Pane();
-
-    public ListGraph getListGraph() {
-        return graph;
-    }
-
-    private boolean unsavedChanges = false; //Changes at: New Place, New Connection, Change Connection, Open
-    private MenuBar menuBar = new MenuBar();
-    //Panes
-    private BorderPane root = new BorderPane();
     private FlowPane flow;
+    private Image mapImage;
 
     //Buttons
     private Button findPathB;
@@ -68,8 +59,6 @@ public class PathFinder extends Application {
     private Button newPlaceB;
     private Button newConnectionB;
     private Button changeConnectionB;
-    private boolean cursorIsCrossHair = false; // tempo public
-
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -110,7 +99,7 @@ public class PathFinder extends Application {
             if (cursorIsCrossHair) {
                 scene.setCursor(Cursor.CROSSHAIR);
                 newPlaceB.setDisable(true);
-                scene.setOnMousePressed(new cityClickHandler());
+                scene.setOnMousePressed(new CityClickHandler());
             }
         });
 
@@ -134,10 +123,12 @@ public class PathFinder extends Application {
         flow.setHgap(10);
 
 
-        imageView = new ImageView();
-        background.getChildren().add(imageView);
+        mapImage = new Image(imageUrl);
+        imageView = new ImageView(mapImage);
+        imageView.setVisible(false);
+        background = new Pane(imageView);
+        //background.getChildren().add(imageView);
 
-        mainField.getChildren().addAll(background, cities);
 
         VBox menus = new VBox(menuBar);
         menus.setId("menuFile");
@@ -157,13 +148,14 @@ public class PathFinder extends Application {
                     return;
                 }
             }
+            loadImage();
             clearNodes();
             //Clear all visible nodes
             Collection<Node> remove = cities.getChildren();
             cities.getChildren().removeAll(remove); //removes all visual elements
             selectedNodes.clear();
             unsavedChanges = false;
-            loadImage();
+
         });
 
         MenuItem openItem = new MenuItem("Open");
@@ -199,7 +191,7 @@ public class PathFinder extends Application {
             exitProgram();
         });
 
-
+        mainField.getChildren().addAll(background, cities);
         //Set position in BorderPane
         root.setTop(menus);
         root.setCenter(flow);
@@ -267,7 +259,7 @@ public class PathFinder extends Application {
         return city;
     }
 
-    class cityClickHandler implements EventHandler<MouseEvent> { //Fixed place
+    class CityClickHandler implements EventHandler<MouseEvent> { //Fixed place
         @Override
         public void handle(MouseEvent event) {
 
@@ -297,8 +289,9 @@ public class PathFinder extends Application {
 
     //Make this generic, use parameter for path
     private void loadImage() {
-        Image image = new Image(imageUrl);
-        imageView.setImage(image);
+        //Image image = new Image(imageUrl);
+        //imageView.setImage(mapImage);
+        imageView.setVisible(true);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
         stage.centerOnScreen();
@@ -394,7 +387,7 @@ public class PathFinder extends Application {
 
 
         dialog.showAndWait().ifPresent(buttonType -> {
-            if (buttonType.getText() == "ok") {
+            if (buttonType.getText().equals("ok")) {
                 String nameInput = nameField.getText();
                 String timeInput = timeField.getText();
 
@@ -677,7 +670,7 @@ public class PathFinder extends Application {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent()) {
-            if (result.get().getText() == "ok") {
+            if (result.get().getText().equals("ok")) {
                 String name = nameField.getText();
                 Character.toUpperCase(name.charAt(0));
                 return name;
