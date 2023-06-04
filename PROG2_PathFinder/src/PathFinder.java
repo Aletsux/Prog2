@@ -37,26 +37,29 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    File imageFile = new File(graphUrl.toString()); //Background image
-
+    String imageUrl = "europa.gif";//Background image
     File graphFile = new File("europa.graph");
+
+    //Background
+    //Image image = new Image(imageFile.toString());
+    ImageView imageView;
+
     private Scene scene;
 
     private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
 
     private Pane cities = new Pane(); //Important positioning
-
+    private Pane mainField = new Pane();
+    private Pane background = new Pane();
 
     public ListGraph getListGraph() {
         return graph;
     }
 
-    private boolean unsavedChanges = false; //WIP
+    private boolean unsavedChanges = false; //Changes at: New Place, New Connection, Change Connection, Open
     private MenuBar menuBar = new MenuBar();
     //Panes
-    private BorderPane root;
-    private Pane mainField; //not necessary?
-    private Pane background;
+    private BorderPane root = new BorderPane();
     private FlowPane flow;
 
     //Buttons
@@ -81,31 +84,16 @@ public class PathFinder extends Application {
         if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
         }
-
-        if (graphUrl == null) {
-            System.out.println("URL IS NULL!");
-        } else {
-            System.out.println("URL EXISTS!");
-        }
-
+        
         //Declare
         primaryStage.setTitle("PathFinder");
-        root = new BorderPane();
-        mainField = new Pane();
-        background = new Pane();
+
+        //mainField = new Pane();
+        //background = new Pane();
         flow = new FlowPane();
         mainField.setId("outPutArea");
 
-        //Show stage
-        scene = new Scene(root);
-
-
-        //Background
-        Image image = new Image(imageFile.toString());
-        ImageView imageView = new ImageView(image);
-        background.getChildren().add(imageView);
-
-        mainField.getChildren().addAll(background, cities);
+        //mainField.getChildren().add(cities);
 
 
         //Flow
@@ -125,6 +113,16 @@ public class PathFinder extends Application {
 
         newPlaceB = new Button("New Place");
         newPlaceB.setId("btnNewPlace");
+        // handles newPlace Button
+        newPlaceB.setOnAction(event -> {
+            cursorIsCrossHair = true;
+            //sets cursor to crosshair, and disables newPlace button
+            if (cursorIsCrossHair) {
+                scene.setCursor(Cursor.CROSSHAIR);
+                newPlaceB.setDisable(true);
+                scene.setOnMousePressed(new cityClickHandler());
+            }
+        });
 
         newConnectionB = new Button("New Connection");
         newConnectionB.setId("btnNewConnection");
@@ -145,32 +143,29 @@ public class PathFinder extends Application {
         flow.setAlignment(Pos.CENTER);
         flow.setHgap(10);
 
-        //add nodes to root
-//        root.getChildren().add(fileMenu());
-//        root.getChildren().add(loadImage());
+
+        imageView = new ImageView();
+        background.getChildren().add(imageView);
+
+        mainField.getChildren().addAll(background, cities);
+
+        VBox menus = new VBox(fileMenu());
 
 
         //Set position in BorderPane
-        root.setTop(fileMenu());
+        root.setTop(menus);
         root.setCenter(flow);
         //root.setBottom(loadImage(imageFile));
         root.setBottom(mainField);
+
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
 
         //Create cursor
         Cursor cursor = Cursor.CROSSHAIR;
 
-        // handles newPlace Button
-        newPlaceB.setOnAction(event -> {
-            cursorIsCrossHair = true;
-            //sets cursor to crosshair, and disables newPlace button
-            if (cursorIsCrossHair) {
-                scene.setCursor(Cursor.CROSSHAIR);
-                newPlaceB.setDisable(true);
-                scene.setOnMousePressed(new cityClickHandler());
-            }
-        });
+        //Show stage
+        scene = new Scene(root);
 
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(windowEvent -> exitProgram()); //Call exit program when closing window
@@ -215,7 +210,7 @@ public class PathFinder extends Application {
         cities.getChildren().addAll(label);
 
 
-        cities.getChildren().addAll(city);//Temporary solution?
+        cities.getChildren().addAll(city);
         //EventHandler<MouseEvent> selectCityHandler = new selectCityHandler();
         //city.setOnMouseClicked(new selectCityHandler());
         city.setOnMouseClicked(event -> {
@@ -257,6 +252,7 @@ public class PathFinder extends Application {
                     name = nameWindow();
                     if (name != null) {
                         createCity(name, x, y);
+                        unsavedChanges = true;
                     }
                     disableCrosshair();
                     newPlaceB.setDisable(false);
@@ -266,11 +262,9 @@ public class PathFinder extends Application {
         }
     }
 
-    private VBox fileMenu() {
+    private MenuBar fileMenu() {
         //A second one is created?
         //Create a menuBar and add it to the VBox to implement menuItems
-        VBox vbox = new VBox();
-        vbox.getChildren().add(menuBar);
 
         //Create menu for menu functionality
         Menu archiveMenu = new Menu("File");
@@ -281,15 +275,21 @@ public class PathFinder extends Application {
         mapItem.setId("menuNewMap");
         archiveMenu.getItems().add(mapItem);
         mapItem.setOnAction(event -> {
-
             if (unsavedChanges) {
-                createAlertConf("Unsaved Changes");
-            }
-            clearNodes();
-            //Clear all visible nodes
-            Collection<Node> remove = cities.getChildren();
+                Alert alert = createAlertConf("Unsaved Changes");
+                if (alert.getResult() == ButtonType.CANCEL) {
+                    alert.close();
+                    return;
+                }
 
-            cities.getChildren().removeAll(remove); //remove all nodes in cities pane?
+                clearNodes();
+                //Clear all visible nodes
+                Collection<Node> remove = cities.getChildren();
+                cities.getChildren().removeAll(remove); //removes all visual elements
+                unsavedChanges = false;
+
+            }
+            loadImage();
         });
 
         MenuItem openItem = new MenuItem("Open");
@@ -331,28 +331,26 @@ public class PathFinder extends Application {
             exitProgram();
         });
 
-        return vbox;
+        return menuBar;
     }
 
     //Make this generic, use parameter for path
-    private Pane loadImage(File imageFile) {
-        Image image = new Image(imageFile.toString());
-        ImageView imageView = new ImageView(image);
-        Pane mapPane = new Pane(imageView);
-        return mapPane;
+    private void loadImage() {
+        System.out.println("Attempting load image!");
+        Image image = new Image(graphUrl.toString());
+        imageView.setImage(image);
+        Stage stage = (Stage) flow.getScene().getWindow();
+        stage.sizeToScene();
+        //background.getChildren().add(imageView);
     }
 
     private void saveFile() throws IOException {
         if (graph.getNodes().isEmpty()) {
             System.err.println("Graph is empty!");
         }
-        //System.out.println(printNodes());
-        if (!imageFile.exists()) {
-            System.out.println("File missing?");
-        }
 
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
-            writer.println("File:" + graphFile);
+            writer.println("File:" + imageUrl);
             System.out.println("Save nodes!");
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
@@ -372,7 +370,6 @@ public class PathFinder extends Application {
     }
 
     private Alert createAlertConf(String title) {
-
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText("There are unsaved changes in the project");
@@ -382,26 +379,16 @@ public class PathFinder extends Application {
         ButtonType confirmButton = new ButtonType("OK");
         ButtonType cancelButton = new ButtonType("cancel", ButtonBar.ButtonData.CANCEL_CLOSE); //ButtonData = enums for opertations
 
-        buttonBar.getButtons().add(alert.getDialogPane());
+        buttonBar.getButtons().addAll(alert.getDialogPane());
         buttonBar.setPadding(new Insets(0, 0, 0, 50));
 
-        if (unsavedChanges) {
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get().getText().equals("OK")) {
-
-                try {
-                    saveFile();
-
-                } catch (IOException e) {
-                    System.err.println("Error: saving file");
-                }
-            }
-        }
+        Optional<ButtonType> result = alert.showAndWait();
 
         //alert.getDialogPane().setPadding(new Insets(0, 0, 0, 0));
 
         return alert;
     }
+
 
     private void noSelectedNodesAlert() {
         Alert newAlert = new Alert(Alert.AlertType.ERROR);
@@ -467,12 +454,9 @@ public class PathFinder extends Application {
                 }
 
                 createLine(null, null);
-
-
                 //create a connection from first node to second node
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
-                System.out.println("Create connections!");
-
+                unsavedChanges = true;
             }
         });
     }
@@ -553,14 +537,12 @@ public class PathFinder extends Application {
                 edgeFrom.setName(nameField.getText());
                 edgeFrom.setWeight(Integer.parseInt(timeField.getText()));
                 System.out.println("Edge: " + edge.getName() + edge.getWeight());
+                unsavedChanges = true;
             }
         } else {
             nameField.setEditable(false);
             timeField.setEditable(false);
         }
-
-
-        //alert.showAndWait();
     }
 
     private void showErrorMessage(String message) {
@@ -576,6 +558,7 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) {
             try {
                 System.out.println("Attempt to save");
+                unsavedChanges = false;
                 saveFile();
             } catch (IOException e) {
 
@@ -593,7 +576,11 @@ public class PathFinder extends Application {
             }
             //Confirmation alert
             if (unsavedChanges) {
-                createAlertConf("Unsaved Changes");
+                Alert alert = createAlertConf("Unsaved Changes");
+                if (alert.getResult() == ButtonType.CANCEL) {
+                    alert.close();
+                    return;
+                }
             }
 
             try {
@@ -601,9 +588,9 @@ public class PathFinder extends Application {
                 BufferedReader in = new BufferedReader(fr);
                 readNodes(in); //Add saved nodes to graph, draw nodes
                 readConnections(in);
-                loadImage(imageFile);
+                loadImage();
                 in.close();
-
+                unsavedChanges = true;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -641,18 +628,16 @@ public class PathFinder extends Application {
 
         while ((text = in.readLine()) != null) {
             String[] parts = text.split(";");
-            for (int i = 0; i < parts.length; i += 4) { //Every other line
-                String node1 = parts[i];
-                String node2 = parts[i + 1];
-                String edgeName = parts[i + 2];
-                int weight = Integer.parseInt(parts[i + 3]);
+            for (int i = 0; i < parts.length; i += 4) {
+                if (i + 3 < parts.length) {
+                    String node1 = parts[i];
+                    String node2 = parts[i + 1];
+                    String edgeName = parts[i + 2];
+                    int weight = Integer.parseInt(parts[i + 3]);
 
-                //Create connection
-                //System.out.println("Connections: " + connectionCount + "\n" + printConnections());
-                createConnection(node1, node2, edgeName, weight); //creates a 2 sided connection
-
+                    createConnection(node1, node2, edgeName, weight);
+                }
                 connectionCount++;
-
             }
         }
         //System.out.println("Connections: " + graph.printConnections());
@@ -710,8 +695,8 @@ public class PathFinder extends Application {
     private void exitProgram() {
         if (unsavedChanges) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Unsaved Changes");
-            alert.setTitle("There are unsaved changes, do you wish to save before exiting?");
+            alert.setHeaderText("Unsaved Changes");
+            alert.setContentText("There are unsaved changes, do you wish to save before exiting?");
             alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.YES) {
