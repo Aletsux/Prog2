@@ -117,7 +117,11 @@ public class PathFinder extends Application {
 
         showConnectionB = new Button("Show Connection");
         showConnectionB.setOnAction(event -> {
-            showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), false);
+            if (selectedNodes.size() >= 2) {
+                showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), false);
+            } else {
+                noSelectedNodesAlert();
+            }
         });
 
         newPlaceB = new Button("New Place");
@@ -376,6 +380,25 @@ public class PathFinder extends Application {
         return alert;
     }
 
+    private void noSelectedNodesAlert (){
+        Alert newAlert = new Alert(Alert.AlertType.ERROR);
+        newAlert.setTitle("Error!");
+        newAlert.setHeaderText(null);
+        newAlert.setContentText("Two places must be selected!");
+        newAlert.showAndWait();
+    }
+
+//    private void noSelectedNodesAlert() {
+//        Alert alert = new Alert(Alert.AlertType.ERROR);
+//        alert.setTitle("Error!");
+//        alert.setHeaderText("Two places must be selected!");
+//
+//        ButtonType okButton = new ButtonType("OK");
+//        alert.getButtonTypes().setAll(okButton);
+//
+//        alert.showAndWait();
+//    }
+
     private void openConnectionWindow() {
         //Check whether connection exists
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -439,8 +462,10 @@ public class PathFinder extends Application {
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
-        if (from == null || to == null) { //selected less than 2 nodes
-            showErrorMessage("Please select two nodes");
+        if (selectedNodes.size() != 2) { //selected less than 2 nodes
+            System.out.println(selectedNodes);
+            noSelectedNodesAlert();
+           // showErrorMessage("Test");
             return;
         }
 
