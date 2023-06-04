@@ -51,7 +51,6 @@ public class PathFinder extends Application {
     private ImageView imageView;
     private Scene scene;
     private FlowPane flow;
-    private Image mapImage;
 
     //Buttons
     private Button findPathB;
@@ -123,23 +122,23 @@ public class PathFinder extends Application {
         flow.setHgap(10);
 
 
-        mapImage = new Image(imageUrl);
-        imageView = new ImageView(mapImage);
-        imageView.setVisible(false);
-        background = new Pane(imageView);
+        background = new Pane();
         //background.getChildren().add(imageView);
+        imageView = new ImageView();
+        background.getChildren().add(imageView);
 
 
         VBox menus = new VBox(menuBar);
-        menus.setId("menuFile");
 
         Menu archiveMenu = new Menu("File");
+        archiveMenu.setId("menuFile");
         menuBar.getMenus().add(archiveMenu);
 
         //Adding menu items to the 'menu'
         MenuItem mapItem = new MenuItem("New Map");
         mapItem.setId("menuNewMap");
         archiveMenu.getItems().add(mapItem);
+
         mapItem.setOnAction(event -> {
             if (unsavedChanges) {
                 Alert alert = createAlertConf("Unsaved Changes");
@@ -157,6 +156,7 @@ public class PathFinder extends Application {
             unsavedChanges = false;
 
         });
+
 
         MenuItem openItem = new MenuItem("Open");
         openItem.setId("menuOpenFile");
@@ -289,15 +289,14 @@ public class PathFinder extends Application {
 
     //Make this generic, use parameter for path
     private void loadImage() {
-        //Image image = new Image(imageUrl);
-        //imageView.setImage(mapImage);
-        imageView.setVisible(true);
+        Image image = new Image("file:europa.gif");
+        imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
         stage.centerOnScreen();
         stage.setWidth(635);
         stage.setHeight(818);
-        //background.getChildren().add(imageView);
+
     }
 
     private void saveFile() throws IOException {
