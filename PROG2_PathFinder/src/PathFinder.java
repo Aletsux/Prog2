@@ -117,7 +117,7 @@ public class PathFinder extends Application {
         newConnectionB = new Button("New Connection");
         newConnectionB.setId("btnNewConnection");
         newConnectionB.setOnAction(event -> {
-            if (selectedNodes.size() != 2) {
+            if (selectedNodes.size() < 2) {
                 noSelectedNodesAlert();
             } else {
                 openConnectionWindow();
@@ -127,7 +127,13 @@ public class PathFinder extends Application {
 
         changeConnectionB = new Button("Change Connection");
         changeConnectionB.setId("btnChangeConnection");
-        changeConnectionB.setOnAction(event -> showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), true));
+        changeConnectionB.setOnAction(event -> {
+            if (selectedNodes.size() < 2) {
+                noSelectedNodesAlert();
+            } else {
+                showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), true);
+            }
+        });
 
         flow.getChildren().addAll(findPathB, showConnectionB, newPlaceB, newConnectionB, changeConnectionB);
         flow.setAlignment(Pos.CENTER);
