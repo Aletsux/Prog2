@@ -310,7 +310,7 @@ public class PathFinder extends Application {
         }
 
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
-            writer.println("File:" + imageURL);
+            writer.println("File:" + imageUrl);
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         } catch (FileNotFoundException e) {
