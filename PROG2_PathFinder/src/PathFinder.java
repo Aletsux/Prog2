@@ -682,22 +682,20 @@ public class PathFinder extends Application {
         }
     }
 
-    private void exitProgram() {
+    private boolean exitProgram() {
         if (unsavedChanges) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText("Unsaved Changes");
             alert.setContentText("There are unsaved changes, do you wish to save before exiting?");
-            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+            alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.YES) {
-                saveChanges();
-            } else if (result.get() == ButtonType.NO) {
-                unsavedChanges = false;
-            } else {
-                return;
+            if (result.get().getText() == "ok") {
+                return true;
             }
+            alert.close();
         }
-        Platform.exit();
+
+        return false;
     }
 
     private String nameWindow() {
