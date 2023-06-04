@@ -69,12 +69,12 @@ public class PathFinder extends Application {
     private Button newConnectionB;
     private Button changeConnectionB;
     private boolean cursorIsCrossHair = false; // tempo public
+    
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         //SetId
         menuBar.setId("menu");
-        fileMenu().setId("menuFile");
 
 
 
@@ -150,6 +150,7 @@ public class PathFinder extends Application {
         mainField.getChildren().addAll(background, cities);
 
         VBox menus = new VBox(fileMenu());
+        menus.setId("menuFile");
 
 
         //Set position in BorderPane
