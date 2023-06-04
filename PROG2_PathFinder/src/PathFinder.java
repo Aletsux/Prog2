@@ -36,10 +36,10 @@ public class PathFinder extends Application {
     //TestClass testClass = null;
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
-    private URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    private File imageFile = new File(graphUrl.toString()); //Background image
+    URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    File imageFile = new File(graphUrl.toString()); //Background image
 
-    private File graphFile = new File("europa.graph");
+    File graphFile = new File("europa.graph");
     private Scene scene;
 
     private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
@@ -323,16 +323,21 @@ public class PathFinder extends Application {
     }
 
     private void saveFile() throws IOException {
-        try (PrintWriter writer = new PrintWriter(imageFile)) { //'try with resource' -> autoclose 'writer'
-            //writer.println("HELLO!");
+        if (graph.getNodes().isEmpty()) {
+            System.err.println("Graph is empty!");
+        }
+        //System.out.println(printNodes());
+        if (!imageFile.exists()) {
+            System.out.println("File missing?");
+        }
+
+        try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
             writer.println("File:" + graphFile);
-            if (graph.getNodes().isEmpty()) {
-                System.err.println("Graph is empty!");
-            }
             System.out.println("Save nodes!");
             writer.println(printNodes()); //writes out node.toString()
-            //System.out.println(printNodes());
-            //writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
+            writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
+        } catch (FileNotFoundException e) {
+            System.err.println("Error: File not found error");
         }
     }
 
@@ -363,6 +368,7 @@ public class PathFinder extends Application {
         if (unsavedChanges) {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get().getText().equals("OK")) {
+
                 try {
                     saveFile();
 
@@ -519,10 +525,10 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
+                System.out.println("Attempt to save");
                 saveFile();
-
             } catch (IOException e) {
-                System.err.println("Error: saving file");
+
             }
         }
     }
@@ -585,7 +591,7 @@ public class PathFinder extends Application {
 
         while ((text = in.readLine()) != null) {
             String[] parts = text.split(";");
-            for (int i = 0; i < parts.length; i += 4) {
+            for (int i = 0; i < parts.length; i += 4) { //Every other line
                 String node1 = parts[i];
                 String node2 = parts[i + 1];
                 String edgeName = parts[i + 2];
@@ -593,7 +599,7 @@ public class PathFinder extends Application {
 
                 //Create connection
                 //System.out.println("Connections: " + connectionCount + "\n" + printConnections());
-                createConnection(node1, node2, edgeName, weight);
+                createConnection(node1, node2, edgeName, weight); //creates a 2 sided connection
 
                 connectionCount++;
 
@@ -603,24 +609,30 @@ public class PathFinder extends Application {
         System.out.println("Amount: " + connectionCount);
     }
 
-    public String printConnections() {
+
+    private String printNodes() {
         StringBuilder sb = new StringBuilder();
-        for (Object city : graph.getNodes()) {
-            Set<Edge> adjacentEdges = graph.getNodes();
-            City current = (City) city;
-            for (Edge edge : adjacentEdges) {
-                City destination = (City) edge.getDestination();
-                sb.append(current.getName()).append(" to ").append(destination.getName() + ": ").append(edge.getName()).append(";").append(edge.getWeight()).append("\n");
+        for (Object obj : graph.getNodes()) {
+            if (obj instanceof City) {
+                sb.append(obj).append(";");
             }
         }
         return sb.toString();
     }
 
-
-    private String printNodes() {
+    private String printConnections() {
         StringBuilder sb = new StringBuilder();
         for (Object obj : graph.getNodes()) {
-            sb.append(obj).append(";");
+            if (obj instanceof City) {
+                Set<Edge> edges = graph.getEdges(obj);
+                City current = (City) obj;
+                for (Edge e : edges) {
+                    City destination = (City) e.getDestination();
+                    sb.append(current.getName()).append(";").append(destination.getName() + ";").append(e.getName() + ";").append(e.getWeight())
+                            .append("\n");
+                }
+
+            }
         }
         return sb.toString();
     }
@@ -640,7 +652,7 @@ public class PathFinder extends Application {
         }
         createLine(node1, node2);
 
-        if (graph.getEdgeBetween(node1, node2) == null) {
+        if (graph.getEdgeBetween(node1, node2) == null) { //Continue if edge exists?
             graph.connect(node1, node2, name, weight);
         }
     }
