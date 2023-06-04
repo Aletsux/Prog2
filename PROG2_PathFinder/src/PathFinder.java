@@ -76,22 +76,12 @@ public class PathFinder extends Application {
         //SetId
         menuBar.setId("menu");
 
-
-
-        System.out.println(graph.getNodes());
-        System.out.println(Arrays.asList(selectedNodes).toString());
-
-        if (graph.getNodes().isEmpty()) {
-            System.err.println("Data not loaded!");
-        }
-
         //Declare
         primaryStage.setTitle("PathFinder");
 
         //mainField = new Pane();
         //background = new Pane();
         flow = new FlowPane();
-        mainField.setId("outPutArea");
 
         //mainField.getChildren().add(cities);
 
@@ -149,125 +139,9 @@ public class PathFinder extends Application {
 
         mainField.getChildren().addAll(background, cities);
 
-        VBox menus = new VBox(fileMenu());
+        VBox menus = new VBox(menuBar);
         menus.setId("menuFile");
 
-
-        //Set position in BorderPane
-        root.setTop(menus);
-        root.setCenter(flow);
-        //root.setBottom(loadImage(imageFile));
-        root.setBottom(mainField);
-
-
-        BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
-
-        //Create cursor
-        Cursor cursor = Cursor.CROSSHAIR;
-
-        //Show stage
-        scene = new Scene(root);
-
-        primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(windowEvent -> exitProgram()); //Call exit program when closing window
-        primaryStage.show();
-    }
-
-
-    private void clearNodes() { //clear nodes from system, graph.getNodes()
-        Set<Edge> edgesToRemove = new HashSet<>();
-        for (Object city : graph.getNodes()) {
-            edgesToRemove.addAll(graph.getEdges((City) city));
-        }
-        edgesToRemove.clear();
-
-        graph.getNodes().clear();
-
-        if (graph.getNodes().isEmpty()) {
-            System.out.println("All nodes cleared!");
-        }
-        if (edgesToRemove.isEmpty()) {
-            System.out.println("All connections cleared!");
-        }
-    }
-
-
-    private City createCity(String name, double x, double y) {
-        //cities
-        //City node = new City(x, y);
-
-        City city = new City(name, x, y);
-        if (graph.getNodes().contains(city)) {
-            System.out.println("Node already exists");
-            return city;
-        } else {
-            graph.add(city);
-            System.out.println("Node created!");
-        }
-
-        Label label = new Label(name);
-        label.setLayoutX(x + 2);
-        label.setLayoutY(y - 2);
-        cities.getChildren().addAll(label);
-
-
-        cities.getChildren().addAll(city);
-        //EventHandler<MouseEvent> selectCityHandler = new selectCityHandler();
-        //city.setOnMouseClicked(new selectCityHandler());
-        city.setOnMouseClicked(event -> {
-            System.out.println("Set color!");
-            if (selectedNodes.size() < 2 && city.getFill() == Color.BLUE) {
-                selectedNodes.add(city);
-                city.setFill(Color.RED);
-
-            } else {
-                city.setFill(Color.BLUE);
-                selectedNodes.remove(city);
-            }
-            System.out.println("SelectedNodes: " + selectedNodes.toString());
-        });
-        city.setId(name);
-        return city;
-    }
-
-    class cityClickHandler implements EventHandler<MouseEvent> { //Fixed place
-        @Override
-        public void handle(MouseEvent event) {
-            //System.out.println("CLICKED!");
-            //System.out.println("ListGraph: " + graph.getNodes().toString());
-
-            if (event.getSource() instanceof Pane) {
-                System.out.println("City found!");
-            }
-
-            String name = "";
-            if (cursorIsCrossHair) {
-                System.out.println("Mouse clicked");
-                double x = event.getX();
-                //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
-                double y = event.getY() - 62;
-// chats förslag för att cirkeln skapas för lågt ner
-                //double localX = root.sceneToLocal(x, y).getX();
-                // double localY = root.sceneToLocal(x, y).getY();
-                if (cursorIsCrossHair) {
-                    name = nameWindow();
-                    if (name != null) {
-                        createCity(name, x, y);
-                        unsavedChanges = true;
-                    }
-                    disableCrosshair();
-                    newPlaceB.setDisable(false);
-                }
-            }
-
-        }
-    }
-
-    private MenuBar fileMenu() {
-        //A second one is created?
-        //Create a menuBar and add it to the VBox to implement menuItems
-
-        //Create menu for menu functionality
         Menu archiveMenu = new Menu("File");
         menuBar.getMenus().add(archiveMenu);
 
@@ -309,16 +183,10 @@ public class PathFinder extends Application {
         imageItem.setOnAction(event -> {
             //Get scene
             WritableImage result = new WritableImage((int) scene.getWidth(), (int) scene.getHeight());
-            if (scene == null) {
-                System.out.println("Error: scene is null!");
-                return;
-            }
             scene.snapshot(result);
             File outputFile = new File("capture.png");
             try {
                 ImageIO.write(SwingFXUtils.fromFXImage(result, null), "png", outputFile);
-                System.out.println("Snapshot image saved: " + outputFile.getAbsolutePath());
-
             } catch (IOException e) {
                 System.err.println("Error: problem when saving snapshot!");
             }
@@ -331,12 +199,105 @@ public class PathFinder extends Application {
             exitProgram();
         });
 
-        return menuBar;
+
+
+        //Set position in BorderPane
+        root.setTop(menus);
+        root.setCenter(flow);
+        //root.setBottom(loadImage(imageFile));
+        root.setBottom(mainField);
+
+
+        BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
+
+        //Create cursor
+        Cursor cursor = Cursor.CROSSHAIR;
+
+        //Show stage
+        scene = new Scene(root);
+
+        primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(windowEvent -> exitProgram()); //Call exit program when closing window
+        primaryStage.show();
+        cities.setId("outputArea");
     }
+
+
+    private void clearNodes() { //clear nodes from system, graph.getNodes()
+        Set<Edge> edgesToRemove = new HashSet<>();
+        for (Object city : graph.getNodes()) {
+            edgesToRemove.addAll(graph.getEdges((City) city));
+        }
+        edgesToRemove.clear();
+
+        graph.getNodes().clear();
+    }
+
+    private City createCity(String name, double x, double y) {
+        //cities
+        //City node = new City(x, y);
+
+        City city = new City(name, x, y);
+        if (graph.getNodes().contains(city)) {
+            return city;
+        } else {
+            graph.add(city);
+        }
+
+        Label label = new Label(name);
+        label.setLayoutX(x + 2);
+        label.setLayoutY(y - 2);
+        cities.getChildren().addAll(label);
+
+
+        cities.getChildren().addAll(city);
+        //EventHandler<MouseEvent> selectCityHandler = new selectCityHandler();
+        //city.setOnMouseClicked(new selectCityHandler());
+        city.setOnMouseClicked(event -> {
+            if (selectedNodes.size() < 2 && city.getFill() == Color.BLUE) {
+                selectedNodes.add(city);
+                city.setFill(Color.RED);
+
+            } else {
+                city.setFill(Color.BLUE);
+                selectedNodes.remove(city);
+            }
+        });
+        city.setId(name);
+        return city;
+    }
+
+    class cityClickHandler implements EventHandler<MouseEvent> { //Fixed place
+        @Override
+        public void handle(MouseEvent event) {
+
+
+            String name = "";
+            if (cursorIsCrossHair) {
+                double x = event.getX();
+                //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
+                double y = event.getY() - 62;
+// chats förslag för att cirkeln skapas för lågt ner
+                //double localX = root.sceneToLocal(x, y).getX();
+                // double localY = root.sceneToLocal(x, y).getY();
+                if (cursorIsCrossHair) {
+                    name = nameWindow();
+                    if (name != null) {
+                        createCity(name, x, y);
+                        unsavedChanges = true;
+                    }
+                    disableCrosshair();
+                    newPlaceB.setDisable(false);
+                }
+            }
+
+        }
+    }
+
+
 
     //Make this generic, use parameter for path
     private void loadImage() {
-        System.out.println("Attempting load image!");
         Image image = new Image(graphUrl.toString());
         imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
@@ -351,7 +312,6 @@ public class PathFinder extends Application {
 
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
             writer.println("File:" + imageUrl);
-            System.out.println("Save nodes!");
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         } catch (FileNotFoundException e) {
@@ -490,7 +450,6 @@ public class PathFinder extends Application {
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
         if (selectedNodes.size() != 2) { //selected less than 2 nodes
-            System.out.println(selectedNodes);
             noSelectedNodesAlert();
             // showErrorMessage("Test");
             return;
@@ -503,13 +462,11 @@ public class PathFinder extends Application {
 
         //Display alert with information on connection
         Edge edge = graph.getEdgeBetween(from, to);
-        System.out.println("Selected edge: " + edge.toString());
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION); //not null...
         alert.setTitle("Connection");
         alert.setHeaderText("From " + from.getName().toUpperCase() + " to " + to.getName().toUpperCase());
 
-        System.out.println("Visible: " + alert.isShowing());
         HBox hbName = new HBox();
         HBox hbTime = new HBox();
         //VBox vb = new VBox();
@@ -537,7 +494,6 @@ public class PathFinder extends Application {
                 edge.setName(nameField.getText());
                 edgeFrom.setName(nameField.getText());
                 edgeFrom.setWeight(Integer.parseInt(timeField.getText()));
-                System.out.println("Edge: " + edge.getName() + edge.getWeight());
                 unsavedChanges = true;
             }
         } else {
@@ -558,7 +514,6 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
-                System.out.println("Attempt to save");
                 unsavedChanges = false;
                 saveFile();
             } catch (IOException e) {
@@ -573,7 +528,6 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent actionEvent) { //Fix: dialogue layout
             if (!graphFile.exists()) {
-                System.out.println("Error: File doesnt exist!");
             }
             //Confirmation alert
             if (unsavedChanges) {
@@ -613,14 +567,11 @@ public class PathFinder extends Application {
                 double y = Double.parseDouble(parts[i + 2]);
 
                 createCity(name, x, y);
-                System.out.println("Coordinates: " + x + ";" + y);//Draw the node added
             }
         }
-        System.out.println("Nodes: " + graph.getNodes());
     }
 
     private void readConnections(BufferedReader in) throws IOException {
-        System.out.println("Reading connections");
         int connectionCount = 0;
         String text = "";
         for (int i = 0; i < 1; i++) { //Skip first 2 lines
@@ -642,8 +593,6 @@ public class PathFinder extends Application {
 
             }
         }
-        //System.out.println("Connections: " + graph.printConnections());
-        System.out.println("Amount: " + connectionCount);
     }
 
 
@@ -727,13 +676,11 @@ public class PathFinder extends Application {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent()) {
             if (result.get().getText() == "ok") {
-                System.out.println("OK button clicked");
                 String name = nameField.getText();
                 Character.toUpperCase(name.charAt(0));
                 return name;
             }
         }
-        System.out.println("Cancel button clicked");
         dialog.close();
         return null;
     }
