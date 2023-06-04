@@ -84,7 +84,7 @@ public class PathFinder extends Application {
         if (graph.getNodes().isEmpty()) {
             System.err.println("Data not loaded!");
         }
-        
+
         //Declare
         primaryStage.setTitle("PathFinder");
 
@@ -282,14 +282,13 @@ public class PathFinder extends Application {
                     alert.close();
                     return;
                 }
-
-                clearNodes();
-                //Clear all visible nodes
-                Collection<Node> remove = cities.getChildren();
-                cities.getChildren().removeAll(remove); //removes all visual elements
-                unsavedChanges = false;
-
             }
+            clearNodes();
+            //Clear all visible nodes
+            Collection<Node> remove = cities.getChildren();
+            cities.getChildren().removeAll(remove); //removes all visual elements
+            selectedNodes.clear();
+            unsavedChanges = false;
             loadImage();
         });
 
@@ -477,10 +476,11 @@ public class PathFinder extends Application {
             node2x = Double.parseDouble(selectedNodes.get(1).getxPos());
             node2y = Double.parseDouble(selectedNodes.get(1).getyPos()) - radius;
         } else {
+            radius = nodeFrom.getRadius();
             node1x = Double.parseDouble(nodeFrom.getxPos());
-            node1y = Double.parseDouble(nodeFrom.getyPos());
+            node1y = Double.parseDouble(nodeFrom.getyPos()) - radius;
             node2x = Double.parseDouble(nodeTo.getxPos());
-            node2y = Double.parseDouble(nodeTo.getyPos());
+            node2y = Double.parseDouble(nodeTo.getyPos()) - radius;
         }
 
         Line line = new Line(node1x, node1y, node2x, node2y);
@@ -623,7 +623,7 @@ public class PathFinder extends Application {
         System.out.println("Reading connections");
         int connectionCount = 0;
         String text = "";
-        for (int i = 0; i < 2; i++) { //Skip first 2 lines
+        for (int i = 0; i < 1; i++) { //Skip first 2 lines
             in.readLine();
         }
 
@@ -637,8 +637,9 @@ public class PathFinder extends Application {
                     int weight = Integer.parseInt(parts[i + 3]);
 
                     createConnection(node1, node2, edgeName, weight);
+                    connectionCount++;
                 }
-                connectionCount++;
+
             }
         }
         //System.out.println("Connections: " + graph.printConnections());
