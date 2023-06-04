@@ -1,19 +1,16 @@
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
 import java.util.Objects;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
 public class City<N> extends Circle {
+    private static double RADIUS = 10;
     private String name = "";
-    private double xPos;
-    private double yPos;
+    private double xpos;
+    private double ypos;
     private boolean blue = true;
 
-    public static double RADIUS = 10;
 
     public City(double x, double y) {
         super(x, y, RADIUS);
@@ -25,8 +22,8 @@ public class City<N> extends Circle {
         super(x, y, RADIUS);
         setCenterY(getCenterY() - RADIUS);
         this.name = name;
-        xPos = x;
-        yPos = y;
+        xpos = x;
+        ypos = y;
         setFill(Color.BLUE);
         blue = true;
 
@@ -46,11 +43,11 @@ public class City<N> extends Circle {
     }
 
     public String getxPos() {
-        return "" + xPos;
+        return "" + xpos;
     }
 
     public String getyPos() {
-        return "" + yPos;
+        return "" + ypos;
     }
 
     @Override
@@ -68,7 +65,7 @@ public class City<N> extends Circle {
 
         if (other instanceof City) {
             City c = (City) other;
-            return name.equals(c.name) && xPos == c.xPos && yPos == c.yPos;
+            return name.equals(c.name) && xpos == c.xpos && ypos == c.ypos;
         } else {
             return false;
         }
