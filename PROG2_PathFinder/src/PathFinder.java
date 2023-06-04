@@ -51,7 +51,7 @@ public class PathFinder extends Application {
         return graph;
     }
 
-    private boolean unsavedChanges = false;
+    private boolean unsavedChanges = false; //WIP
     private MenuBar menuBar = new MenuBar();
     //Panes
     private BorderPane root;
@@ -65,7 +65,6 @@ public class PathFinder extends Application {
     private Button newPlaceB;
     private Button newConnectionB;
     private Button changeConnectionB;
-
     public boolean cursorIsCrossHair = false; // tempo public
 
     @Override
@@ -98,12 +97,10 @@ public class PathFinder extends Application {
         scene = new Scene(root);
 
 
-        // Background
-        File imageFile = new File(graphUrl.toString());
+        //Background
         Image image = new Image(imageFile.toString());
         ImageView imageView = new ImageView(image);
         background.getChildren().add(imageView);
-
 
         mainField.getChildren().addAll(background, cities);
 
@@ -243,7 +240,9 @@ public class PathFinder extends Application {
                 // double localY = root.sceneToLocal(x, y).getY();
                 if (cursorIsCrossHair) {
                     name = nameWindow();
-                    createCity(name, x, y);
+                    if (name != null) {
+                        createCity(name, x, y);
+                    }
                     disableCrosshair();
                     newPlaceB.setDisable(false);
                 }
@@ -266,6 +265,7 @@ public class PathFinder extends Application {
         MenuItem mapItem = new MenuItem("New Map");
         archiveMenu.getItems().add(mapItem);
         mapItem.setOnAction(event -> {
+
             if (unsavedChanges) {
                 createAlertConf("Unsaved Changes");
             }
@@ -462,6 +462,7 @@ public class PathFinder extends Application {
 
         //Display alert with information on connection
         Edge edge = graph.getEdgeBetween(from, to);
+        System.out.println("Selected edge: " + edge.toString());
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION); //not null...
         alert.setTitle("Connection");
@@ -482,22 +483,28 @@ public class PathFinder extends Application {
         hbName.setAlignment(Pos.CENTER);
         hbTime.getChildren().addAll(time, timeField);
         hbTime.setAlignment(Pos.CENTER);
+        alert.getDialogPane().setContent(new VBox(hbName, hbTime));
 
+        Optional<ButtonType> result = alert.showAndWait();
         if (edit) { //To be tested
             nameField.setEditable(true);
             timeField.setEditable(true);
-            Optional<ButtonType> result = alert.showAndWait();
+
             if (result.get() == ButtonType.OK) {
+                Edge edgeFrom = graph.getEdgeBetween(to, from);
                 edge.setWeight(Integer.parseInt(timeField.getText()));
                 edge.setName(nameField.getText());
+                edgeFrom.setName(nameField.getText());
+                edgeFrom.setWeight(Integer.parseInt(timeField.getText()));
+                System.out.println("Edge: " + edge.getName() + edge.getWeight());
             }
         } else {
             nameField.setEditable(false);
             timeField.setEditable(false);
         }
 
-        alert.getDialogPane().setContent(new VBox(hbName, hbTime));
-        alert.showAndWait();
+
+        //alert.showAndWait();
     }
 
     private void showErrorMessage(String message) {
@@ -670,18 +677,16 @@ public class PathFinder extends Application {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent()) {
-            System.out.println("OK button clicked");
             if (result.get().getText() == "ok") {
+                System.out.println("OK button clicked");
                 String name = nameField.getText();
                 Character.toUpperCase(name.charAt(0));
                 return name;
             }
-        } else {
-            System.out.println("Cancel button clicked");
-            dialog.close();
-            return null;
         }
-        return "";
+        System.out.println("Cancel button clicked");
+        dialog.close();
+        return null;
     }
 
     private void findPath() { //Fixed
