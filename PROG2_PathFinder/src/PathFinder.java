@@ -36,8 +36,8 @@ public class PathFinder extends Application {
     //TestClass testClass = null;
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
-    URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    String imageUrl = "europa.gif";//Background image
+    //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    String imageUrl = "file:europa.gif";//Background image
     File graphFile = new File("europa.graph");
 
     //Background
@@ -69,7 +69,7 @@ public class PathFinder extends Application {
     private Button newConnectionB;
     private Button changeConnectionB;
     private boolean cursorIsCrossHair = false; // tempo public
-    
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -200,7 +200,6 @@ public class PathFinder extends Application {
         });
 
 
-
         //Set position in BorderPane
         root.setTop(menus);
         root.setCenter(flow);
@@ -231,6 +230,7 @@ public class PathFinder extends Application {
         edgesToRemove.clear();
 
         graph.getNodes().clear();
+
     }
 
     private City createCity(String name, double x, double y) {
@@ -295,10 +295,9 @@ public class PathFinder extends Application {
     }
 
 
-
     //Make this generic, use parameter for path
     private void loadImage() {
-        Image image = new Image(graphUrl.toString());
+        Image image = new Image(imageUrl);
         imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
