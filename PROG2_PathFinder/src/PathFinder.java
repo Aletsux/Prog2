@@ -37,7 +37,7 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
     URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    String imageUrl = "europa.gif";//Background image
+    File imageFile = new File(graphUrl.toString()); //Background image
     File graphFile = new File("europa.graph");
 
     //Background
@@ -69,7 +69,7 @@ public class PathFinder extends Application {
     private Button newConnectionB;
     private Button changeConnectionB;
     private boolean cursorIsCrossHair = false; // tempo public
-    
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -200,7 +200,6 @@ public class PathFinder extends Application {
         });
 
 
-
         //Set position in BorderPane
         root.setTop(menus);
         root.setCenter(flow);
@@ -295,7 +294,6 @@ public class PathFinder extends Application {
     }
 
 
-
     //Make this generic, use parameter for path
     private void loadImage() {
         Image image = new Image(graphUrl.toString());
@@ -311,7 +309,7 @@ public class PathFinder extends Application {
         }
 
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
-            writer.println("File:" + imageUrl);
+            writer.println("File:" + imageFile);
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         } catch (FileNotFoundException e) {
