@@ -37,8 +37,7 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
     //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    //File imageFile = new File(graphUrl.toString()); //Background image
-    private String imageURL = "europa.gif";
+    String imageUrl = "file:europa.gif";//Background image
     File graphFile = new File("europa.graph");
 
     //Background
@@ -231,6 +230,7 @@ public class PathFinder extends Application {
         edgesToRemove.clear();
 
         graph.getNodes().clear();
+
     }
 
     private City createCity(String name, double x, double y) {
@@ -297,7 +297,7 @@ public class PathFinder extends Application {
 
     //Make this generic, use parameter for path
     private void loadImage() {
-        Image image = new Image(imageURL);
+        Image image = new Image(imageUrl);
         imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
