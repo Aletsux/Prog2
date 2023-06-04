@@ -125,7 +125,7 @@ public class PathFinder extends Application {
 
         newConnectionB = new Button("New Connection");
         newConnectionB.setOnAction(event -> {
-            if (selectedNodes.size() != 2){
+            if (selectedNodes.size() != 2) {
                 noSelectedNodesAlert();
             } else {
                 openConnectionWindow();
@@ -392,7 +392,7 @@ public class PathFinder extends Application {
         return alert;
     }
 
-    private void noSelectedNodesAlert (){
+    private void noSelectedNodesAlert() {
         Alert newAlert = new Alert(Alert.AlertType.ERROR);
         newAlert.setTitle("Error!");
         newAlert.setHeaderText(null);
@@ -447,7 +447,7 @@ public class PathFinder extends Application {
                 if (nameInput.isEmpty() && !timeInput.matches("\\d+")) {
                     showErrorMessage("Input is not valid. Name cannot be empty and Time must contain a numeric value");
                     return;
-                } else if(!timeInput.matches("\\d+")) {
+                } else if (!timeInput.matches("\\d+")) {
                     showErrorMessage("Input is not valid. Time must contain numeric value");
                     return;
                 } else if (nameInput.isEmpty()) {
@@ -455,7 +455,7 @@ public class PathFinder extends Application {
                     return;
                 }
 
-                createLine();
+                createLine(null, null);
 
 
                 //create a connection from first node to second node
@@ -496,7 +496,7 @@ public class PathFinder extends Application {
         if (selectedNodes.size() != 2) { //selected less than 2 nodes
             System.out.println(selectedNodes);
             noSelectedNodesAlert();
-           // showErrorMessage("Test");
+            // showErrorMessage("Test");
             return;
         }
 
