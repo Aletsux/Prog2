@@ -36,8 +36,9 @@ public class PathFinder extends Application {
     //TestClass testClass = null;
     //ListGraph listGraph = testClass.getListGraph();
     private ListGraph graph = new ListGraph();
-    URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    File imageFile = new File(graphUrl.toString()); //Background image
+    //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    //File imageFile = new File(graphUrl.toString()); //Background image
+    private String imageURL = "europa.gif";
     File graphFile = new File("europa.graph");
 
     //Background
@@ -296,7 +297,7 @@ public class PathFinder extends Application {
 
     //Make this generic, use parameter for path
     private void loadImage() {
-        Image image = new Image(graphUrl.toString());
+        Image image = new Image(imageURL);
         imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
@@ -309,7 +310,7 @@ public class PathFinder extends Application {
         }
 
         try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
-            writer.println("File:" + imageFile);
+            writer.println("File:" + imageURL);
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
         } catch (FileNotFoundException e) {
