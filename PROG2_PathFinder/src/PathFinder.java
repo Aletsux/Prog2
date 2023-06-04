@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -35,9 +34,8 @@ public class PathFinder extends Application {
     //ListGraph listGraph = testClass.getListGraph();
     private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
     //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
-    private ListGraph graph = new ListGraph();
+    private ListGraph<City> graph = new ListGraph<>();
     private File graphFile = new File("europa.graph");
-    private Pane cities = new Pane(); //Important positioning
     private Pane mainField = new Pane();
     private MenuBar menuBar = new MenuBar();
     private BorderPane root = new BorderPane();
@@ -47,7 +45,6 @@ public class PathFinder extends Application {
 
     //Background
     //Image image = new Image(imageFile.toString());
-    private Pane background;
     private ImageView imageView;
     private Scene scene;
     private FlowPane flow;
@@ -71,8 +68,6 @@ public class PathFinder extends Application {
         //background = new Pane();
         flow = new FlowPane();
 
-        //mainField.getChildren().add(cities);
-
 
         //Flow
         findPathB = new Button("Find Path");
@@ -90,27 +85,35 @@ public class PathFinder extends Application {
         });
 
         newPlaceB = new Button("New Place");
-        newPlaceB.setId("btnNewPlace");
-        // handles newPlace Button
+        //newPlaceB.setId("btnNewPlace");
         newPlaceB.setOnAction(event -> {
             cursorIsCrossHair = true;
             //sets cursor to crosshair, and disables newPlace button
             if (cursorIsCrossHair) {
                 scene.setCursor(Cursor.CROSSHAIR);
                 newPlaceB.setDisable(true);
-                scene.setOnMousePressed(new CityClickHandler());
+                mainField.setOnMousePressed(new CityClickHandler());
             }
         });
+        newPlaceB.setId("btnNewPlace");
 
         newConnectionB = new Button("New Connection");
-        newConnectionB.setId("btnNewConnection");
         newConnectionB.setOnAction(event -> {
+
+            if (selectedNodes.size() == 2) {
+                if (graph.getEdgeBetween(selectedNodes.get(0), selectedNodes.get(1)) != null) {
+                    showErrorMessage("Connection already exist between the two destinations.");
+                    return;
+                }
+            }
+
             if (selectedNodes.size() < 2) {
                 noSelectedNodesAlert();
             } else {
                 openConnectionWindow();
             }
         });
+        newConnectionB.setId("btnNewConnection");
 
 
         changeConnectionB = new Button("Change Connection");
@@ -128,11 +131,10 @@ public class PathFinder extends Application {
         flow.setHgap(10);
 
 
-        background = new Pane();
+        //background = new Pane();
         //background.getChildren().add(imageView);
         imageView = new ImageView();
-        background.getChildren().add(imageView);
-
+        mainField.getChildren().add(imageView);
 
         VBox menus = new VBox(menuBar);
 
@@ -142,9 +144,6 @@ public class PathFinder extends Application {
 
         //Adding menu items to the 'menu'
         MenuItem mapItem = new MenuItem("New Map");
-        mapItem.setId("menuNewMap");
-        archiveMenu.getItems().add(mapItem);
-
         mapItem.setOnAction(event -> {
             if (unsavedChanges) {
                 Alert alert = createAlertConf("Unsaved Changes");
@@ -153,15 +152,21 @@ public class PathFinder extends Application {
                     return;
                 }
             }
-            loadImage();
-            clearNodes();
-            //Clear all visible nodes
-            Collection<Node> remove = cities.getChildren();
-            cities.getChildren().removeAll(remove); //removes all visual elements
-            selectedNodes.clear();
-            unsavedChanges = false;
+            //loadImage();
+            Image image = new Image(imageUrl);
+            imageView.setImage(image);
+            Stage stage = (Stage) flow.getScene().getWindow();
+            stage.sizeToScene();
+            stage.centerOnScreen();
 
+
+            clearNodes();
+
+
+            unsavedChanges = false;
         });
+        mapItem.setId("menuNewMap");
+        archiveMenu.getItems().add(mapItem);
 
 
         MenuItem openItem = new MenuItem("Open");
@@ -197,7 +202,7 @@ public class PathFinder extends Application {
             exitProgram();
         });
 
-        mainField.getChildren().addAll(background, cities);
+        //mainField.getChildren().addAll(background);
         //Set position in BorderPane
         root.setTop(menus);
         root.setCenter(flow);
@@ -216,28 +221,31 @@ public class PathFinder extends Application {
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(windowEvent -> exitProgram()); //Call exit program when closing window
         primaryStage.show();
-        cities.setId("outputArea");
+        mainField.setId("outputArea");
     }
 
 
     private void clearNodes() { //clear nodes from system, graph.getNodes()
+        //Clear all visible nodes
+        mainField.getChildren().clear();
+        mainField.getChildren().add(imageView); //removes all visual elements
+        selectedNodes.clear();
+
         Set<Edge> edgesToRemove = new HashSet<>();
         for (Object city : graph.getNodes()) {
             edgesToRemove.addAll(graph.getEdges((City) city));
         }
-        edgesToRemove.clear();
+        edgesToRemove.clear(); //removes all edges
 
-        graph.getNodes().clear();
-
+        graph.getNodes().clear(); //removes all nodes
+        //graph = new ListGraph<>();
     }
 
-    private City createCity(String name, double x, double y) {
-        //cities
-        //City node = new City(x, y);
+    private void createCity(String name, double x, double y) {
 
-        City city = new City(name, x, y);
+        City city = new City(name, x, y + 10); //Position is off by +10
         if (graph.getNodes().contains(city)) {
-            return city;
+            return;
         } else {
             graph.add(city);
         }
@@ -245,11 +253,8 @@ public class PathFinder extends Application {
         Label label = new Label(name);
         label.setLayoutX(x + 2);
         label.setLayoutY(y - 2);
-        cities.getChildren().addAll(label);
 
 
-        cities.getChildren().addAll(city);
-        //EventHandler<MouseEvent> selectCityHandler = new selectCityHandler();
         //city.setOnMouseClicked(new selectCityHandler());
         city.setOnMouseClicked(event -> {
             if (selectedNodes.size() < 2 && city.getFill() == Color.BLUE) {
@@ -262,28 +267,47 @@ public class PathFinder extends Application {
             }
         });
         city.setId(name);
-        return city;
+        mainField.getChildren().addAll(city, label);
+        unsavedChanges = true;
     }
 
     class CityClickHandler implements EventHandler<MouseEvent> { //Fixed place
         @Override
         public void handle(MouseEvent event) {
-
-
             String name = "";
             if (cursorIsCrossHair) {
                 double x = event.getX();
                 //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
-                double y = event.getY() - 62;
-// chats förslag för att cirkeln skapas för lågt ner
+                double y = event.getY(); //-62 from scene
                 //double localX = root.sceneToLocal(x, y).getX();
                 // double localY = root.sceneToLocal(x, y).getY();
                 if (cursorIsCrossHair) {
-                    name = nameWindow();
-                    if (name != null) {
-                        createCity(name, x, y);
-                        unsavedChanges = true;
+                    int nrNodes = 1;
+                    for (Object obj : graph.getNodes()) {
+                        nrNodes++;
                     }
+                    Dialog<ButtonType> dialog = new Dialog<>();
+                    dialog.setTitle("Name");
+                    dialog.setHeaderText("Name of place:");
+
+                    javafx.scene.control.TextField nameField = new javafx.scene.control.TextField("Node" + nrNodes);
+
+                    ButtonType okButton = new ButtonType("OK");
+                    ButtonType cancelButton = new ButtonType("CLOSE");
+                    dialog.getDialogPane().setContent(new HBox(10, nameField));
+                    dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
+
+                    Optional<ButtonType> result = dialog.showAndWait();
+                    if (result.isPresent()) {
+                        if (result.get().getText().equals("OK")) {
+                            name = nameField.getText();
+                            Character.toUpperCase(name.charAt(0));
+                            createCity(name, x, y);
+                        }
+                    }
+                    dialog.close();
+
+
                     disableCrosshair();
                     newPlaceB.setDisable(false);
                 }
@@ -295,13 +319,11 @@ public class PathFinder extends Application {
 
     //Make this generic, use parameter for path
     private void loadImage() {
-        Image image = new Image("file:europa.gif");
+        Image image = new Image(imageUrl);
         imageView.setImage(image);
         Stage stage = (Stage) flow.getScene().getWindow();
         stage.sizeToScene();
         stage.centerOnScreen();
-        stage.setWidth(635);
-        stage.setHeight(818);
 
     }
 
@@ -310,7 +332,7 @@ public class PathFinder extends Application {
             System.err.println("Graph is empty!");
         }
 
-        try (PrintWriter writer = new PrintWriter(graphFile)) { //'try with resource' -> autoclose 'writer'
+        try (PrintWriter writer = new PrintWriter(new FileWriter(graphFile))) { //'try with resource' -> autoclose 'writer'
             writer.println(imageUrl);
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
@@ -386,21 +408,15 @@ public class PathFinder extends Application {
         hbTime.getChildren().addAll(time, timeField);
         hbTime.setAlignment(Pos.CENTER);
 
-        ButtonType okButton = new ButtonType("ok");
+        ButtonType okButton = new ButtonType("OK");
         dialog.getDialogPane().setContent(new VBox(hbName, hbTime));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
 
         dialog.showAndWait().ifPresent(buttonType -> {
-            if (buttonType.getText().equals("ok")) {
+            if (buttonType.getText().equals("OK")) {
                 String nameInput = nameField.getText();
                 String timeInput = timeField.getText();
-
-
-                if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
-                    showErrorMessage("Connection already exist between the two destinations.");
-                    return;
-                }
 
                 if (nameInput.isEmpty() && !timeInput.matches("\\d+")) {
                     showErrorMessage("Input is not valid. Name cannot be empty and Time must contain a numeric value");
@@ -445,7 +461,8 @@ public class PathFinder extends Application {
 
         Line line = new Line(node1x, node1y, node2x, node2y);
         line.setStrokeWidth(2);
-        cities.getChildren().add(line);
+        line.setDisable(true);
+        mainField.getChildren().add(line);
     }
 
     public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
@@ -527,8 +544,6 @@ public class PathFinder extends Application {
     class OpenHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent actionEvent) { //Fix: dialogue layout
-            if (!graphFile.exists()) {
-            }
             //Confirmation alert
             if (unsavedChanges) {
                 Alert alert = createAlertConf("Unsaved Changes");
@@ -539,6 +554,7 @@ public class PathFinder extends Application {
             }
 
             try {
+                clearNodes();
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
                 readNodes(in); //Add saved nodes to graph, draw nodes
@@ -554,10 +570,13 @@ public class PathFinder extends Application {
 
     //Reads each line, splits it and creates new nodes based on parts
     private void readNodes(BufferedReader in) throws IOException { //Fixed!
+        String firstLine = in.readLine();
+        if (firstLine.contains("file")) {
+            imageUrl = firstLine;
+        }
         String text = "";
-        in.readLine(); //skip first line
+        //Read first line, set url
         int cityCount = 0;
-
         text = in.readLine();
         if (text != null) {
             String[] parts = text.split(";");
@@ -608,16 +627,13 @@ public class PathFinder extends Application {
 
     private String printConnections() {
         StringBuilder sb = new StringBuilder();
-        for (Object obj : graph.getNodes()) {
-            if (obj instanceof City) {
-                Set<Edge> edges = graph.getEdges(obj);
-                City current = (City) obj;
-                for (Edge e : edges) {
-                    City destination = (City) e.getDestination();
-                    sb.append(current.getName()).append(";").append(destination.getName() + ";").append(e.getName() + ";").append(e.getWeight())
-                            .append("\n");
-                }
-
+        for (City obj : graph.getNodes()) {
+            Set<Edge<City>> edges = graph.getEdges(obj);
+            City current = (City) obj;
+            for (Edge e : edges) {
+                City destination = (City) e.getDestination();
+                sb.append(current.getName()).append(";").append(destination.getName() + ";").append(e.getName() + ";").append(e.getWeight())
+                        .append("\n");
             }
         }
         return sb.toString();
@@ -662,20 +678,24 @@ public class PathFinder extends Application {
     }
 
     private String nameWindow() {
+        int nrNodes = 1;
+        for (Object obj : graph.getNodes()) {
+            nrNodes++;
+        }
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Name");
         dialog.setHeaderText("Name of place:");
 
-        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField("Node1");
+        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField("Node" + nrNodes);
 
-        ButtonType okButton = new ButtonType("ok");
+        ButtonType okButton = new ButtonType("OK");
         ButtonType cancelButton = new ButtonType("close");
         dialog.getDialogPane().setContent(new HBox(10, nameField));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent()) {
-            if (result.get().getText().equals("ok")) {
+            if (result.get().getText().equals("OK")) {
                 String name = nameField.getText();
                 Character.toUpperCase(name.charAt(0));
                 return name;
@@ -691,7 +711,7 @@ public class PathFinder extends Application {
             Collections.reverse(path);
             TextArea result = new TextArea();
 
-            javafx.scene.control.Dialog<Boolean> dialog = new javafx.scene.control.Dialog<>();
+            javafx.scene.control.Dialog<ButtonType> dialog = new javafx.scene.control.Dialog<>();
             dialog.setTitle("Message");
             dialog.setHeaderText("The path from " + selectedNodes.get(0).getName() + " to " + selectedNodes.get(1).getName());
 
@@ -702,19 +722,18 @@ public class PathFinder extends Application {
                 message.append("to " + cityToPrint.getName() + " by " + edge.getName() + " takes " + edge.getWeight()).append("\n");
                 totalweight += edge.getWeight();
             }
-            result.setText(message.toString() + "\n" + "total " + totalweight);
+            message.append("Total " + totalweight);
+            result.setText(message.toString());
 
-            ButtonType okButton = new ButtonType("ok");
+            ButtonType okButton = new ButtonType("OK");
             dialog.getDialogPane().setContent(result);
             dialog.getDialogPane().getButtonTypes().addAll(okButton);
 
-            dialog.setResultConverter(buttonType -> {
-                if (okButton == ButtonType.OK) {
-                    return true;
-                }
-                return false;
-            });
-            dialog.showAndWait();
+            Optional<ButtonType> clickResult = dialog.showAndWait();
+            if (clickResult.isPresent()) {
+                dialog.close();
+            }
+
         } else {
             showErrorMessage("Connection must be selected.");
         }
