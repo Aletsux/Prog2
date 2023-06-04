@@ -128,8 +128,13 @@ public class PathFinder extends Application {
 
         newConnectionB = new Button("New Connection");
         newConnectionB.setOnAction(event -> {
-            openConnectionWindow();
+            if (selectedNodes.size() != 2){
+                noSelectedNodesAlert();
+            } else {
+                openConnectionWindow();
+            }
         });
+
 
         changeConnectionB = new Button("Change Connection");
         changeConnectionB.setOnAction(event -> showConnectionHandler(selectedNodes.get(0), selectedNodes.get(1), true));
@@ -429,17 +434,26 @@ public class PathFinder extends Application {
                 String nameInput = nameField.getText();
                 String timeInput = timeField.getText();
 
-                createLine();
 
                 if (graph.pathExists(selectedNodes.get(0), selectedNodes.get(1))) {
                     showErrorMessage("Connection already exist between the two destinations.");
                     return;
                 }
 
-                if (nameInput.isEmpty() || !timeInput.matches("\\d+")) {
+                if (nameInput.isEmpty() && !timeInput.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Name cannot be empty and Time must contain a numeric value");
+                    return;
+                } else if(!timeInput.matches("\\d+")) {
+                    showErrorMessage("Input is not valid. Time must contain numeric value");
+                    return;
+                } else if (nameInput.isEmpty()) {
                     showErrorMessage("Input is not valid. Name cannot be empty.");
                     return;
                 }
+
+                createLine();
+
+
                 //create a connection from first node to second node
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
                 //createConnection(name, Integer.parseInt(time));
