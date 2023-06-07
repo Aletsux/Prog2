@@ -9,14 +9,7 @@ public class City<N> extends Circle {
     private String name = "";
     private double xpos;
     private double ypos;
-    private boolean blue = true;
-
-
-    public City(double x, double y) {
-        super(x, y, RADIUS);
-        setCenterY(getCenterY() - RADIUS);
-        setFill(Color.BLUE);
-    }
+    private boolean blue;
 
     public City(String name, double x, double y) {
         super(x, y, RADIUS);
@@ -26,7 +19,6 @@ public class City<N> extends Circle {
         ypos = y;
         setFill(Color.BLUE);
         blue = true;
-
     }
 
     public void toggleColor() {
@@ -52,24 +44,12 @@ public class City<N> extends Circle {
 
     @Override
     public boolean equals(Object other) {
-//        if (other instanceof City city) {
-//            return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos;
-//        } else {
-//            return false;
-//        }
-//        if (other instanceof City city) {
-//            return name.equals(city.name) && xPos == city.xPos && yPos == city.yPos && clickCount == city.clickCount;
-//        } else {
-//            return false;
-//        }
-
         if (other instanceof City) {
             City c = (City) other;
             return name.equals(c.name) && xpos == c.xpos && ypos == c.ypos;
         } else {
             return false;
         }
-
     }
 
     @Override
@@ -81,6 +61,4 @@ public class City<N> extends Circle {
     public String toString() {
         return name + ";" + getxPos() + ";" + getyPos();
     }
-
-
 }
