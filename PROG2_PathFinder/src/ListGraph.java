@@ -9,7 +9,6 @@ ToDo:
  */
 
 public class ListGraph<N> implements Graph<N> {
-    //LinkedList<N> existingNodes = new LinkedList<>();
 
     //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
@@ -17,11 +16,9 @@ public class ListGraph<N> implements Graph<N> {
 
     public void add(N node) {
         if (adjacentNodes.containsKey(node)) {
-            //System.err.println("Error: Node already exists!");
             return;
         }
-        //existingNodes.add(node);
-        adjacentNodes.putIfAbsent(node, new HashSet<Edge<N>>());
+        adjacentNodes.putIfAbsent(node, new HashSet<>());
     }
 
     // I1 - Should throw IllegalStateException
@@ -198,7 +195,7 @@ public class ListGraph<N> implements Graph<N> {
 
 
     @Override
-    public void disconnect(N node1, N node2) { //Doesnt work in 'l1'?
+    public void disconnect(N node1, N node2) {
 
         if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException("Nodes not registered in the system");
@@ -207,8 +204,8 @@ public class ListGraph<N> implements Graph<N> {
             throw new IllegalStateException("No connection between the nodes exists");
         }
 
-        if (node1 instanceof String) { //Seperate solutions for I1 and TestClass
-            Edge edgeFrom = getEdgeBetween(node1, node2); //Works for I1, ConcurrentModificationException for TestClass
+        if (node1 instanceof String) {
+            Edge edgeFrom = getEdgeBetween(node1, node2);
             //iterate over connectionsFrom, remove edges from other nodes
             Set<Edge<N>> connectionsFrom = adjacentNodes.get(edgeFrom.getDestination());
             for (Edge<N> edge : connectionsFrom) {
@@ -218,7 +215,6 @@ public class ListGraph<N> implements Graph<N> {
                 }
             }
 
-            //Edge edgeTo = getEdgeBetween(node1, node2);
             //Iterate over connectionsTo, remove edges to other nodes
             Set<Edge<N>> connectionsTo = adjacentNodes.get(node2);
             for (Edge<N> edge : connectionsTo) {
@@ -229,17 +225,13 @@ public class ListGraph<N> implements Graph<N> {
             }
         }
 
-        //Edge edgeFrom = getEdgeBetween(node1, node2);
         //iterate over connectionsFrom, remove edges from other nodes
-        Set<Edge<N>> connections = adjacentNodes.get(node2);
         Set<Edge<N>> adjacentEdgesFrom = adjacentNodes.get(node2);
         Set<Edge<N>> adjacentEdgesTo = adjacentNodes.get(node1);
-        for (Edge<N> edge : connections) {
-            if (edge.getDestination() == node1) {
-                adjacentEdgesFrom.removeIf(e -> e.getDestination().equals(node1));
-            } else if (adjacentEdgesFrom.isEmpty()) {
-                adjacentEdgesTo.removeIf(e -> e.getDestination().equals(node2));
-            }
+
+        adjacentEdgesFrom.removeIf(e -> e.getDestination().equals(node1));
+        if (adjacentEdgesFrom.isEmpty()) {
+            adjacentEdgesTo.removeIf(e -> e.getDestination().equals(node2));
         }
     }
 
@@ -254,17 +246,16 @@ public class ListGraph<N> implements Graph<N> {
             return false;
         }
 
-        // Set<N> visited = new HashSet<>();
         depthFirstSearch(node1, node2, visited, new Stack<>());
         return visited.contains(node2);
     }
 
     @Override
-    public List<Edge<N>> getPath(N node1, N node2) {
+    public List<Edge<N>> getPath(N nodeFrom, N nodeTo) {
         Set<N> visited = new HashSet<>();
         Stack<Edge<N>> stack = new Stack<>();
 
-        depthFirstSearch(node1, node2, visited, stack);
+        depthFirstSearch(nodeFrom, nodeTo, visited, stack);
 
         if (stack.isEmpty()) {
             // If there is no path between the nodes, return null
@@ -279,11 +270,9 @@ public class ListGraph<N> implements Graph<N> {
 
     private List<Edge<N>> depthFirstSearch(N node1, N node2, Set<N> visited, Stack<Edge<N>> stack) {
         visited.add(node1);
-
         if (node1.equals(node2)) {
             return new ArrayList<>(stack);
         }
-
         for (Edge<N> edge : adjacentNodes.get(node1)) {
             if (!visited.contains(edge.getDestination())) {
                 stack.push(edge);
@@ -296,5 +285,4 @@ public class ListGraph<N> implements Graph<N> {
         }
         return null;
     }
-
 }
