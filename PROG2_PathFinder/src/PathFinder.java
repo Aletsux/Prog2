@@ -468,7 +468,7 @@ public class PathFinder extends Application {
     //Open button handler
     class OpenHandler implements EventHandler<ActionEvent> {
         @Override
-        public void handle(ActionEvent actionEvent) { //Fix: dialogue layout
+        public void handle(ActionEvent actionEvent) {
             //Confirmation alert
             if (unsavedChanges) {
                 Alert alert = createAlertConf("Unsaved changes, continue anyway?");
@@ -481,7 +481,7 @@ public class PathFinder extends Application {
                 clearNodes();
                 FileReader fr = new FileReader(graphFile);
                 BufferedReader in = new BufferedReader(fr);
-                readNodes(in); //Add saved nodes to graph, draw nodes
+                readNodes(in);
                 readConnections(in);
                 loadImage();
                 in.close();
@@ -580,14 +580,14 @@ public class PathFinder extends Application {
         }
         createLine(node1, node2);
 
-        if (graph.getEdgeBetween(node1, node2) == null) { //Continue if edge exists?
+        if (graph.getEdgeBetween(node1, node2) == null) {
             graph.connect(node1, node2, name, weight);
         }
     }
 
     private void findPath() {
         if (selectedNodes.size() == 2) {
-            List<Edge<City>> path = graph.getPath(selectedNodes.get(0), selectedNodes.get(1)); //sends reverse!
+            List<Edge<City>> path = graph.getPath(selectedNodes.get(0), selectedNodes.get(1));
             Collections.reverse(path);
             TextArea result = new TextArea();
 
