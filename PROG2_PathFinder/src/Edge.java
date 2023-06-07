@@ -1,7 +1,6 @@
-// Edge<N> - Generic type Edge
 public class Edge<N> {
 
-    // weight - int?
+
     private String name;
     private int weight;
     private N destination;
