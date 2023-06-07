@@ -576,7 +576,8 @@ public class PathFinder extends Application {
         //Read first line, set url
         int cityCount = 0;
         text = in.readLine();
-        if (text != null) {
+
+        if (!text.isBlank()) {
             String[] parts = text.split(";");
             for (int i = 0; i < parts.length; i += 3) {
                 String name = parts[i];
