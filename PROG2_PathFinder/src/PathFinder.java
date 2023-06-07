@@ -1,5 +1,4 @@
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,6 +26,7 @@ import java.util.Optional;
 import java.util.*;
 
 import javafx.scene.shape.Line;
+import javafx.stage.WindowEvent;
 
 public class PathFinder extends Application {
     //Class for testing and loading data
@@ -37,7 +37,7 @@ public class PathFinder extends Application {
     private ListGraph<City> graph = new ListGraph<>();
     private File graphFile = new File("europa.graph");
     private Pane mainField = new Pane();
-    private MenuBar menuBar = new MenuBar();
+    private MenuBar menuBar;
     private BorderPane root = new BorderPane();
     private String imageUrl = "File:europa.gif";//Background image
     private boolean unsavedChanges = false; //Changes at: New Place, New Connection, Change Connection, Open
@@ -59,7 +59,7 @@ public class PathFinder extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //SetId
-        menuBar.setId("menu");
+        //menuBar.setId("menu");
 
         //Declare
         primaryStage.setTitle("PathFinder");
@@ -135,12 +135,14 @@ public class PathFinder extends Application {
         //background.getChildren().add(imageView);
         imageView = new ImageView();
         mainField.getChildren().add(imageView);
+        menuBar = new MenuBar();
 
         VBox menus = new VBox(menuBar);
 
         Menu archiveMenu = new Menu("File");
         archiveMenu.setId("menuFile");
         menuBar.getMenus().add(archiveMenu);
+        menuBar.setId("menu");
 
         //Adding menu items to the 'menu'
         MenuItem mapItem = new MenuItem("New Map");
@@ -161,9 +163,9 @@ public class PathFinder extends Application {
 
 
             clearNodes();
+            unsavedChanges = true;
 
-
-            unsavedChanges = false;
+            //unsavedChanges = false;
         });
         mapItem.setId("menuNewMap");
         archiveMenu.getItems().add(mapItem);
@@ -199,7 +201,8 @@ public class PathFinder extends Application {
         exitItem.setId("menuExit");
         archiveMenu.getItems().add(exitItem);
         exitItem.setOnAction(event -> {
-            exitProgram();
+            //exitProgram();
+            primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
         //mainField.getChildren().addAll(background);
@@ -219,7 +222,14 @@ public class PathFinder extends Application {
         scene = new Scene(root);
 
         primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(windowEvent -> exitProgram()); //Call exit program when closing window
+        primaryStage.setOnCloseRequest(windowEvent -> {
+            if (unsavedChanges) {
+                Alert alert = createAlertConf("Unsaved Changes");
+                if (alert.getResult() == ButtonType.CANCEL) {
+                    windowEvent.consume();
+                }
+            }
+        });  //Call exit program when closing window
         primaryStage.show();
         mainField.setId("outputArea");
     }
@@ -336,26 +346,15 @@ public class PathFinder extends Application {
             writer.println(imageUrl);
             writer.println(printNodes()); //writes out node.toString()
             writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
-        } catch (FileNotFoundException e) {
-            System.err.println("Error: File not found error");
+            unsavedChanges = false;
         }
-    }
-
-    public void saveChanges() {
-        try {
-            saveFile();
-        } catch (IOException e) {
-            System.err.println("Error: problem when saving changes!");
-        }
-        unsavedChanges = false;
-        Platform.exit();
     }
 
     private Alert createAlertConf(String title) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
-        alert.setHeaderText("There are unsaved changes in the project");
-        alert.setContentText("Save changes?");
+        alert.setHeaderText(null);
+        alert.setContentText("Unsaved changes, exit anyway?");
 
         ButtonBar buttonBar = new ButtonBar();
         ButtonType confirmButton = new ButtonType("OK");
@@ -531,7 +530,6 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent actionEvent) {
             try {
-                unsavedChanges = false;
                 saveFile();
             } catch (IOException e) {
 
@@ -657,24 +655,6 @@ public class PathFinder extends Application {
         if (graph.getEdgeBetween(node1, node2) == null) { //Continue if edge exists?
             graph.connect(node1, node2, name, weight);
         }
-    }
-
-    private void exitProgram() {
-        if (unsavedChanges) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setHeaderText("Unsaved Changes");
-            alert.setContentText("There are unsaved changes, do you wish to save before exiting?");
-            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.YES) {
-                saveChanges();
-            } else if (result.get() == ButtonType.NO) {
-                unsavedChanges = false;
-            } else {
-                return;
-            }
-        }
-        Platform.exit();
     }
 
     private String nameWindow() {
