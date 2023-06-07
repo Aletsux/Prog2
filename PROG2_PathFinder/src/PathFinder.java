@@ -28,23 +28,20 @@ import java.util.*;
 import javafx.scene.shape.Line;
 import javafx.stage.WindowEvent;
 
+// Grupp 365
+// Cheng che Huang chhu9071
+// Adin Farid adfa8505
+// Sara Afshar saaf0625
 public class PathFinder extends Application {
-    //Class for testing and loading data
-    //TestClass testClass = null;
-    //ListGraph listGraph = testClass.getListGraph();
-    private static ArrayList<City> selectedNodes = new ArrayList(); //temporary public for testing
-    //URL graphUrl = PathFinder.class.getResource("europa.gif"); //URL = bakgrundsbild??
+    private static ArrayList<City> selectedNodes = new ArrayList();
     private ListGraph<City> graph = new ListGraph<>();
     private File graphFile = new File("europa.graph");
     private Pane mainField = new Pane();
     private MenuBar menuBar;
     private BorderPane root = new BorderPane();
-    private String imageUrl = "File:europa.gif";//Background image
-    private boolean unsavedChanges = false; //Changes at: New Place, New Connection, Change Connection, Open
-    private boolean cursorIsCrossHair = false; // tempo public
-
-    //Background
-    //Image image = new Image(imageFile.toString());
+    private String imageUrl = "File:europa.gif";
+    private boolean unsavedChanges = false;
+    private boolean cursorIsCrossHair = false;
     private ImageView imageView;
     private Scene scene;
     private FlowPane flow;
@@ -58,16 +55,8 @@ public class PathFinder extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //SetId
-        //menuBar.setId("menu");
-
-        //Declare
         primaryStage.setTitle("PathFinder");
-
-        //mainField = new Pane();
-        //background = new Pane();
         flow = new FlowPane();
-
 
         //Flow
         findPathB = new Button("Find Path");
@@ -85,7 +74,6 @@ public class PathFinder extends Application {
         });
 
         newPlaceB = new Button("New Place");
-        //newPlaceB.setId("btnNewPlace");
         newPlaceB.setOnAction(event -> {
             cursorIsCrossHair = true;
             //sets cursor to crosshair, and disables newPlace button
@@ -99,14 +87,12 @@ public class PathFinder extends Application {
 
         newConnectionB = new Button("New Connection");
         newConnectionB.setOnAction(event -> {
-
             if (selectedNodes.size() == 2) {
                 if (graph.getEdgeBetween(selectedNodes.get(0), selectedNodes.get(1)) != null) {
                     showErrorMessage("Connection already exist between the two destinations.");
                     return;
                 }
             }
-
             if (selectedNodes.size() < 2) {
                 noSelectedNodesAlert();
             } else {
@@ -114,7 +100,6 @@ public class PathFinder extends Application {
             }
         });
         newConnectionB.setId("btnNewConnection");
-
 
         changeConnectionB = new Button("Change Connection");
         changeConnectionB.setId("btnChangeConnection");
@@ -130,9 +115,6 @@ public class PathFinder extends Application {
         flow.setAlignment(Pos.CENTER);
         flow.setHgap(10);
 
-
-        //background = new Pane();
-        //background.getChildren().add(imageView);
         imageView = new ImageView();
         mainField.getChildren().add(imageView);
         menuBar = new MenuBar();
@@ -148,28 +130,23 @@ public class PathFinder extends Application {
         MenuItem mapItem = new MenuItem("New Map");
         mapItem.setOnAction(event -> {
             if (unsavedChanges) {
-                Alert alert = createAlertConf("Unsaved Changes");
+                Alert alert = createAlertConf("Unsaved changes, continue anyway?");
                 if (alert.getResult() == ButtonType.CANCEL) {
                     alert.close();
                     return;
                 }
             }
-            //loadImage();
             Image image = new Image(imageUrl);
             imageView.setImage(image);
             Stage stage = (Stage) flow.getScene().getWindow();
             stage.sizeToScene();
             stage.centerOnScreen();
-
-
             clearNodes();
             unsavedChanges = true;
-
-            //unsavedChanges = false;
         });
+
         mapItem.setId("menuNewMap");
         archiveMenu.getItems().add(mapItem);
-
 
         MenuItem openItem = new MenuItem("Open");
         openItem.setId("menuOpenFile");
@@ -186,7 +163,6 @@ public class PathFinder extends Application {
         imageItem.setId("menuSaveImage");
         archiveMenu.getItems().add(imageItem);
         imageItem.setOnAction(event -> {
-            //Get scene
             WritableImage result = new WritableImage((int) scene.getWidth(), (int) scene.getHeight());
             scene.snapshot(result);
             File outputFile = new File("capture.png");
@@ -201,58 +177,48 @@ public class PathFinder extends Application {
         exitItem.setId("menuExit");
         archiveMenu.getItems().add(exitItem);
         exitItem.setOnAction(event -> {
-            //exitProgram();
             primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
-        //mainField.getChildren().addAll(background);
-        //Set position in BorderPane
         root.setTop(menus);
         root.setCenter(flow);
-        //root.setBottom(loadImage(imageFile));
         root.setBottom(mainField);
-
 
         BorderPane.setMargin(flow, new Insets(10, 0, 10, 0));
 
-        //Create cursor
-        Cursor cursor = Cursor.CROSSHAIR;
-
-        //Show stage
         scene = new Scene(root);
 
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(windowEvent -> {
             if (unsavedChanges) {
-                Alert alert = createAlertConf("Unsaved Changes");
+                Alert alert = createAlertConf("Unsaved changes, close anyway?");
                 if (alert.getResult() == ButtonType.CANCEL) {
                     windowEvent.consume();
                 }
             }
-        });  //Call exit program when closing window
+        });
         primaryStage.show();
         mainField.setId("outputArea");
     }
 
 
-    private void clearNodes() { //clear nodes from system, graph.getNodes()
+    private void clearNodes() {
         //Clear all visible nodes
         mainField.getChildren().clear();
-        mainField.getChildren().add(imageView); //removes all visual elements
+        mainField.getChildren().add(imageView);
         selectedNodes.clear();
 
         Set<Edge> edgesToRemove = new HashSet<>();
         for (Object city : graph.getNodes()) {
             edgesToRemove.addAll(graph.getEdges((City) city));
         }
-        edgesToRemove.clear(); //removes all edges
+        edgesToRemove.clear();
 
-        graph.getNodes().clear(); //removes all nodes
-        //graph = new ListGraph<>();
+        graph.getNodes().clear();
+
     }
 
     private void createCity(String name, double x, double y) {
-
         City city = new City(name, x, y + 10); //Position is off by +10
         if (graph.getNodes().contains(city)) {
             return;
@@ -264,8 +230,6 @@ public class PathFinder extends Application {
         label.setLayoutX(x + 2);
         label.setLayoutY(y - 2);
 
-
-        //city.setOnMouseClicked(new selectCityHandler());
         city.setOnMouseClicked(event -> {
             if (selectedNodes.size() < 2 && city.getFill() == Color.BLUE) {
                 selectedNodes.add(city);
@@ -287,10 +251,8 @@ public class PathFinder extends Application {
             String name = "";
             if (cursorIsCrossHair) {
                 double x = event.getX();
-                //minus 62 för att det blev fel med y axeln annars och andra lösningar icke funkna bre
-                double y = event.getY(); //-62 from scene
-                //double localX = root.sceneToLocal(x, y).getX();
-                // double localY = root.sceneToLocal(x, y).getY();
+                double y = event.getY();
+
                 if (cursorIsCrossHair) {
                     int nrNodes = 1;
                     for (Object obj : graph.getNodes()) {
@@ -317,59 +279,41 @@ public class PathFinder extends Application {
                     }
                     dialog.close();
 
-
                     disableCrosshair();
                     newPlaceB.setDisable(false);
                 }
             }
-
         }
     }
 
-
-    //Make this generic, use parameter for path
-    private void loadImage() {
-        Image image = new Image(imageUrl);
-        imageView.setImage(image);
-        Stage stage = (Stage) flow.getScene().getWindow();
-        stage.sizeToScene();
-        stage.centerOnScreen();
-
+    public void disableCrosshair() {
+        this.cursorIsCrossHair = false;
+        scene.setCursor(Cursor.DEFAULT);
     }
+
 
     private void saveFile() throws IOException {
         if (graph.getNodes().isEmpty()) {
             System.err.println("Graph is empty!");
         }
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(graphFile))) { //'try with resource' -> autoclose 'writer'
+        try (PrintWriter writer = new PrintWriter(new FileWriter(graphFile))) {
             writer.println(imageUrl);
-            writer.println(printNodes()); //writes out node.toString()
-            writer.println(printConnections()); //writes out edges, disabled for testing readNodes()
+            writer.println(printNodes());
+            writer.println(printConnections());
             unsavedChanges = false;
         }
     }
 
-    private Alert createAlertConf(String title) {
+    private Alert createAlertConf(String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
+        alert.setTitle("Unsaved Changes");
         alert.setHeaderText(null);
-        alert.setContentText("Unsaved changes, exit anyway?");
-
-        ButtonBar buttonBar = new ButtonBar();
-        ButtonType confirmButton = new ButtonType("OK");
-        ButtonType cancelButton = new ButtonType("cancel", ButtonBar.ButtonData.CANCEL_CLOSE); //ButtonData = enums for opertations
-
-        buttonBar.getButtons().addAll(alert.getDialogPane());
-        buttonBar.setPadding(new Insets(0, 0, 0, 50));
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        //alert.getDialogPane().setPadding(new Insets(0, 0, 0, 0));
+        alert.setContentText(content);
+        alert.showAndWait();
 
         return alert;
     }
-
 
     private void noSelectedNodesAlert() {
         Alert newAlert = new Alert(Alert.AlertType.ERROR);
@@ -378,17 +322,6 @@ public class PathFinder extends Application {
         newAlert.setContentText("Two places must be selected!");
         newAlert.showAndWait();
     }
-
-//    private void noSelectedNodesAlert() {
-//        Alert alert = new Alert(Alert.AlertType.ERROR);
-//        alert.setTitle("Error!");
-//        alert.setHeaderText("Two places must be selected!");
-//
-//        ButtonType okButton = new ButtonType("OK");
-//        alert.getButtonTypes().setAll(okButton);
-//
-//        alert.showAndWait();
-//    }
 
     private void openConnectionWindow() {
         //Check whether connection exists
@@ -411,7 +344,6 @@ public class PathFinder extends Application {
         dialog.getDialogPane().setContent(new VBox(hbName, hbTime));
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 
-
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getText().equals("OK")) {
                 String nameInput = nameField.getText();
@@ -427,9 +359,7 @@ public class PathFinder extends Application {
                     showErrorMessage("Input is not valid. Name cannot be empty.");
                     return;
                 }
-
                 createLine(null, null);
-                //create a connection from first node to second node
                 graph.connect(selectedNodes.get(0), selectedNodes.get(1), nameInput, Integer.parseInt(timeInput));
                 unsavedChanges = true;
             }
@@ -464,10 +394,9 @@ public class PathFinder extends Application {
         mainField.getChildren().add(line);
     }
 
-    public void showConnectionHandler(City from, City to, boolean edit) { //Bug: pops up twice in change connection
+    public void showConnectionHandler(City from, City to, boolean edit) {
         if (selectedNodes.size() < 2) { //selected less than 2 nodes
             noSelectedNodesAlert();
-            // showErrorMessage("Test");
             return;
         }
 
@@ -479,13 +408,12 @@ public class PathFinder extends Application {
         //Display alert with information on connection
         Edge edge = graph.getEdgeBetween(from, to);
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION); //not null...
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Connection");
         alert.setHeaderText("From " + from.getName().toUpperCase() + " to " + to.getName().toUpperCase());
 
         HBox hbName = new HBox();
         HBox hbTime = new HBox();
-        //VBox vb = new VBox();
 
         Label name = new Label("Name: ");
         TextField nameField = new TextField(edge.getName());
@@ -532,11 +460,10 @@ public class PathFinder extends Application {
             try {
                 saveFile();
             } catch (IOException e) {
-
+                //Handle exception
             }
         }
     }
-
 
     //Open button handler
     class OpenHandler implements EventHandler<ActionEvent> {
@@ -544,13 +471,12 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) { //Fix: dialogue layout
             //Confirmation alert
             if (unsavedChanges) {
-                Alert alert = createAlertConf("Unsaved Changes");
+                Alert alert = createAlertConf("Unsaved changes, continue anyway?");
                 if (alert.getResult() == ButtonType.CANCEL) {
                     alert.close();
                     return;
                 }
             }
-
             try {
                 clearNodes();
                 FileReader fr = new FileReader(graphFile);
@@ -566,15 +492,21 @@ public class PathFinder extends Application {
         }
     }
 
+    private void loadImage() {
+        Image image = new Image(imageUrl);
+        imageView.setImage(image);
+        Stage stage = (Stage) flow.getScene().getWindow();
+        stage.sizeToScene();
+        stage.centerOnScreen();
+    }
+
     //Reads each line, splits it and creates new nodes based on parts
-    private void readNodes(BufferedReader in) throws IOException { //Fixed!
+    private void readNodes(BufferedReader in) throws IOException {
         String firstLine = in.readLine();
         if (firstLine.contains("file")) {
             imageUrl = firstLine;
         }
         String text = "";
-        //Read first line, set url
-        int cityCount = 0;
         text = in.readLine();
 
         if (!text.isBlank()) {
@@ -590,7 +522,6 @@ public class PathFinder extends Application {
     }
 
     private void readConnections(BufferedReader in) throws IOException {
-        int connectionCount = 0;
         String text = "";
         for (int i = 0; i < 1; i++) { //Skip first 2 lines
             in.readLine();
@@ -604,15 +535,11 @@ public class PathFinder extends Application {
                     String node2 = parts[i + 1];
                     String edgeName = parts[i + 2];
                     int weight = Integer.parseInt(parts[i + 3]);
-
                     createConnection(node1, node2, edgeName, weight);
-                    connectionCount++;
                 }
-
             }
         }
     }
-
 
     private String printNodes() {
         StringBuilder sb = new StringBuilder();
@@ -658,35 +585,7 @@ public class PathFinder extends Application {
         }
     }
 
-    private String nameWindow() {
-        int nrNodes = 1;
-        for (Object obj : graph.getNodes()) {
-            nrNodes++;
-        }
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Name");
-        dialog.setHeaderText("Name of place:");
-
-        javafx.scene.control.TextField nameField = new javafx.scene.control.TextField("Node" + nrNodes);
-
-        ButtonType okButton = new ButtonType("OK");
-        ButtonType cancelButton = new ButtonType("close");
-        dialog.getDialogPane().setContent(new HBox(10, nameField));
-        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            if (result.get().getText().equals("OK")) {
-                String name = nameField.getText();
-                Character.toUpperCase(name.charAt(0));
-                return name;
-            }
-        }
-        dialog.close();
-        return null;
-    }
-
-    private void findPath() { //Fixed
+    private void findPath() {
         if (selectedNodes.size() == 2) {
             List<Edge<City>> path = graph.getPath(selectedNodes.get(0), selectedNodes.get(1)); //sends reverse!
             Collections.reverse(path);
@@ -714,21 +613,10 @@ public class PathFinder extends Application {
             if (clickResult.isPresent()) {
                 dialog.close();
             }
-
         } else {
             showErrorMessage("Connection must be selected.");
         }
     }
-
-    public boolean getCrosshairBoolean() {
-        return cursorIsCrossHair;
-    }
-
-    public void disableCrosshair() {
-        this.cursorIsCrossHair = false;
-        scene.setCursor(Cursor.DEFAULT);
-    }
-
 }
 
 
