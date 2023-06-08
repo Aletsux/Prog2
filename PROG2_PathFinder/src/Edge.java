@@ -1,5 +1,8 @@
+// Grupp 365
+// Cheng che Huang chhu9071
+// Adin Farid adfa8505
+// Sara Afshar saaf0625
 public class Edge<N> {
-
 
     private String name;
     private int weight;

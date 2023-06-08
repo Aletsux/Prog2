@@ -1,18 +1,21 @@
 import java.util.*;
 
-/* Suggestions:
-Type of collection: probably LinkedList
-Nodes - A generic type 'N'
-Graph - Interface we need to create?
-
-ToDo:
- */
-
+// Grupp 365
+// Cheng che Huang chhu9071
+// Adin Farid adfa8505
+// Sara Afshar saaf0625
 public class ListGraph<N> implements Graph<N> {
 
-    //Tracks nodes and connected edges
     private Map<N, Set<Edge<N>>> adjacentNodes = new HashMap<>();
     private Set<N> visited = new HashSet<N>();
+
+    public Set<N> getNodes() {
+        return adjacentNodes.keySet();
+    }
+
+    public Set<Edge<N>> getEdges(N key) {
+        return adjacentNodes.get(key);
+    }
 
     public void add(N node) {
         if (adjacentNodes.containsKey(node)) {
@@ -21,7 +24,6 @@ public class ListGraph<N> implements Graph<N> {
         adjacentNodes.putIfAbsent(node, new HashSet<>());
     }
 
-    // I1 - Should throw IllegalStateException
     public void connect(N currentNode, N newNode, String bindName, int weight) {
         //checks whether selected nodes exist
         if (!adjacentNodes.containsKey(currentNode) || !adjacentNodes.containsKey(newNode)) {
@@ -31,10 +33,9 @@ public class ListGraph<N> implements Graph<N> {
         if (weight < 0) {
             throw new IllegalArgumentException("Invalid value");
         }
-        //Checks whether node has edges??
-        //Max 1 edge can exist between nodes
+
         boolean edgeExists = false;
-        //A set of setOfEdges
+
         for (Set<Edge<N>> setOfEdges : adjacentNodes.values()) {
             for (Edge<N> edge : setOfEdges) {
                 if (edge.equals(getEdgeBetween(currentNode, newNode))) {
@@ -53,7 +54,7 @@ public class ListGraph<N> implements Graph<N> {
         //create a new edge from currentNode to newNode
         Edge<N> currentToNew = new Edge<N>(bindName, weight, newNode);
 
-        //more optimal version: adjacentNodes.computeIfAbsent(currentNode, k -> new HashSet<Edge<N>>()).add(currentToNew);
+
         if (edges != null) {
             edges.add(currentToNew);
             adjacentNodes.put(currentNode, edges);
@@ -63,10 +64,8 @@ public class ListGraph<N> implements Graph<N> {
             adjacentNodes.put(currentNode, edges);
         }
 
-        //Reference the Set<Edge> for the newNode in the adjacentNodes map
         edges = adjacentNodes.get(newNode);
 
-        //Same as above, create edge for newNode to currentNode
         Edge<N> newToCurrent = new Edge<>(bindName, weight, currentNode);
         if (edges != null) {
             edges.add(newToCurrent);
@@ -77,7 +76,6 @@ public class ListGraph<N> implements Graph<N> {
             adjacentNodes.put(newNode, edges);
         }
 
-        //If list is empty create new list of Edges
         if (edges == null) {
             edges = new HashSet<>();
             adjacentNodes.put(currentNode, edges);
@@ -90,10 +88,8 @@ public class ListGraph<N> implements Graph<N> {
             throw new NoSuchElementException("Not an existing node!");
         }
 
-        //save all connections to nodeToRemove
         Set<Edge<N>> connections = adjacentNodes.get(nodeToRemove);
 
-        //iterate over connections, remove edges from other nodes
         if (connections != null) {
             for (Edge<N> edge : connections) {
                 if (edge.getDestination() != nodeToRemove) {
@@ -103,7 +99,6 @@ public class ListGraph<N> implements Graph<N> {
             }
         }
 
-        //removes the node and all edges from the node
         if (adjacentNodes.get(nodeToRemove) != null) {
             adjacentNodes.remove(nodeToRemove);
         } else {
@@ -111,35 +106,12 @@ public class ListGraph<N> implements Graph<N> {
         }
     }
 
-    // returns amount of 'nodes'
-    public Set<N> getNodes() {
-        return adjacentNodes.keySet();
-    }
-
-    public Set<Edge<N>> getEdges(N key) {
-        return adjacentNodes.get(key);
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (N city : adjacentNodes.keySet()) {
-            Set<Edge<N>> edgeToPrint = getEdges(city);
-            sb.append(city).append(" : ").append(edgeToPrint).append("\n");
-        }
-
-        return sb.toString();
-    }
-
-
     @Override
     public void setConnectionWeight(N node1, N node2, int newWeight) {
 
         if (!adjacentNodes.containsKey(node1) || !adjacentNodes.containsKey(node2)) {
             throw new NoSuchElementException();
         }
-
 
         if (newWeight < 0) {
             throw new IllegalArgumentException();
@@ -176,21 +148,28 @@ public class ListGraph<N> implements Graph<N> {
 
     @Override
     public Edge<N> getEdgeBetween(N node1, N node2) {
+        Edge<N> edgeToReturn = null;
         if (adjacentNodes.get(node1) == null || adjacentNodes.get(node2) == null) {
             throw new NoSuchElementException("Error: node not registered");
         }
-
         Collection<Edge<N>> edgesTo = adjacentNodes.get(node1); //Checks one way
-        if (edgesTo != null) {
-            for (Edge edge : adjacentNodes.get(node1)) {
-                if (edge.getDestination().equals(node2)) {
-                    return edge;
-                }
-            }
-        } else {
+        Collection<Edge<N>> edgesFrom = adjacentNodes.get(node2);
+        if (edgesTo == null || edgesFrom == null) {
             throw new NoSuchElementException("Error: Node has no edges");
         }
-        return null;
+        for (Edge edgeTo : adjacentNodes.get(node1)) {
+            if (edgeTo.getDestination().equals(node2)) {
+                edgeToReturn = edgeTo;
+            } else {
+                for (Edge edgeFrom : adjacentNodes.get(node1)) {
+                    if (edgeFrom.getDestination().equals(node2)) {
+                        edgeToReturn = edgeFrom;
+                    }
+                }
+            }
+        }
+        
+        return edgeToReturn;
     }
 
 
@@ -284,5 +263,15 @@ public class ListGraph<N> implements Graph<N> {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (N city : adjacentNodes.keySet()) {
+            Set<Edge<N>> edgeToPrint = getEdges(city);
+            sb.append(city).append(" : ").append(edgeToPrint).append("\n");
+        }
+        return sb.toString();
     }
 }

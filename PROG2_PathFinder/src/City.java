@@ -4,6 +4,10 @@ import java.util.Objects;
 
 import javafx.scene.paint.Color;
 
+// Grupp 365
+// Cheng che Huang chhu9071
+// Adin Farid adfa8505
+// Sara Afshar saaf0625
 public class City<N> extends Circle {
     private static double RADIUS = 10;
     private String name = "";
